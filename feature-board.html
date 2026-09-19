@@ -1,0 +1,381 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html{color-scheme:light}body{margin:0}img{max-width:100%}</style>
+<title>機能のたまり場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4;
+  --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6;
+  --g4:#B36A24; --g4s:#F6E7D5;
+  --yes:#2E7D63; --no:#B05252;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --yes:#6BC3A2; --no:#E08585;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --yes:#6BC3A2; --no:#E08585;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(28px,5vw,40px);letter-spacing:.01em}
+h2{font-family:var(--f-d);font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px}
+p{margin:0}
+.muted{color:var(--ink2)}
+.lead{color:var(--ink2);font-size:14px}
+.mono{font-family:var(--f-m)}
+section{display:flex;flex-direction:column;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+
+/* 全体像 */
+.layers{display:grid;gap:10px}
+.layer{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--k);border-radius:14px;padding:12px 16px}
+@media (max-width:560px){.layer{grid-template-columns:1fr;gap:4px}}
+.layer .nm{font-family:var(--f-d);font-weight:800;font-size:17px;color:var(--k)}
+.layer .de{font-size:13.5px;color:var(--ink2);line-height:1.6}
+.l1{--k:var(--g1)}.l2{--k:var(--g2)}.l3{--k:var(--g3)}.l4{--k:var(--g4)}
+.loopnote{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink2);background:var(--accent-soft);border-radius:12px;padding:10px 16px}
+
+/* feature cards */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.grid{grid-template-columns:1fr}}
+.f{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.f .top{display:flex;gap:10px;align-items:flex-start}
+.f .em{font-size:24px;line-height:1.2}
+.f .ttl{font-family:var(--f-d);font-weight:800;font-size:17.5px;color:var(--k);line-height:1.4}
+.f .one{font-size:13.5px;color:var(--ink2);line-height:1.6}
+.f .become{font-size:14px;background:var(--ks);border-radius:10px;padding:9px 12px;line-height:1.65}
+.pm{display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.6}
+.pm div{display:grid;grid-template-columns:20px 1fr;gap:6px}
+.pm .s{font-weight:700}
+.pm .p .s{color:var(--yes)}
+.pm .m .s{color:var(--no)}
+.vote{display:flex;gap:6px;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line);flex-wrap:wrap}
+.vote button{font:inherit;font-size:12.5px;background:var(--bg);border:1px solid var(--line);color:var(--ink2);border-radius:99px;padding:4px 12px;cursor:pointer}
+.vote button:hover{border-color:var(--ink2);color:var(--ink)}
+.vote button.on[data-v="yes"]{background:var(--yes);border-color:var(--yes);color:var(--surface);font-weight:700}
+.vote button.on[data-v="hmm"]{background:var(--ink2);border-color:var(--ink2);color:var(--surface);font-weight:700}
+.vote button.on[data-v="no"]{background:var(--no);border-color:var(--no);color:var(--surface);font-weight:700}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.g1 .f,.f.g1{--k:var(--g1);--ks:var(--g1s)}
+.g2 .f{--k:var(--g2);--ks:var(--g2s)}
+.g3 .f{--k:var(--g3);--ks:var(--g3s)}
+.g4 .f{--k:var(--g4);--ks:var(--g4s)}
+.tag{font-size:11px;font-family:var(--f-m);color:var(--k);border:1px solid var(--k);border-radius:99px;padding:1px 8px;white-space:nowrap;align-self:flex-start}
+
+/* summary */
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.summary pre{margin:0;white-space:pre-wrap;font-family:var(--f-m);font-size:12.5px;line-height:1.85;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto}
+.btn{font:inherit;font-size:13px;background:transparent;border:1px solid var(--line);color:var(--ink2);border-radius:99px;padding:5px 12px;cursor:pointer}
+.btn:hover{color:var(--ink)}
+.count{display:flex;gap:14px;font-size:13px;color:var(--ink2);flex-wrap:wrap}
+.count b{font-family:var(--f-m);color:var(--ink)}
+.qs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.qs{grid-template-columns:1fr}}
+.qc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.7}
+.qc b{display:block;font-family:var(--f-d);font-weight:800;color:var(--accent);margin-bottom:2px}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <span class="mono muted" style="font-size:11px;letter-spacing:.14em">FEATURE IDEAS · 社内コミュニティ基盤</span>
+  <h1>🎪 機能のたまり場</h1>
+  <p class="muted" style="margin-top:8px">「作れるか」はいったん忘れて <b>あったら面白い機能</b>だけを並べた板。20個それぞれに いいところと こわいところを書いてある。</p>
+  <div class="panel" style="margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start">
+    <span style="font-size:22px">🎯</span>
+    <div><b>この基盤がやりたいこと</b>：人が集まる「場」を作り そこで起きたことを記録して 人と知見にラベルを付け 知りたい人と知っている人をつなぐ。<br>
+    <span class="muted" style="font-size:14px">機能をひとつ足すたびに この4つのどこかが厚くなる。</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>🗺️ 4つの層</h2>
+  <div class="layers">
+    <div class="layer l1"><span class="nm">🏛️ 集まる</span><span class="de">もくもく会 講演会 知見シェア 社内ハッカソンが開かれる部屋そのもの</span></div>
+    <div class="layer l2"><span class="nm">🎙️ 残る</span><span class="de">部屋で起きたこと（録音の文字起こし 投稿 資料）が知見として積もる</span></div>
+    <div class="layer l3"><span class="nm">🏷️ 知る</span><span class="de">積もった記録から 人のスキルと興味にラベルが付く</span></div>
+    <div class="layer l4"><span class="nm">🔗 つながる</span><span class="de">ラベルを使って 知りたい人と知っている人が出会う</span></div>
+  </div>
+  <div class="loopnote">🔄 この4つは一方通行ではなく輪。つながって生まれた会話がまた記録になり ラベルが濃くなる。<b>使うほど賢くなる</b>のがこの基盤の面白さ。</div>
+</section>
+
+<section class="g1">
+  <h2>🏛️ 集まる ─ 部屋そのものを面白くする</h2>
+  <div class="grid">
+    <div class="f" data-id="a1">
+      <div class="top"><span class="em">🫧</span><div><div class="ttl">部屋が勝手に立つ</div><div class="one">同じことを調べている人が3人たまると 部屋が自動で開いて招待が届く</div></div></div>
+      <div class="become">💡 こうなる：幹事がいなくても 毎週どこかで小さな会が立ち上がっている状態</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>誰も企画しなくていい。偶然の出会いが起きる</span></div>
+        <div class="m"><span class="s">△</span><span>呼ばれた側が「なんで自分？」となる。空振りの部屋が増えると飽きられる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="a2">
+      <div class="top"><span class="em">🎤</span><div><div class="ttl">部屋に司会がいる</div><div class="one">進行と時間管理をAIがやる。沈黙が続いたら呼び水の質問を投げる</div></div></div>
+      <div class="become">💡 こうなる：喋る人が偏らない。新人にも順番が回ってくる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>会が締まる。話を振る役を誰かが背負わなくていい</span></div>
+        <div class="m"><span class="s">△</span><span>喋らされ感が出る。雑談のゆるさが消えると人は来なくなる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="a3">
+      <div class="top"><span class="em">🏛️</span><div><div class="ttl">終わった部屋に後から入れる</div><div class="one">記録と資料つきで過去の会がそのまま残り いつでも見学できる</div></div></div>
+      <div class="become">💡 こうなる：参加できなかった人が 3か月後に同じ場に立てる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>時間が合わない人も置いていかれない。資産が消えない</span></div>
+        <div class="m"><span class="s">△</span><span>後から読まれる前提だと本音が出にくくなる。非公開の部屋も要る</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="a4">
+      <div class="top"><span class="em">🚪</span><div><div class="ttl">ひとこと入室</div><div class="one">部屋に入るとき「今日持ってきた話題」を一行書くと それが自動で名札になる</div></div></div>
+      <div class="become">💡 こうなる：初対面でも何を話せばいいか最初から分かっている</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>雑談の入口ができる。参加者の興味がそのままデータになる</span></div>
+        <div class="m"><span class="s">△</span><span>入室のひと手間で離脱する人がいる。空欄を許す設計が要る</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="a5">
+      <div class="top"><span class="em">🎠</span><div><div class="ttl">会がまるごと回る</div><div class="one">テーマ決め 告知 リマインド 当日の記録 ふりかえりまで 運営の一式を引き受ける</div></div></div>
+      <div class="become">💡 こうなる：主催者は「やろう」と言うだけ。あとは勝手に会が立って終わって片付く</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>幹事の負担で会が消える問題が根本から消える。回数が増えるほど場が育つ</span></div>
+        <div class="m"><span class="s">△</span><span>全社に出す告知を機械が打つ怖さ。誤送信は取り消せないので最後は人が押したくなる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="a6">
+      <div class="top"><span class="em">🫙</span><div><div class="ttl">見るだけ参加を許す</div><div class="one">発言しない参加を正式なものとして扱う。聞くだけの人にも席がある</div></div></div>
+      <div class="become">💡 こうなる：喋らないと気まずい空気が消えて 最初の一歩のハードルが下がる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>人が来やすい。見ていた人が数回後に話し始める</span></div>
+        <div class="m"><span class="s">△</span><span>見る人ばかりだと場が静まる。話す人への還元が別に要る</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+  </div>
+</section>
+
+<section class="g2">
+  <h2>🎙️ 残る ─ 記録が知見に変わる</h2>
+  <div class="grid">
+    <div class="f" data-id="b1">
+      <div class="top"><span class="em">🧊</span><div><div class="ttl">会議が終わると知見が増えている</div><div class="one">文字起こしから 話題ごとの知見カードが自動で切り出される</div></div></div>
+      <div class="become">💡 こうなる：議事録を誰も書かないのに ナレッジだけ溜まっていく</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>書く人の負担がゼロ。口頭で消えていた話が残る</span></div>
+        <div class="m"><span class="s">△</span><span>機密や個人情報がそのまま出る事故。落とす仕組みが必須</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="b2">
+      <div class="top"><span class="em">🪪</span><div><div class="ttl">知見に顔が付く</div><div class="one">カードに「これを話した人」が残る。知見の出どころが人にひも付く</div></div></div>
+      <div class="become">💡 こうなる：目立たないけど詳しい人が 勝手に見つかる状態</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>アピールが苦手な人の貢献が見える。社内で名前が売れる</span></div>
+        <div class="m"><span class="s">△</span><span>発言量が多い人ほど得をする。目立ちたくない人には圧になる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="b3">
+      <div class="top"><span class="em">📚</span><div><div class="ttl">わからん語辞典</div><div class="one">会話に出てきた社内用語や略語をAIが拾い 用語集が勝手に育つ</div></div></div>
+      <div class="become">💡 こうなる：新人が「それ何ですか」と聞けないまま3か月過ごす問題が消える</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>オンボーディングが速い。誰も書きたがらない資料が自動で埋まる</span></div>
+        <div class="m"><span class="s">△</span><span>まちがった定義が独り歩きする。直す人が要る</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="b4">
+      <div class="top"><span class="em">🩹</span><div><div class="ttl">失敗の棚</div><div class="one">うまくいかなかった話だけを集める棚。成功談より検索される</div></div></div>
+      <div class="become">💡 こうなる：同じ穴に落ちる人が減り 失敗を話すことが普通になる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>他社にない文化ができる。実務でいちばん役に立つ情報が集まる</span></div>
+        <div class="m"><span class="s">△</span><span>晒しに見えた瞬間 誰も書かなくなる。匿名にするかが分かれ目</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+  </div>
+</section>
+
+<section class="g3">
+  <h2>🏷️ 知る ─ 人にラベルが付く</h2>
+  <div class="grid">
+    <div class="f" data-id="c1">
+      <div class="top"><span class="em">🌱</span><div><div class="ttl">勝手に育つスキルシート</div><div class="one">話したこと 答えたこと 参加した部屋から スキルのラベルが自動で増える</div></div></div>
+      <div class="become">💡 こうなる：自己申告しなくても 今できることが最新の状態で並んでいる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>経歴やスキルシートを書き直す手間が消える。忘れていた経験も残る</span></div>
+        <div class="m"><span class="s">△</span><span>実態とずれたラベルが付く。評価に使われると身構えて発言が減る</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="c2">
+      <div class="top"><span class="em">⏳</span><div><div class="ttl">賞味期限つきの「いま気になってること」</div><div class="one">興味タグは1か月で自然に薄くなる。更新しないと消える</div></div></div>
+      <div class="become">💡 こうなる：死んだプロフィールが存在しない。今の熱でつながれる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>スキルより興味でつながる方が会話が続く。古い情報が勝手に掃除される</span></div>
+        <div class="m"><span class="s">△</span><span>消える怖さで更新作業が発生する。長く続く興味には向かない</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="c3">
+      <div class="top"><span class="em">🫥</span><div><div class="ttl">隠しラベル</div><div class="one">本人にしか見えないラベル。マッチングには使われるが一覧には出ない</div></div></div>
+      <div class="become">💡 こうなる：出したくない人も 見えないところでつながれる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>目立ちたくない人を排除しない。プライバシーの逃げ道になる</span></div>
+        <div class="m"><span class="s">△</span><span>なぜ自分に来たか説明できないマッチは不信感につながる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="c4">
+      <div class="top"><span class="em">🗺️</span><div><div class="ttl">社内の知識地図</div><div class="one">会社全体のラベルを地図にする。厚いところと薄いところが一目で分かる</div></div></div>
+      <div class="become">💡 こうなる：「この分野 社内で3人しかいない」が数字で見える</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>採用や育成の話に直結する。見ていて単純に面白い</span></div>
+        <div class="m"><span class="s">△</span><span>薄い分野の人が減点されたように感じる。見せ方しだいで凶器になる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+  </div>
+</section>
+
+<section class="g4">
+  <h2>🔗 つながる ─ 人と人が出会う</h2>
+  <div class="grid">
+    <div class="f" data-id="d1">
+      <div class="top"><span class="em">🙋</span><div><div class="ttl">ぎもんマッチ</div><div class="one">質問を書くと 詳しそうな人をAIが選び「答えられますか」と本人に打診する</div></div></div>
+      <div class="become">💡 こうなる：誰に聞けばいいか分からない状態がなくなる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>二重に調べる時間が消える。聞かれた側も必要とされていると分かる</span></div>
+        <div class="m"><span class="s">△</span><span>同じ人にばかり飛ぶと負担になる。断りやすさの設計が要る</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="d2">
+      <div class="top"><span class="em">🔦</span><div><div class="ttl">逆マッチ</div><div class="one">「その知見 社内で持ってるの あなただけかも」と本人に教える</div></div></div>
+      <div class="become">💡 こうなる：自分の価値に気づいていない人が 教える側に回る</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>手を挙げるきっかけを外から渡せる。自信のない人ほど効く</span></div>
+        <div class="m"><span class="s">△</span><span>おだてに見えると冷める。根拠を一緒に出さないと響かない</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="d3">
+      <div class="top"><span class="em">👯</span><div><div class="ttl">相棒サジェスト</div><div class="one">学びたい人と教えられる人 似た興味の2人を組ませて提案する</div></div></div>
+      <div class="become">💡 こうなる：社内に勝手にペアや小さな勉強会が生まれる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>部署をまたいだつながりができる。育成が仕組みになる</span></div>
+        <div class="m"><span class="s">△</span><span>相性は数字で測れない。押しつけになると続かない</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="d4">
+      <div class="top"><span class="em">🎁</span><div><div class="ttl">ありがとうが残る</div><div class="one">助けてもらったらお礼を送る。誰が誰を助けたかが記録として積もる</div></div></div>
+      <div class="become">💡 こうなる：評価に載らない助け合いが 目に見える形になる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>縁の下の貢献が可視化される。感謝が回ると場の空気がよくなる</span></div>
+        <div class="m"><span class="s">△</span><span>点数稼ぎの回答が出る。数字が一人歩きすると評価の道具になる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="d5">
+      <div class="top"><span class="em">🧭</span><div><div class="ttl">この人に聞く前に読む3枚</div><div class="one">質問を人に飛ばす前に 既にある知見カードを先に差し出す</div></div></div>
+      <div class="become">💡 こうなる：同じ質問が何度も人に飛ばない。知見が使われて価値が上がる</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>詳しい人の時間が守られる。蓄積した記録に出番ができる</span></div>
+        <div class="m"><span class="s">△</span><span>カードがずれていると遠回りになり 人に聞く方が早いと言われる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+    <div class="f" data-id="d6">
+      <div class="top"><span class="em">🎏</span><div><div class="ttl">知見が呼ぶ次の部屋</div><div class="one">よく読まれている知見をもとに「この話 もっと聞きたい人？」と会を提案する</div></div></div>
+      <div class="become">💡 こうなる：記録 → 興味 → 次の場 と輪が閉じて 基盤が自走する</div>
+      <div class="pm">
+        <div class="p"><span class="s">◎</span><span>4つの層が1周つながる。放っておいてもコミュニティが続く</span></div>
+        <div class="m"><span class="s">△</span><span>人気テーマばかり回って ニッチな話題が埋もれる</span></div>
+      </div>
+      <div class="vote"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>📋 気になったものをまとめる</h2>
+  <p class="lead">各カードの「いいね／うーん／なし」を押すと ここにまとまります。押した内容はこのブラウザにだけ残るので それぞれで付けてから見せ合うのがおすすめ。</p>
+  <div class="summary">
+    <div class="count" id="count"></div>
+    <pre id="sum"></pre>
+    <div><button class="btn" id="clear" type="button">↺ 全部クリア</button></div>
+  </div>
+</section>
+
+<section>
+  <h2>🤔 たぶん先に決まる4つ</h2>
+  <p class="lead">機能を選ぶ前にここが決まると 話が早い。</p>
+  <div class="qs">
+    <div class="qc"><b>誰のための場？</b>全社員か 有志だけか。有志の場だと熱量は高いが人数が集まらない</div>
+    <div class="qc"><b>ラベルは評価に使う？</b>使わないと決めるほど人は自由に喋る。使うと経営には刺さる</div>
+    <div class="qc"><b>匿名を許す？</b>失敗の棚とありがとうは 匿名かどうかで性格がまるで変わる</div>
+    <div class="qc"><b>最初の部屋は何？</b>もくもく会か 知見シェアか。ひとつ動けば記録が生まれ 他が回り始める</div>
+  </div>
+</section>
+
+<footer>「作れるか」ではなく「あったら面白いか」で並べた板。ここから絞り込むのは次の話。</footer>
+</div>
+
+<script>
+(function(){
+  var KEY="kinou-board-v1",st={};
+  try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+  var OPTS=[["yes","💚 いいね"],["hmm","🤔 うーん"],["no","🙅 なし"]];
+  var cards=[].slice.call(document.querySelectorAll(".f"));
+  cards.forEach(function(c){
+    var v=c.querySelector(".vote");
+    OPTS.forEach(function(o){
+      var b=document.createElement("button");b.type="button";b.dataset.v=o[0];b.textContent=o[1];
+      b.addEventListener("click",function(){
+        st[c.dataset.id]=(st[c.dataset.id]===o[0])?null:o[0];persist();paint();
+      });
+      v.appendChild(b);
+    });
+  });
+  function persist(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+  function paint(){
+    var n={yes:[],hmm:[],no:[]};
+    cards.forEach(function(c){
+      var cur=st[c.dataset.id];
+      c.querySelectorAll(".vote button").forEach(function(b){b.classList.toggle("on",b.dataset.v===cur)});
+      if(cur&&n[cur])n[cur].push(c.querySelector(".ttl").textContent);
+    });
+    document.getElementById("count").innerHTML="💚 いいね <b>"+n.yes.length+"</b>　🤔 うーん <b>"+n.hmm.length+"</b>　🙅 なし <b>"+n.no.length+"</b>　<span>（全"+cards.length+"件）</span>";
+    function blk(t,a){return t+"\n"+(a.length?a.map(function(x){return "  ・"+x}).join("\n"):"  （なし）")}
+    document.getElementById("sum").textContent=[blk("💚 いいね",n.yes),blk("🤔 うーん",n.hmm),blk("🙅 なし",n.no)].join("\n\n");
+  }
+  document.getElementById("clear").addEventListener("click",function(){st={};persist();paint()});
+  paint();
+})();
+</script>
+</body></html>

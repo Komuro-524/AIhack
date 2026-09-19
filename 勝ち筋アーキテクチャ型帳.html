@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>勝ち筋アーキテクチャ型帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F2F4F3; --surface:#FFFFFF; --ink:#17202A; --muted:#56616D; --line:#D5DBD8; --accent:#0F6B6B; --accent-bg:#DDEFEE;
+  --in:#2F63C4; --in-bg:#E6EEFB; --ai:#C04A12; --ai-bg:#FCEBDF; --st:#5B6573; --st-bg:#ECEEF1;
+  --ui:#1C7A43; --ui-bg:#E3F3E8; --out:#9A3A86; --out-bg:#F6E6F2; --trap:#B42318; --trap-bg:#FDECEA;
+  --f-disp:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+  --bg:#11161B; --surface:#192028; --ink:#E6EAEE; --muted:#9AA6B2; --line:#2C3641; --accent:#4FB8B3; --accent-bg:#17302F;
+  --in:#7FA6F0; --in-bg:#1C2A42; --ai:#F0935E; --ai-bg:#3A2418; --st:#A5AEBA; --st-bg:#252C35;
+  --ui:#62C58A; --ui-bg:#173022; --out:#D98AC7; --out-bg:#36203A; --trap:#F2877D; --trap-bg:#3A1C1A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161B; --surface:#192028; --ink:#E6EAEE; --muted:#9AA6B2; --line:#2C3641; --accent:#4FB8B3; --accent-bg:#17302F;
+  --in:#7FA6F0; --in-bg:#1C2A42; --ai:#F0935E; --ai-bg:#3A2418; --st:#A5AEBA; --st-bg:#252C35;
+  --ui:#62C58A; --ui-bg:#173022; --out:#D98AC7; --out-bg:#36203A; --trap:#F2877D; --trap-bg:#3A1C1A;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:44px}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3{font-family:var(--f-disp);text-wrap:balance;margin:0;line-height:1.35}
+b,strong{font-weight:700}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+/* hero */
+.hero{display:grid;gap:14px}
+.hero h1{font-size:clamp(28px,4.4vw,44px);font-weight:900;letter-spacing:.01em}
+.verdict{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:8px;max-width:880px}
+.verdict p{margin:0}
+.verdict .big{font-family:var(--f-disp);font-weight:700;font-size:18px}
+.nav{display:flex;flex-wrap:wrap;gap:8px}
+.nav a{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.nav a:hover{border-color:var(--accent);color:var(--accent)}
+/* section heads */
+.sh{display:grid;gap:4px;margin-bottom:14px}
+.sh h2{font-size:24px;font-weight:700}
+.sh p{margin:0;color:var(--muted);max-width:68ch}
+/* skeleton */
+.skel{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.layer{flex:1 1 170px;border-radius:10px;padding:12px 14px;border:1.5px solid;display:grid;gap:6px;align-content:start}
+.layer h3{font-size:16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.layer h3 span{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;opacity:.85}
+.layer p{margin:0;font-size:13.5px}
+.layer ul{margin:0;padding-left:1.1em;font-size:13px;color:var(--muted)}
+.l-in{border-color:var(--in);background:var(--in-bg)} .l-in h3{color:var(--in)}
+.l-ai{border-color:var(--ai);background:var(--ai-bg)} .l-ai h3{color:var(--ai)}
+.l-st{border-color:var(--st);background:var(--st-bg)} .l-st h3{color:var(--st)}
+.l-ui{border-color:var(--ui);background:var(--ui-bg)} .l-ui h3{color:var(--ui)}
+.l-out{border-color:var(--out);background:var(--out-bg)} .l-out h3{color:var(--out)}
+.arrow{align-self:center;color:var(--muted);font-size:18px}
+@media (max-width:720px){.arrow{display:none}}
+/* diagrams */
+.dgwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+.dg{display:block;width:100%;min-width:680px;height:auto}
+.dg .eg{fill:none;stroke:var(--muted);stroke-width:1.5}
+.dg .lp{stroke-dasharray:5 4}
+.dg .ah{fill:var(--muted)}
+.dg .lpt{fill:var(--muted);font-size:12px;font-family:var(--f-body)}
+.dg .n rect{stroke-width:1.6}
+.dg .tg{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em}
+.dg .tt{fill:var(--ink);font-family:var(--f-disp);font-weight:700;font-size:14px}
+.dg .ts{fill:var(--muted);font-family:var(--f-body);font-size:11.5px}
+.dg .tq{fill:var(--ink);font-family:var(--f-body);font-weight:500;font-size:13.5px}
+.dg .tc{fill:var(--ink);font-family:var(--f-disp);font-weight:700;font-size:14px}
+.n-in rect{fill:var(--in-bg);stroke:var(--in)} .n-in .tg{fill:var(--in)}
+.n-ai rect{fill:var(--ai-bg);stroke:var(--ai)} .n-ai .tg{fill:var(--ai)}
+.n-st rect{fill:var(--st-bg);stroke:var(--st)} .n-st .tg{fill:var(--st)}
+.n-ui rect{fill:var(--ui-bg);stroke:var(--ui)} .n-ui .tg{fill:var(--ui)}
+.n-out rect{fill:var(--out-bg);stroke:var(--out)} .n-out .tg{fill:var(--out)}
+.n-root rect{fill:var(--accent-bg);stroke:var(--accent)}
+.n-chip rect{fill:var(--surface);stroke:var(--accent)}
+.dg a:hover .n-chip rect,.dg a:focus .n-chip rect{fill:var(--accent-bg)}
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.6}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+thead th{font-family:var(--f-disp);font-weight:700;font-size:13px;background:var(--bg);white-space:nowrap;position:sticky;top:0}
+tbody tr:last-child>*{border-bottom:0}
+.master{min-width:1060px}
+.master tbody th{min-width:150px}
+.master td:nth-child(2),.master td:nth-child(3),.master td:nth-child(5){min-width:190px}
+.master td:nth-child(4){min-width:140px}
+.tlink{display:flex;gap:6px;font-family:var(--f-disp);font-weight:700;font-size:15px;color:var(--ink);text-decoration:none}
+.tlink:hover{color:var(--accent)}
+.master small{display:block;color:var(--muted);font-size:12px;margin-top:2px;font-weight:400}
+.exs{white-space:nowrap}
+.fit td:first-child{white-space:nowrap;font-weight:500}
+.fit{min-width:560px}
+.chip{display:inline-block;padding:0 8px;border-radius:999px;background:var(--accent-bg);color:var(--accent);font-weight:700;font-size:12.5px;margin:0 4px 2px 0;text-decoration:none}
+/* deaths */
+.deaths{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.death{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:4px;align-content:start}
+.death h3{font-size:16px}
+.death p{margin:0;font-size:14px}
+.death .src{font-size:12px;color:var(--muted)}
+/* kata */
+.katas{display:grid;gap:56px}
+.kata{display:grid;gap:14px;scroll-margin-top:16px}
+.kh{display:grid;gap:2px}
+.knum{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;color:var(--accent)}
+.kh h2{font-size:clamp(22px,3vw,28px);font-weight:900;display:flex;gap:10px;align-items:center}
+.ktag{margin:0;color:var(--muted);font-size:15px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:grid;gap:4px;align-content:start}
+.fact h3{font-size:14px;font-weight:700;color:var(--muted)}
+.fact p{margin:0}
+.fact ul{margin:0;padding-left:1.15em}
+.fact.trap{background:var(--trap-bg);border-color:transparent}
+.fact.trap h3{color:var(--trap)}
+.fact.swap p{font-size:13.5px;color:var(--muted)}
+.exblock h3{font-size:15px;margin-bottom:6px}
+.exlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 14px}
+.exlist li{border-top:2px solid var(--line);padding:8px 2px 4px;display:grid;grid-template-columns:1fr auto;column-gap:10px;row-gap:2px}
+.exlist a{font-family:var(--f-disp);font-weight:700;font-size:15.5px}
+.exlist .meta{grid-column:1/-1;font-size:12.5px;color:var(--muted)}
+.exlist .dur{grid-row:1;grid-column:2;font-family:var(--f-mono);font-size:11.5px;color:var(--accent);background:var(--accent-bg);padding:1px 8px;border-radius:999px;align-self:center;white-space:nowrap}
+.exlist .what{grid-column:1/-1;font-size:13.5px}
+.note{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:14px 18px;font-size:14px}
+.note p{margin:0 0 6px}
+.note ul{margin:0;padding-left:1.2em}
+.sources{font-size:13px;color:var(--muted)}
+.sources ul{columns:2 320px;padding-left:1.1em;margin:6px 0 0}
+.emo{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="eyebrow">AI HACK 2026 · Day1 構成リファレンス</span>
+  <h1>勝ち筋アーキテクチャ型帳</h1>
+  <div class="verdict">
+    <p class="big">🎯 入賞作の構成は<b>「データの入口」</b>でほぼ7つの型に分かれる</p>
+    <p>Day1はアイデアより先に<b>入口を1つ決める</b>→型が決まる→あとは各レイヤーをチームの得意技術で埋めるだけ。</p>
+    <p style="color:var(--muted);font-size:13.5px">調査範囲：2025〜2026年のAIハッカソン入賞作26件（36時間〜2日間の対面大会を中心に、5日〜3週間の大会も構成の参考として収録。期間は各実例に表示）</p>
+  </div>
+  <nav class="nav" aria-label="型へ移動">
+    <a href="#t1">📄 読解・照合</a><a href="#t2">📡 ライブ監視</a><a href="#t3">🤖 代理実行</a><a href="#t4">🏭 変換量産</a><a href="#t5">🧠 組織の記憶</a><a href="#t6">🎭 相手役</a><a href="#t7">🎨 共演体験</a>
+  </nav>
+</header>
+
+<section>
+  <div class="sh"><span class="eyebrow">全体像</span><h2>🗺️ どの型も同じ5レイヤーでできている</h2>
+  <p>型ごとに違うのは「入口の種類」と「AIに任せる判断」だけ。色は下の構成図すべてで共通。</p></div>
+  <div class="skel">
+    <div class="layer l-in"><h3>入口<span>INPUT</span></h3><p>何をどこから取るか</p><ul><li>ファイル・写真</li><li>ストリーム・Webhook</li><li>既存システムのデータ</li></ul></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="layer l-ai"><h3>AI<span>JUDGE</span></h3><p>どの判断を任せるか</p><ul><li>抽出・分類・照合</li><li>計画・生成・採点</li><li>LLM / 認識モデル</li></ul></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="layer l-st"><h3>保存<span>STORE</span></h3><p>結果をどこに残すか</p><ul><li>表（Excel・Dataverse）</li><li>DB（SQLite・Postgres）</li><li>検索索引</li></ul></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="layer l-ui"><h3>画面<span>VIEW</span></h3><p>何画面で見せるか</p><ul><li>HTML1枚・Webアプリ</li><li>Power Apps・Streamlit</li><li>Teams・チャット内</li></ul></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="layer l-out"><h3>出口<span>ACTION</span></h3><p>外の世界に何を返すか</p><ul><li>通知・メール・電話</li><li>PDF・ファイル書き出し</li><li>他システムへの書き込み</li></ul></div>
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="eyebrow">Day1 即決</span><h2>🧭 入口から型を引く</h2>
+  <p>チームで「どこからデータが来るか」だけ先に合意する。型をクリックすると詳細へ飛ぶ。</p></div>
+  <div class="dgwrap"><svg class="dg" viewBox="0 0 760 412" role="img" aria-label="入口から型を選ぶ図">
+<defs><marker id="adec" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<g class="n n-root"><rect x="16" y="170.0" width="150" height="72" rx="8"/><text x="30" y="200.0" class="tt">Day1の問い</text><text x="30" y="222.0" class="ts">データの入口はどれ？</text></g>
+<path d="M168,206.0 C194.5,206.0 194.5,38.0 221,38.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="16" width="320" height="44" rx="7"/><text x="236" y="43.0" class="tq">手元の書類・写真に「指摘」を返したい</text></g>
+<path d="M546,38.0 L585,38.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t1"><g class="n n-chip"><rect x="588" y="16" width="156" height="44" rx="22"/><text x="666.0" y="43.0" text-anchor="middle" class="tc">📄 読解・照合型</text></g></a>
+<path d="M168,206.0 C194.5,206.0 194.5,94.0 221,94.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="72" width="320" height="44" rx="7"/><text x="236" y="99.0" class="tq">流れ続けるデータを見張りたい</text></g>
+<path d="M546,94.0 L585,94.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t2"><g class="n n-chip"><rect x="588" y="72" width="156" height="44" rx="22"/><text x="666.0" y="99.0" text-anchor="middle" class="tc">📡 ライブ監視型</text></g></a>
+<path d="M168,206.0 C194.5,206.0 194.5,150.0 221,150.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="128" width="320" height="44" rx="7"/><text x="236" y="155.0" class="tq">外の相手（電話・Web・SaaS）に働きかけたい</text></g>
+<path d="M546,150.0 L585,150.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t3"><g class="n n-chip"><rect x="588" y="128" width="156" height="44" rx="22"/><text x="666.0" y="155.0" text-anchor="middle" class="tc">🤖 代理実行型</text></g></a>
+<path d="M168,206.0 C194.5,206.0 194.5,206.0 221,206.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="184" width="320" height="44" rx="7"/><text x="236" y="211.0" class="tq">素材1つから完成品を量産したい</text></g>
+<path d="M546,206.0 L585,206.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t4"><g class="n n-chip"><rect x="588" y="184" width="156" height="44" rx="22"/><text x="666.0" y="211.0" text-anchor="middle" class="tc">🏭 変換量産型</text></g></a>
+<path d="M168,206.0 C194.5,206.0 194.5,262.0 221,262.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="240" width="320" height="44" rx="7"/><text x="236" y="267.0" class="tq">すでにある履歴の山を使いたい</text></g>
+<path d="M546,262.0 L585,262.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t5"><g class="n n-chip"><rect x="588" y="240" width="156" height="44" rx="22"/><text x="666.0" y="267.0" text-anchor="middle" class="tc">🧠 組織の記憶型</text></g></a>
+<path d="M168,206.0 C194.5,206.0 194.5,318.0 221,318.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="296" width="320" height="44" rx="7"/><text x="236" y="323.0" class="tq">人に練習させて採点したい</text></g>
+<path d="M546,318.0 L585,318.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t6"><g class="n n-chip"><rect x="588" y="296" width="156" height="44" rx="22"/><text x="666.0" y="323.0" text-anchor="middle" class="tc">🎭 相手役型</text></g></a>
+<path d="M168,206.0 C194.5,206.0 194.5,374.0 221,374.0" class="eg" marker-end="url(#adec)"/>
+<g class="n n-in"><rect x="224" y="352" width="320" height="44" rx="7"/><text x="236" y="379.0" class="tq">身体の動き・遊びを入力にしたい</text></g>
+<path d="M546,374.0 L585,374.0" class="eg" marker-end="url(#adec)"/>
+<a href="#t7"><g class="n n-chip"><rect x="588" y="352" width="156" height="44" rx="22"/><text x="666.0" y="379.0" text-anchor="middle" class="tc">🎨 共演体験型</text></g></a>
+</svg></div>
+</section>
+
+<section>
+  <div class="sh"><span class="eyebrow">チーム編成</span><h2>🧑‍💻 得意技術から近い型</h2>
+  <p>その型で「見せ場を作るレイヤー」を担当できる人がいるかで絞る。</p></div>
+  <div class="tw"><table class="fit">
+    <thead><tr><th>チームの得意</th><th>近い型</th><th>理由（見せ場になるレイヤー）</th></tr></thead>
+    <tbody>
+      <tr><td>🖥️ 画面づくり（Web・Power Apps）</td><td><a class="chip" href="#t1">読解・照合</a><a class="chip" href="#t5">組織の記憶</a><a class="chip" href="#t6">相手役</a></td><td>画面数が2〜3で見せ場が「結果の見せ方」にある</td></tr>
+      <tr><td>🗄️ DB・SQL・データ整形</td><td><a class="chip" href="#t5">組織の記憶</a><a class="chip" href="#t2">ライブ監視</a></td><td>台帳・時系列の<b>保存レイヤー設計</b>が質を決める</td></tr>
+      <tr><td>🔌 API連携・RPA（PAD・Power Automate等）</td><td><a class="chip" href="#t3">代理実行</a><a class="chip" href="#t2">ライブ監視</a></td><td>外部の操作と<b>トリガー</b>が肝</td></tr>
+      <tr><td>🎥 音声・画像・動画の処理</td><td><a class="chip" href="#t2">ライブ監視</a><a class="chip" href="#t4">変換量産</a><a class="chip" href="#t7">共演体験</a></td><td>入口か生成物がメディア</td></tr>
+      <tr><td>📚 業務ドメインの専門知識</td><td><a class="chip" href="#t1">読解・照合</a><a class="chip" href="#t6">相手役</a></td><td><b>ルール集・採点基準</b>を書ける人が品質を決める（Opus 4.6／4.7大会の上位は弁護士・医師・修理職人など）</td></tr>
+      <tr><td>🔧 ハードウェア・センサー</td><td><a class="chip" href="#t2">ライブ監視</a><a class="chip" href="#t7">共演体験</a></td><td>物理的な入口がそのままデモになる</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sh"><span class="eyebrow">一覧</span><h2>📊 型カタログ</h2>
+  <p>横にスクロールできる。型名をクリックすると構成図つきの詳細へ。</p></div>
+  <div class="tw"><table class="master">
+    <thead><tr><th>型</th><th>🚪 データの入口</th><th>🧠 AIの使いどころ</th><th>🖥️ 画面</th><th>⏱️ デモ30秒</th><th>💀 代表的な落とし穴</th><th>🏆 実例</th></tr></thead>
+    <tbody>
+<tr><th scope="row"><a class="tlink" href="#t1"><span class="emo">📄</span><span>読解・照合型</span></a><small>書類を読んで赤ペンを返す</small></th>
+<td>ユーザーがその場で上げる<b>PDF・写真・図面</b>＋事前に置いておく<b>ルール集</b>（規程・法令・チェック表）</td><td>①書類から項目を<b>抽出</b> ②ルールと突き合わせて<b>不足・違反を判定</b> ③次にやることを<b>起案</b></td><td><b>2画面</b>：アップロード → 指摘リスト（根拠つき）。任意で管理者向け一覧</td><td>実物の書類をドラッグ → 指摘が<b>根拠つきで並ぶ</b> → 「人がやると◯日かかる作業です」</td><td>デモ用の書類が用意できない（機密・個人情報）</td><td class="exs"><a href="https://github.com/mikeOnBreeze/cc-crossbeam" target="_blank" rel="noopener">CrossBeam</a><br><a href="https://github.com/Junkz3/wrench-board" target="_blank" rel="noopener">Wrench Board</a></td></tr>
+<tr><th scope="row"><a class="tlink" href="#t2"><span class="emo">📡</span><span>ライブ監視型</span></a><small>流れるデータを見張って異常だけ知らせる</small></th>
+<td>途切れず流れてくる<b>映像・音声・センサー値・ログ・イベント</b>。デモ用に<b>録画を再生できるソース</b>を必ず持つ</td><td>数秒ごとの断片を<b>構造化</b> → 「いつもと違う／ルールに該当」を<b>判定</b> → 通知するか・何と伝えるかを決める</td><td><b>1〜2画面</b>：ライブダッシュボード＋アラート。任意で監視ルールの設定画面</td><td>平常の映像 → 異常を起こす → <b>数秒で画面が赤くなり電話や通知が鳴る</b></td><td>会場Wi-Fiでストリームが途切れる</td><td class="exs"><a href="https://devpost.com/software/mayday-l74dub" target="_blank" rel="noopener">MayDay</a><br><a href="https://devpost.com/software/cameron-9biv60" target="_blank" rel="noopener">Cameron</a></td></tr>
+<tr><th scope="row"><a class="tlink" href="#t3"><span class="emo">🤖</span><span>代理実行型</span></a><small>ゴールを渡すとAIが外で手を動かす</small></th>
+<td>ユーザーの<b>一言のゴール</b>＋AIが働きかける<b>外部の相手</b>（電話・Webサイト・PC画面・業務SaaSのAPI）</td><td>手順と相手リストを<b>計画</b> → 相手との<b>やり取り</b>（交渉・入力・クリック）を任せる → 結果を<b>集約・比較</b></td><td><b>2画面</b>：依頼入力 → 実行の実況ログと結果比較</td><td>依頼を入れる → <b>AIが本当に電話・ブラウザ・PCを操作する様子</b>を実況 → 結果表が出る</td><td>相手側に止められる（電話の自動音声・CAPTCHA・ログイン）</td><td class="exs"><a href="https://github.com/ThePickleGawd/FaceTimeOS" target="_blank" rel="noopener">FaceTimeOS</a><br><a href="https://devpost.com/software/john-ai" target="_blank" rel="noopener">Dealwise</a></td></tr>
+<tr><th scope="row"><a class="tlink" href="#t4"><span class="emo">🏭</span><span>変換量産型</span></a><small>素材1つから完成品を並べる</small></th>
+<td><b>素材1つ</b>（動画・教材テキスト・PDF・車載映像）＋<b>出し分け条件</b>（ターゲット属性の表・テンプレート）</td><td>素材を<b>分解</b>（シーン・要点） → 構成を<b>計画</b> → パーツを<b>生成</b> → <b>レビュー役AI</b>が制約チェックして差し戻す</td><td><b>2〜3画面</b>：アップロード → 進捗 → 成果物ギャラリー</td><td>素材を1つ入れる → <b>成果物がズラッと並ぶ</b>（本番は事前生成分を見せ、ライブは短縮版）</td><td>生成が遅く壇上で待つ（動画・音声は数分単位）</td><td class="exs"><a href="https://devpost.com/software/adapt-ujvn5e" target="_blank" rel="noopener">ADapt</a><br><a href="https://devpost.com/software/eduagent" target="_blank" rel="noopener">EduAgent</a></td></tr>
+<tr><th scope="row"><a class="tlink" href="#t5"><span class="emo">🧠</span><span>組織の記憶型</span></a><small>散らばった履歴に根拠つきで答える</small></th>
+<td><b>すでにある組織の履歴</b>（コード・レビューの議論・Wiki・議事録・作業の録画）を一括で取り込む</td><td>決定事項・ルールを<b>抽出して台帳化</b> → 質問に<b>検索＋出典つき回答</b> → 新しい変更と<b>過去の決定の矛盾</b>を指摘</td><td><b>2画面</b>：出典つき回答（既存ツールの中に出すと強い）＋知識マップ・台帳</td><td>「なぜこの設計にした？」 → <b>過去の議論リンクつき</b>で答える → 新しい変更に「過去の決定と矛盾」と警告</td><td>ただの社内検索チャットに見える</td><td class="exs"><a href="https://devpost.com/software/lore-living-organizational-record-engine" target="_blank" rel="noopener">LORE</a><br><a href="https://devpost.com/software/graphdev" target="_blank" rel="noopener">GraphDev</a></td></tr>
+<tr><th scope="row"><a class="tlink" href="#t6"><span class="emo">🎭</span><span>相手役型</span></a><small>AIが相手を演じ人が練習し採点が返る</small></th>
+<td><b>シナリオの元</b>（ガイドライン・オープンデータ・事例）＋<b>人の行動</b>（発話・選択・位置）</td><td>状況と相手役を<b>生成して演じる</b> → 人の行動を基準で<b>採点</b> → 答えを教えず<b>問い返す</b></td><td><b>3画面</b>：お題 → 実践 → 振り返り（スコア・改善点）</td><td><b>審査員に1ターンだけ体験してもらう</b> → その場で採点とフィードバックが返る</td><td>採点基準が曖昧で“AIの感想”になる → 評価軸を先に作る（MaestrIAの教訓「Eval first」）</td><td class="exs"><a href="https://github.com/bedriyan/medkit-app" target="_blank" rel="noopener">Medkit</a><br><a href="https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon" target="_blank" rel="noopener">Maieutic</a></td></tr>
+<tr><th scope="row"><a class="tlink" href="#t7"><span class="emo">🎨</span><span>共演体験型</span></a><small>身体の入力にAIがその場で応える</small></th>
+<td><b>身体を使った入力</b>（手描きの絵・笑顔の写真・Webカメラの動き・鍵盤・声）</td><td>入力の<b>意味を読む</b>（形・表情・コード進行） → その場で<b>生成して返す</b>（コース・キャラ・伴奏・小道具）</td><td><b>1画面</b>：入力と結果が同じ画面に並ぶ。＋コレクション（図鑑・履歴）</td><td><b>会場の人に描いて・笑って・弾いてもらう</b> → 即座に作品になる → 会場が沸く</td><td>反応の遅延で体験が冷める（Conductrは生成部をWebAssembly化し約15ms）</td><td class="exs"><a href="https://github.com/jphacks/sp_2509" target="_blank" rel="noopener">AshiArt</a><br><a href="https://github.com/nanassound/conductr" target="_blank" rel="noopener">Conductr</a></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sh"><span class="eyebrow">全型共通</span><h2>☠️ どの型でも死ぬ3パターン</h2></div>
+  <div class="deaths">
+    <div class="death"><h3>🎭 コア機能をモックする</h3><p>モックしてよいのはデータ供給など周辺だけ。コアを偽物にすると未完成に見える。</p><span class="src">出典：<a href="https://browser-use.com/posts/how-to-win-hackathons" target="_blank" rel="noopener">Browser Use「How to Win Hackathons」</a></span></div>
+    <div class="death"><h3>📝 デモ台本がない</h3><p>最低10分・できれば20分をデモの台本づくりに確保。最初の1文で何のプロダクトか言い切る。</p><span class="src">出典：<a href="https://browser-use.com/posts/how-to-win-hackathons" target="_blank" rel="noopener">Browser Use「How to Win Hackathons」</a></span></div>
+    <div class="death"><h3>🎨 見た目の担当がいない</h3><p>審査員が見るのは発表だけ。UIとデモの磨き込み専任を1人置く。</p><span class="src">出典：<a href="https://blog.dylanlu.com/cal-hacks-12/" target="_blank" rel="noopener">Cal Hacks 12.0 優勝者ブログ</a></span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="eyebrow">詳細</span><h2>📖 7つの型</h2></div>
+  <div class="katas">
+<section class="kata" id="t1">
+<header class="kh"><span class="knum">型1</span><h2><span class="emo">📄</span>読解・照合型</h2><p class="ktag">書類を読んで赤ペンを返す</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 772 198" role="img" aria-label="構成図">
+<defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,99.0 C191.5,99.0 191.5,51.0 207,51.0" class="eg" marker-end="url(#a1)"/>
+<path d="M370,51.0 C385.5,51.0 385.5,99.0 401,99.0" class="eg" marker-end="url(#a1)"/>
+<path d="M370,147.0 C385.5,147.0 385.5,99.0 401,99.0" class="eg" marker-end="url(#a1)"/>
+<path d="M564,99.0 C579.5,99.0 579.5,51.0 595,51.0" class="eg" marker-end="url(#a1)"/>
+<path d="M564,99.0 C579.5,99.0 579.5,147.0 595,147.0" class="eg" marker-end="url(#a1)"/>
+<g class="n n-in"><rect x="16" y="66.0" width="158" height="66" rx="7"/><text x="26" y="82.0" class="tg">入口</text><text x="26" y="103.0" class="tt">書類をアップロード</text><text x="26" y="121.0" class="ts">PDF・写真・図面</text></g>
+<g class="n n-ai"><rect x="210" y="18.0" width="158" height="66" rx="7"/><text x="220" y="34.0" class="tg">AI</text><text x="220" y="55.0" class="tt">抽出</text><text x="220" y="73.0" class="ts">項目・数値を読む</text></g>
+<g class="n n-in"><rect x="210" y="114.0" width="158" height="66" rx="7"/><text x="220" y="130.0" class="tg">入口</text><text x="220" y="151.0" class="tt">ルール集</text><text x="220" y="169.0" class="ts">規程・法令・チェック表</text></g>
+<g class="n n-ai"><rect x="404" y="66.0" width="158" height="66" rx="7"/><text x="414" y="82.0" class="tg">AI</text><text x="414" y="103.0" class="tt">照合・判定</text><text x="414" y="121.0" class="ts">不足／違反を指摘</text></g>
+<g class="n n-ui"><rect x="598" y="18.0" width="158" height="66" rx="7"/><text x="608" y="34.0" class="tg">画面</text><text x="608" y="55.0" class="tt">指摘リスト</text><text x="608" y="73.0" class="ts">根拠つきで表示</text></g>
+<g class="n n-out"><rect x="598" y="114.0" width="158" height="66" rx="7"/><text x="608" y="130.0" class="tg">出口</text><text x="608" y="151.0" class="tt">次の行動</text><text x="608" y="169.0" class="ts">修正案・返信案</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p>ユーザーがその場で上げる<b>PDF・写真・図面</b>＋事前に置いておく<b>ルール集</b>（規程・法令・チェック表）</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>①書類から項目を<b>抽出</b> ②ルールと突き合わせて<b>不足・違反を判定</b> ③次にやることを<b>起案</b></p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>2画面</b>：アップロード → 指摘リスト（根拠つき）。任意で管理者向け一覧</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p>実物の書類をドラッグ → 指摘が<b>根拠つきで並ぶ</b> → 「人がやると◯日かかる作業です」</p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>デモ用の書類が用意できない（機密・個人情報）</li><li>1件の処理が長く壇上で待つ（CrossBeamは1タスク10〜30分）</li><li>根拠が出ず“それっぽい要約”に見える</li><li>ルール集づくりの時間を見積もっていない</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>AI：画像も読めるLLM ／ ルール：Markdownの規程集・検索索引 ／ 画面：Web・Power Apps ／ 保存：ファイル置き場</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://github.com/mikeOnBreeze/cc-crossbeam" target="_blank" rel="noopener">CrossBeam</a>
+<span class="meta">Built with Opus 4.6 Claude Code Hackathon ／ <b>1位</b></span><span class="dur">1週間</span>
+<span class="what">図面と自治体の是正通知 → 不足署名・法令違反を抽出 → 対応プランと返信案</span></li><li><a href="https://github.com/Junkz3/wrench-board" target="_blank" rel="noopener">Wrench Board</a>
+<span class="meta">Built with Opus 4.7 Claude Code Hackathon ／ <b>2位</b></span><span class="dur">5日</span>
+<span class="what">回路図・基板画像・症状 → 測定ポイントと故障診断</span></li><li><a href="https://maestriachile.cl/" target="_blank" rel="noopener">MaestrIA</a>
+<span class="meta">Built with Opus 4.7 Claude Code Hackathon ／ <b>Keep Thinking賞</b></span><span class="dur">5日</span>
+<span class="what">住宅の損傷写真と説明 → 診断・重症度・見積 → 近くの職人を提案</span></li></ul></div>
+</section>
+<section class="kata" id="t2">
+<header class="kh"><span class="knum">型2</span><h2><span class="emo">📡</span>ライブ監視型</h2><p class="ktag">流れるデータを見張って異常だけ知らせる</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 772 198" role="img" aria-label="構成図">
+<defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,51.0 C191.5,51.0 191.5,99.0 207,99.0" class="eg" marker-end="url(#a2)"/>
+<path d="M176,147.0 C191.5,147.0 191.5,99.0 207,99.0" class="eg" marker-end="url(#a2)"/>
+<path d="M370,99.0 C385.5,99.0 385.5,51.0 401,51.0" class="eg" marker-end="url(#a2)"/>
+<path d="M370,99.0 C385.5,99.0 385.5,147.0 401,147.0" class="eg" marker-end="url(#a2)"/>
+<path d="M564,51.0 C579.5,51.0 579.5,51.0 595,51.0" class="eg" marker-end="url(#a2)"/>
+<path d="M564,51.0 C579.5,51.0 579.5,147.0 595,147.0" class="eg" marker-end="url(#a2)"/>
+<g class="n n-in"><rect x="16" y="18.0" width="158" height="66" rx="7"/><text x="26" y="34.0" class="tg">入口</text><text x="26" y="55.0" class="tt">連続データ</text><text x="26" y="73.0" class="ts">映像・音声・センサー</text></g>
+<g class="n n-in"><rect x="16" y="114.0" width="158" height="66" rx="7"/><text x="26" y="130.0" class="tg">入口</text><text x="26" y="151.0" class="tt">録画ソース</text><text x="26" y="169.0" class="ts">デモ用リプレイ</text></g>
+<g class="n n-ai"><rect x="210" y="66.0" width="158" height="66" rx="7"/><text x="220" y="82.0" class="tg">AI</text><text x="220" y="103.0" class="tt">区切って構造化</text><text x="220" y="121.0" class="ts">数秒ごとに要約</text></g>
+<g class="n n-ai"><rect x="404" y="18.0" width="158" height="66" rx="7"/><text x="414" y="34.0" class="tg">AI</text><text x="414" y="55.0" class="tt">異常判定</text><text x="414" y="73.0" class="ts">ルールと照合</text></g>
+<g class="n n-st"><rect x="404" y="114.0" width="158" height="66" rx="7"/><text x="414" y="130.0" class="tg">保存</text><text x="414" y="151.0" class="tt">イベント記録</text><text x="414" y="169.0" class="ts">時系列の表・DB</text></g>
+<g class="n n-ui"><rect x="598" y="18.0" width="158" height="66" rx="7"/><text x="608" y="34.0" class="tg">画面</text><text x="608" y="55.0" class="tt">ライブ画面</text><text x="608" y="73.0" class="ts">アラートを強調</text></g>
+<g class="n n-out"><rect x="598" y="114.0" width="158" height="66" rx="7"/><text x="608" y="130.0" class="tg">出口</text><text x="608" y="151.0" class="tt">通知</text><text x="608" y="169.0" class="ts">電話・メール・チャット</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p>途切れず流れてくる<b>映像・音声・センサー値・ログ・イベント</b>。デモ用に<b>録画を再生できるソース</b>を必ず持つ</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>数秒ごとの断片を<b>構造化</b> → 「いつもと違う／ルールに該当」を<b>判定</b> → 通知するか・何と伝えるかを決める</p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>1〜2画面</b>：ライブダッシュボード＋アラート。任意で監視ルールの設定画面</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p>平常の映像 → 異常を起こす → <b>数秒で画面が赤くなり電話や通知が鳴る</b></p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>会場Wi-Fiでストリームが途切れる</li><li>判定の遅延が長くデモが間延びする</li><li>誤検知が連発して信用を失う</li><li>ライブ入力に頼り本番で再現できない</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>入口：カメラ・マイク・Webhook・CIイベント ／ AI：音声認識＋LLM・物体検出 ／ 保存：時系列の表 ／ 出口：Teams通知・メール・電話API</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://devpost.com/software/mayday-l74dub" target="_blank" rel="noopener">MayDay</a>
+<span class="meta">UC Berkeley AI Hackathon 2025 ／ <b>Fetch.ai賞・マルチモーダル賞</b></span><span class="dur">2日間</span>
+<span class="what">管制無線を5秒ごとに文字起こし → 異常検知 → レーダー風画面と電話通知</span></li><li><a href="https://devpost.com/software/cameron-9biv60" target="_blank" rel="noopener">Cameron</a>
+<span class="meta">UC Berkeley AI Hackathon 2025 ／ <b>Grand Prize（Creativity）・Best LLM Agent</b></span><span class="dur">2日間</span>
+<span class="what">監視ルールを話し言葉で指定 → 映像を解析 → メール・電話・通知</span></li><li><a href="https://devpost.com/software/pipeheal" target="_blank" rel="noopener">DocSync</a>
+<span class="meta">GitLab AI Hackathon 2026 ／ <b>Anthropic部門 Runner Up</b></span><span class="dur">オンライン</span>
+<span class="what">コード変更のマージを合図に古いドキュメントを検知 → 確信度で修正MRか課題起票</span></li><li><a href="https://github.com/zestones/Aria" target="_blank" rel="noopener">ARIA</a>
+<span class="meta">Built with Opus 4.7 Claude Code Hackathon ／ <b>Managed Agents賞</b></span><span class="dur">5日</span>
+<span class="what">機械マニュアルPDF＋稼働信号 → 故障予測 → 作業指示書</span></li></ul></div>
+</section>
+<section class="kata" id="t3">
+<header class="kh"><span class="knum">型3</span><h2><span class="emo">🤖</span>代理実行型</h2><p class="ktag">ゴールを渡すとAIが外で手を動かす</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 966 198" role="img" aria-label="構成図">
+<defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,99.0 C191.5,99.0 191.5,99.0 207,99.0" class="eg" marker-end="url(#a3)"/>
+<path d="M370,99.0 C385.5,99.0 385.5,51.0 401,51.0" class="eg" marker-end="url(#a3)"/>
+<path d="M483.0,86.0 L483.0,111.0" class="eg" marker-end="url(#a3)" marker-start="url(#a3)"/>
+<path d="M564,51.0 C579.5,51.0 579.5,99.0 595,99.0" class="eg" marker-end="url(#a3)"/>
+<path d="M758,99.0 C773.5,99.0 773.5,99.0 789,99.0" class="eg" marker-end="url(#a3)"/>
+<g class="n n-in"><rect x="16" y="66.0" width="158" height="66" rx="7"/><text x="26" y="82.0" class="tg">入口</text><text x="26" y="103.0" class="tt">ゴールの一言</text><text x="26" y="121.0" class="ts">チャット・音声</text></g>
+<g class="n n-ai"><rect x="210" y="66.0" width="158" height="66" rx="7"/><text x="220" y="82.0" class="tg">AI</text><text x="220" y="103.0" class="tt">計画</text><text x="220" y="121.0" class="ts">手順・相手リスト</text></g>
+<g class="n n-ai"><rect x="404" y="18.0" width="158" height="66" rx="7"/><text x="414" y="34.0" class="tg">AI</text><text x="414" y="55.0" class="tt">対話・操作</text><text x="414" y="73.0" class="ts">交渉／入力／クリック</text></g>
+<g class="n n-out"><rect x="404" y="114.0" width="158" height="66" rx="7"/><text x="414" y="130.0" class="tg">出口</text><text x="414" y="151.0" class="tt">外の世界</text><text x="414" y="169.0" class="ts">電話・Web・SaaS</text></g>
+<g class="n n-st"><rect x="598" y="66.0" width="158" height="66" rx="7"/><text x="608" y="82.0" class="tg">保存</text><text x="608" y="103.0" class="tt">実況ログ</text><text x="608" y="121.0" class="ts">結果を記録</text></g>
+<g class="n n-ui"><rect x="792" y="66.0" width="158" height="66" rx="7"/><text x="802" y="82.0" class="tg">画面</text><text x="802" y="103.0" class="tt">結果比較</text><text x="802" y="121.0" class="ts">表・おすすめ</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p>ユーザーの<b>一言のゴール</b>＋AIが働きかける<b>外部の相手</b>（電話・Webサイト・PC画面・業務SaaSのAPI）</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>手順と相手リストを<b>計画</b> → 相手との<b>やり取り</b>（交渉・入力・クリック）を任せる → 結果を<b>集約・比較</b></p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>2画面</b>：依頼入力 → 実行の実況ログと結果比較</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p>依頼を入れる → <b>AIが本当に電話・ブラウザ・PCを操作する様子</b>を実況 → 結果表が出る</p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>相手側に止められる（電話の自動音声・CAPTCHA・ログイン）</li><li>クリック精度が出ない（FaceTimeOSはキーボード操作に置き換えて回避）</li><li>本物の相手に迷惑をかける・倫理の線引き</li><li>実行が長く持ち時間に収まらない</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>実行手段：ブラウザ操作エージェント・PC操作・電話API・RPA（PAD等）・SaaS API ／ 画面：チャット・Teams ／ 保存：実行ログ</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://github.com/ThePickleGawd/FaceTimeOS" target="_blank" rel="noopener">FaceTimeOS</a>
+<span class="meta">Cal Hacks 12.0 ／ <b>1st Place Grand Prize</b></span><span class="dur">36時間</span>
+<span class="what">FaceTimeで自分のMacに電話 → 声で指示 → AIがPCを操作</span></li><li><a href="https://devpost.com/software/john-ai" target="_blank" rel="noopener">Dealwise</a>
+<span class="meta">ElevenLabs × a16z Worldwide Hackathon（SF会場） ／ <b>会場入賞</b></span><span class="dur">2日間</span>
+<span class="what">業種と郵便番号 → ブラウザAIで業者を探す → 音声AIが電話で値切る → 見積比較</span></li><li><a href="https://github.com/microsoft/AI_Agents_Hackathon/issues/587" target="_blank" rel="noopener">WorkWizee</a>
+<span class="meta">Microsoft AI Agents Hackathon 2025 ／ <b>Best Copilot Agent</b></span><span class="dur">3週間</span>
+<span class="what">Teamsの一言 → Jira・ServiceNow・Confluenceを操作してインシデント対応</span></li></ul></div>
+</section>
+<section class="kata" id="t4">
+<header class="kh"><span class="knum">型4</span><h2><span class="emo">🏭</span>変換量産型</h2><p class="ktag">素材1つから完成品を並べる</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 966 198" role="img" aria-label="構成図">
+<defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,99.0 C191.5,99.0 191.5,51.0 207,51.0" class="eg" marker-end="url(#a4)"/>
+<path d="M370,51.0 C385.5,51.0 385.5,99.0 401,99.0" class="eg" marker-end="url(#a4)"/>
+<path d="M370,147.0 C385.5,147.0 385.5,99.0 401,99.0" class="eg" marker-end="url(#a4)"/>
+<path d="M564,99.0 C579.5,99.0 579.5,51.0 595,51.0" class="eg" marker-end="url(#a4)"/>
+<path d="M677.0,86.0 L677.0,111.0" class="eg" marker-end="url(#a4)" marker-start="url(#a4)"/>
+<path d="M758,51.0 C773.5,51.0 773.5,51.0 789,51.0" class="eg" marker-end="url(#a4)"/>
+<path d="M758,51.0 C773.5,51.0 773.5,147.0 789,147.0" class="eg" marker-end="url(#a4)"/>
+<g class="n n-in"><rect x="16" y="66.0" width="158" height="66" rx="7"/><text x="26" y="82.0" class="tg">入口</text><text x="26" y="103.0" class="tt">素材1つ</text><text x="26" y="121.0" class="ts">動画・文書・映像</text></g>
+<g class="n n-ai"><rect x="210" y="18.0" width="158" height="66" rx="7"/><text x="220" y="34.0" class="tg">AI</text><text x="220" y="55.0" class="tt">分解</text><text x="220" y="73.0" class="ts">シーン・要点を抽出</text></g>
+<g class="n n-in"><rect x="210" y="114.0" width="158" height="66" rx="7"/><text x="220" y="130.0" class="tg">入口</text><text x="220" y="151.0" class="tt">出し分け条件</text><text x="220" y="169.0" class="ts">属性の表・テンプレ</text></g>
+<g class="n n-ai"><rect x="404" y="66.0" width="158" height="66" rx="7"/><text x="414" y="82.0" class="tg">AI</text><text x="414" y="103.0" class="tt">計画</text><text x="414" y="121.0" class="ts">構成・編集方針</text></g>
+<g class="n n-ai"><rect x="598" y="18.0" width="158" height="66" rx="7"/><text x="608" y="34.0" class="tg">AI</text><text x="608" y="55.0" class="tt">生成</text><text x="608" y="73.0" class="ts">パーツを量産</text></g>
+<g class="n n-ai"><rect x="598" y="114.0" width="158" height="66" rx="7"/><text x="608" y="130.0" class="tg">AI</text><text x="608" y="151.0" class="tt">レビュー役</text><text x="608" y="169.0" class="ts">制約チェック</text></g>
+<g class="n n-ui"><rect x="792" y="18.0" width="158" height="66" rx="7"/><text x="802" y="34.0" class="tg">画面</text><text x="802" y="55.0" class="tt">ギャラリー</text><text x="802" y="73.0" class="ts">成果物を一覧</text></g>
+<g class="n n-out"><rect x="792" y="114.0" width="158" height="66" rx="7"/><text x="802" y="130.0" class="tg">出口</text><text x="802" y="151.0" class="tt">書き出し</text><text x="802" y="169.0" class="ts">動画・PDF</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p><b>素材1つ</b>（動画・教材テキスト・PDF・車載映像）＋<b>出し分け条件</b>（ターゲット属性の表・テンプレート）</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>素材を<b>分解</b>（シーン・要点） → 構成を<b>計画</b> → パーツを<b>生成</b> → <b>レビュー役AI</b>が制約チェックして差し戻す</p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>2〜3画面</b>：アップロード → 進捗 → 成果物ギャラリー</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p>素材を1つ入れる → <b>成果物がズラッと並ぶ</b>（本番は事前生成分を見せ、ライブは短縮版）</p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>生成が遅く壇上で待つ（動画・音声は数分単位）</li><li>品質がばらつく → 計画役とレビュー役のループで抑える（ADaptは最大3周）</li><li>エージェント間の受け渡しが崩れる → JSON形式を固定（EduAgent）</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>生成：LLM・画像／音声／動画生成API・描画ライブラリ ／ 加工：FFmpeg等 ／ 保存：ファイル置き場 ／ 画面：ギャラリー1枚</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://devpost.com/software/adapt-ujvn5e" target="_blank" rel="noopener">ADapt</a>
+<span class="meta">TreeHacks 2026 ／ <b>RunPod賞</b></span><span class="dur">36時間</span>
+<span class="what">動画1本＋ターゲット属性CSV → シーン分解 → 出し分け広告を量産</span></li><li><a href="https://devpost.com/software/eduagent" target="_blank" rel="noopener">EduAgent</a>
+<span class="meta">UC Berkeley AI Hackathon 2025 ／ <b>Best Use of Claude 4</b></span><span class="dur">2日間</span>
+<span class="what">教材テキスト → 6役のエージェントで台本・アニメ・ナレーション → 解説動画</span></li><li><a href="https://github.com/jphacks/ng_2501" target="_blank" rel="noopener">SUDO</a>
+<span class="meta">JPHACKS 2025 ／ <b>審査員特別賞</b></span><span class="dur">Hack Day 2日間</span>
+<span class="what">講師の数式・説明順 → 数式アニメーション動画を自動生成</span></li><li><a href="https://github.com/Kye256/tara-transport-assessment" target="_blank" rel="noopener">TARA</a>
+<span class="meta">Built with Opus 4.6 Claude Code Hackathon ／ <b>Keep Thinking賞</b></span><span class="dur">1週間</span>
+<span class="what">ドラレコ映像 → 路面状態を分析 → 投資評価PDFを1クリック</span></li></ul></div>
+</section>
+<section class="kata" id="t5">
+<header class="kh"><span class="knum">型5</span><h2><span class="emo">🧠</span>組織の記憶型</h2><p class="ktag">散らばった履歴に根拠つきで答える</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 966 198" role="img" aria-label="構成図">
+<defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,99.0 C191.5,99.0 191.5,99.0 207,99.0" class="eg" marker-end="url(#a5)"/>
+<path d="M370,99.0 C385.5,99.0 385.5,51.0 401,51.0" class="eg" marker-end="url(#a5)"/>
+<path d="M564,51.0 C579.5,51.0 579.5,51.0 595,51.0" class="eg" marker-end="url(#a5)"/>
+<path d="M564,147.0 C579.5,147.0 579.5,51.0 595,51.0" class="eg" marker-end="url(#a5)"/>
+<path d="M564,51.0 C579.5,51.0 579.5,147.0 595,147.0" class="eg" marker-end="url(#a5)"/>
+<path d="M758,51.0 C773.5,51.0 773.5,99.0 789,99.0" class="eg" marker-end="url(#a5)"/>
+<g class="n n-in"><rect x="16" y="66.0" width="158" height="66" rx="7"/><text x="26" y="82.0" class="tg">入口</text><text x="26" y="103.0" class="tt">既存の履歴</text><text x="26" y="121.0" class="ts">コード・議事録・Wiki</text></g>
+<g class="n n-ai"><rect x="210" y="66.0" width="158" height="66" rx="7"/><text x="220" y="82.0" class="tg">AI</text><text x="220" y="103.0" class="tt">抽出・構造化</text><text x="220" y="121.0" class="ts">決定事項・ルール</text></g>
+<g class="n n-st"><rect x="404" y="18.0" width="158" height="66" rx="7"/><text x="414" y="34.0" class="tg">保存</text><text x="414" y="55.0" class="tt">台帳・グラフ</text><text x="414" y="73.0" class="ts">表・検索索引</text></g>
+<g class="n n-in"><rect x="404" y="114.0" width="158" height="66" rx="7"/><text x="414" y="130.0" class="tg">入口</text><text x="414" y="151.0" class="tt">質問・新しい変更</text><text x="414" y="169.0" class="ts">チャット・レビュー依頼</text></g>
+<g class="n n-ai"><rect x="598" y="18.0" width="158" height="66" rx="7"/><text x="608" y="34.0" class="tg">AI</text><text x="608" y="55.0" class="tt">検索・照合</text><text x="608" y="73.0" class="ts">矛盾も検知</text></g>
+<g class="n n-ui"><rect x="598" y="114.0" width="158" height="66" rx="7"/><text x="608" y="130.0" class="tg">画面</text><text x="608" y="151.0" class="tt">知識マップ</text><text x="608" y="169.0" class="ts">台帳ダッシュボード</text></g>
+<g class="n n-ui"><rect x="792" y="66.0" width="158" height="66" rx="7"/><text x="802" y="82.0" class="tg">画面</text><text x="802" y="103.0" class="tt">出典つき回答</text><text x="802" y="121.0" class="ts">既存ツール内に表示</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p><b>すでにある組織の履歴</b>（コード・レビューの議論・Wiki・議事録・作業の録画）を一括で取り込む</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>決定事項・ルールを<b>抽出して台帳化</b> → 質問に<b>検索＋出典つき回答</b> → 新しい変更と<b>過去の決定の矛盾</b>を指摘</p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>2画面</b>：出典つき回答（既存ツールの中に出すと強い）＋知識マップ・台帳</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p>「なぜこの設計にした？」 → <b>過去の議論リンクつき</b>で答える → 新しい変更に「過去の決定と矛盾」と警告</p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>ただの社内検索チャットに見える</li><li>取り込むデータが少なく賢さが伝わらない</li><li>取り込み・索引づくりに時間を溶かす</li><li>出典リンクが出ず信用されない</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>取り込み：Git・SharePoint・Wiki・議事録 ／ 保存：表・ベクトル索引・グラフDB ／ 画面：チャット・Teams・レビューコメント ／ AI：LLM＋検索</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://devpost.com/software/lore-living-organizational-record-engine" target="_blank" rel="noopener">LORE</a>
+<span class="meta">GitLab AI Hackathon 2026 ／ <b>Grand Prize</b></span><span class="dur">オンライン</span>
+<span class="what">レビューの議論から決定事項を台帳化 → 新しい変更で過去の決定との矛盾を指摘</span></li><li><a href="https://devpost.com/software/graphdev" target="_blank" rel="noopener">GraphDev</a>
+<span class="meta">GitLab AI Hackathon 2026 ／ <b>Anthropic部門 Grand Prize</b></span><span class="dur">オンライン</span>
+<span class="what">コードの依存関係と変更の波及を可視化</span></li><li><a href="https://github.com/microsoft/AI_Agents_Hackathon/issues/645" target="_blank" rel="noopener">Konveyor</a>
+<span class="meta">Microsoft AI Agents Hackathon 2025 ／ <b>Best Python Agent</b></span><span class="dur">3週間</span>
+<span class="what">社内ドキュメント・コード・Wiki → 出典つきQ&amp;Aでオンボーディング</span></li><li><a href="https://devpost.com/software/show-me-how" target="_blank" rel="noopener">Show Me How</a>
+<span class="meta">ElevenLabs × a16z Worldwide Hackathon ／ <b>協賛賞（Shure）</b></span><span class="dur">2日間</span>
+<span class="what">熟練者の作業を1回録画 → AIが手順化して多人数をガイド</span></li></ul></div>
+</section>
+<section class="kata" id="t6">
+<header class="kh"><span class="knum">型6</span><h2><span class="emo">🎭</span>相手役型</h2><p class="ktag">AIが相手を演じ人が練習し採点が返る</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 966 224" role="img" aria-label="構成図">
+<defs><marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,125.0 C191.5,125.0 191.5,125.0 207,125.0" class="eg" marker-end="url(#a6)"/>
+<path d="M370,125.0 C385.5,125.0 385.5,77.0 401,77.0" class="eg" marker-end="url(#a6)"/>
+<path d="M483.0,112.0 L483.0,137.0" class="eg" marker-end="url(#a6)" marker-start="url(#a6)"/>
+<path d="M564,173.0 C579.5,173.0 579.5,125.0 595,125.0" class="eg" marker-end="url(#a6)"/>
+<path d="M758,125.0 C773.5,125.0 773.5,77.0 789,77.0" class="eg" marker-end="url(#a6)"/>
+<path d="M758,125.0 C773.5,125.0 773.5,173.0 789,173.0" class="eg" marker-end="url(#a6)"/>
+<path d="M871.0,42.0 L871.0,16 L289.0,16 L289.0,89.0" class="eg lp" marker-end="url(#a6)"/>
+<text x="580.0" y="12" class="lpt" text-anchor="middle">次のお題</text>
+<g class="n n-in"><rect x="16" y="92.0" width="158" height="66" rx="7"/><text x="26" y="108.0" class="tg">入口</text><text x="26" y="129.0" class="tt">シナリオの元</text><text x="26" y="147.0" class="ts">ガイドライン・実データ</text></g>
+<g class="n n-ai"><rect x="210" y="92.0" width="158" height="66" rx="7"/><text x="220" y="108.0" class="tg">AI</text><text x="220" y="129.0" class="tt">状況を生成</text><text x="220" y="147.0" class="ts">相手役・お題</text></g>
+<g class="n n-ui"><rect x="404" y="44.0" width="158" height="66" rx="7"/><text x="414" y="60.0" class="tg">画面</text><text x="414" y="81.0" class="tt">実践画面</text><text x="414" y="99.0" class="ts">会話・操作・移動</text></g>
+<g class="n n-in"><rect x="404" y="140.0" width="158" height="66" rx="7"/><text x="414" y="156.0" class="tg">入口</text><text x="414" y="177.0" class="tt">人の行動</text><text x="414" y="195.0" class="ts">発話・選択・位置</text></g>
+<g class="n n-ai"><rect x="598" y="92.0" width="158" height="66" rx="7"/><text x="608" y="108.0" class="tg">AI</text><text x="608" y="129.0" class="tt">評価</text><text x="608" y="147.0" class="ts">基準で採点・問い返し</text></g>
+<g class="n n-ui"><rect x="792" y="44.0" width="158" height="66" rx="7"/><text x="802" y="60.0" class="tg">画面</text><text x="802" y="81.0" class="tt">振り返り</text><text x="802" y="99.0" class="ts">スコア・改善点</text></g>
+<g class="n n-st"><rect x="792" y="140.0" width="158" height="66" rx="7"/><text x="802" y="156.0" class="tg">保存</text><text x="802" y="177.0" class="tt">履歴</text><text x="802" y="195.0" class="ts">成長の記録</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p><b>シナリオの元</b>（ガイドライン・オープンデータ・事例）＋<b>人の行動</b>（発話・選択・位置）</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>状況と相手役を<b>生成して演じる</b> → 人の行動を基準で<b>採点</b> → 答えを教えず<b>問い返す</b></p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>3画面</b>：お題 → 実践 → 振り返り（スコア・改善点）</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p><b>審査員に1ターンだけ体験してもらう</b> → その場で採点とフィードバックが返る</p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>採点基準が曖昧で“AIの感想”になる → 評価軸を先に作る（MaestrIAの教訓「Eval first」）</li><li>1プレイが長くデモで回らない</li><li>数ターンで相手役のキャラが崩れる</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>対話：音声会話API・チャット ／ 基準：Markdownの評価ルーブリック ／ 画面：Web・スマホ ／ 保存：プレイ履歴の表</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://github.com/bedriyan/medkit-app" target="_blank" rel="noopener">Medkit</a>
+<span class="meta">Built with Opus 4.7 Claude Code Hackathon ／ <b>1位</b></span><span class="dur">5日</span>
+<span class="what">模擬患者に音声で問診・検査オーダー → 指導医役AIがガイドラインで採点</span></li><li><a href="https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon" target="_blank" rel="noopener">Maieutic</a>
+<span class="meta">Built with Opus 4.7 Claude Code Hackathon ／ <b>3位</b></span><span class="dur">5日</span>
+<span class="what">学生が仕様を書く → AIは答えでなく問い返す → 仕様とコードのズレを分類</span></li><li><a href="https://github.com/jphacks/tk_a_2505" target="_blank" rel="noopener">HiNan!</a>
+<span class="meta">JPHACKS 2025 ／ <b>ソフトバンク賞</b></span><span class="dur">Hack Day 2日間</span>
+<span class="what">避難所オープンデータ＋位置 → 毎日の災害シナリオ → 実際に歩いて訓練 → バッジ</span></li><li><a href="https://elevenlabs.io/blog/announcing-the-winners-of-the-elevenlabs-worldwide-hackathon" target="_blank" rel="noopener">Pep Physical Therapy Agent</a>
+<span class="meta">ElevenLabs Worldwide Hackathon ／ <b>オンライン部門2位</b></span><span class="dur">2日間</span>
+<span class="what">声と映像でリハビリ運動のフォームをライブ指導</span></li></ul></div>
+</section>
+<section class="kata" id="t7">
+<header class="kh"><span class="knum">型7</span><h2><span class="emo">🎨</span>共演体験型</h2><p class="ktag">身体の入力にAIがその場で応える</p></header>
+<div class="dgwrap"><svg class="dg" viewBox="0 0 772 224" role="img" aria-label="構成図">
+<defs><marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+<path d="M176,125.0 C191.5,125.0 191.5,125.0 207,125.0" class="eg" marker-end="url(#a7)"/>
+<path d="M370,125.0 C385.5,125.0 385.5,125.0 401,125.0" class="eg" marker-end="url(#a7)"/>
+<path d="M564,125.0 C579.5,125.0 579.5,77.0 595,77.0" class="eg" marker-end="url(#a7)"/>
+<path d="M677.0,112.0 L677.0,137.0" class="eg" marker-end="url(#a7)" marker-start="url(#a7)"/>
+<path d="M677.0,42.0 L677.0,16 L95.0,16 L95.0,89.0" class="eg lp" marker-end="url(#a7)"/>
+<text x="386.0" y="12" class="lpt" text-anchor="middle">もう一回</text>
+<g class="n n-in"><rect x="16" y="92.0" width="158" height="66" rx="7"/><text x="26" y="108.0" class="tg">入口</text><text x="26" y="129.0" class="tt">身体の入力</text><text x="26" y="147.0" class="ts">描く・笑う・弾く・動く</text></g>
+<g class="n n-ai"><rect x="210" y="92.0" width="158" height="66" rx="7"/><text x="220" y="108.0" class="tg">AI</text><text x="220" y="129.0" class="tt">意味を読む</text><text x="220" y="147.0" class="ts">形・表情・コード進行</text></g>
+<g class="n n-ai"><rect x="404" y="92.0" width="158" height="66" rx="7"/><text x="414" y="108.0" class="tg">AI</text><text x="414" y="129.0" class="tt">即時生成</text><text x="414" y="147.0" class="ts">コース・キャラ・音</text></g>
+<g class="n n-ui"><rect x="598" y="44.0" width="158" height="66" rx="7"/><text x="608" y="60.0" class="tg">画面</text><text x="608" y="81.0" class="tt">同じ画面で返す</text><text x="608" y="99.0" class="ts">入力と結果を並べる</text></g>
+<g class="n n-st"><rect x="598" y="140.0" width="158" height="66" rx="7"/><text x="608" y="156.0" class="tg">保存</text><text x="608" y="177.0" class="tt">コレクション</text><text x="608" y="195.0" class="ts">図鑑・履歴</text></g>
+</svg></div>
+<div class="facts">
+ <div class="fact"><h3>🚪 データの入口</h3><p><b>身体を使った入力</b>（手描きの絵・笑顔の写真・Webカメラの動き・鍵盤・声）</p></div>
+ <div class="fact"><h3>🧠 AIの使いどころ</h3><p>入力の<b>意味を読む</b>（形・表情・コード進行） → その場で<b>生成して返す</b>（コース・キャラ・伴奏・小道具）</p></div>
+ <div class="fact"><h3>🖥️ 画面</h3><p><b>1画面</b>：入力と結果が同じ画面に並ぶ。＋コレクション（図鑑・履歴）</p></div>
+ <div class="fact"><h3>⏱️ デモで見せる30秒</h3><p><b>会場の人に描いて・笑って・弾いてもらう</b> → 即座に作品になる → 会場が沸く</p></div>
+ <div class="fact trap"><h3>💀 落とし穴（この型が死ぬ瞬間）</h3><ul><li>反応の遅延で体験が冷める（Conductrは生成部をWebAssembly化し約15ms）</li><li>会場の照明・騒音で認識に失敗する</li><li>課題の実在性を採点する大会では体験のあとに「誰の何の課題か」の説明が要る</li></ul></div>
+ <div class="fact swap"><h3>🔁 技術の置き換え例</h3><p>入力：カメラ・マイク・手書きキャンバス・MIDI ／ 解釈：画像認識・LLM・古典アルゴリズム ／ 生成：画像・音・3D ／ 画面：Web1枚</p></div>
+</div>
+<div class="exblock"><h3>🏆 実例</h3><ul class="exlist"><li><a href="https://github.com/jphacks/sp_2509" target="_blank" rel="noopener">AshiArt</a>
+<span class="meta">JPHACKS 2025 ／ <b>Best Hack Award・Best Audience Award</b></span><span class="dur">Hack Day 2日間</span>
+<span class="what">一筆書きの絵 → 道路網上でその形を再現したランニングコースを生成</span></li><li><a href="https://github.com/nanassound/conductr" target="_blank" rel="noopener">Conductr</a>
+<span class="meta">Built with Opus 4.6 Claude Code Hackathon ／ <b>Creative Exploration賞</b></span><span class="dur">1週間</span>
+<span class="what">MIDI鍵盤のコード入力 → ドラム・ベース・メロディをリアルタイム生成</span></li><li><a href="https://github.com/rhmoller/virtual-puppet-theater" target="_blank" rel="noopener">Virtual Puppet Theater</a>
+<span class="meta">Built with Opus 4.7 Claude Code Hackathon ／ <b>Most Creative賞</b></span><span class="dur">5日</span>
+<span class="what">Webカメラと声で人形を操る → AIの相方人形が会話し小道具を生成</span></li><li><a href="https://forest.watch.impress.co.jp/docs/special/2067831.html" target="_blank" rel="noopener">スマイルグリッド</a>
+<span class="meta">全日本AIハッカソン2025 決勝 ／ <b>決勝進出</b></span><span class="dur">5時間</span>
+<span class="what">笑顔を撮影 → AIがキャラクター化 → 3×3の図鑑に集める</span></li></ul></div>
+</section>
+  </div>
+</section>
+
+<section class="note">
+  <p><b>💡 読み方の注意</b></p>
+  <ul>
+    <li><b>期間の差</b>：Opus 4.6／4.7大会（5日〜1週間）やMicrosoft大会（3週間）の実例はエージェント数・画面数が多め。48時間ではAI処理を1〜2段に絞って同じ型を組む</li>
+    <li><b>構成図は抽象化したもの</b>：各実例の実装をそのまま写したものではなく、共通する骨格を描いている</li>
+    <li><b>アイデアの良し悪しは扱っていない</b>：ここにあるのは「完成して評価された構成」の型だけ</li>
+  </ul>
+</section>
+
+<section class="sources">
+  <b>📚 調査に使った一次情報</b>
+  <ul>
+    <li><a href="https://claude.com/blog/meet-the-winners-of-our-built-with-opus-4-6-claude-code-hackathon" target="_blank" rel="noopener">Built with Opus 4.6 Claude Code hackathon 受賞者</a></li>
+    <li><a href="https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon" target="_blank" rel="noopener">Built with Opus 4.7 Claude Code hackathon 受賞者</a></li>
+    <li><a href="https://uc-berkeley-ai-hackathon-2025.devpost.com/project-gallery" target="_blank" rel="noopener">UC Berkeley AI Hackathon 2025 作品一覧</a></li>
+    <li><a href="https://stanforddaily.com/2026/02/15/12th-annual-treehacks/" target="_blank" rel="noopener">TreeHacks 2026（Stanford Daily）</a></li>
+    <li><a href="https://www.runpod.io/blog/runpod-treehacks-2026" target="_blank" rel="noopener">Runpod：TreeHacks 2026で作られたもの</a></li>
+    <li><a href="https://blog.dylanlu.com/cal-hacks-12/" target="_blank" rel="noopener">Cal Hacks 12.0 Grand Prize 振り返り</a></li>
+    <li><a href="https://elevenlabs.io/blog/announcing-the-winners-of-the-elevenlabs-worldwide-hackathon" target="_blank" rel="noopener">ElevenLabs Worldwide Hackathon 受賞者</a></li>
+    <li><a href="https://about.gitlab.com/blog/gitlab-ai-hackathon-2026-meet-the-winners/" target="_blank" rel="noopener">GitLab AI Hackathon 2026 受賞者</a></li>
+    <li><a href="https://microsoft.github.io/AI_Agents_Hackathon/winners/" target="_blank" rel="noopener">Microsoft AI Agents Hackathon 2025 受賞者</a></li>
+    <li><a href="https://jphacks.com/2025/result/" target="_blank" rel="noopener">JPHACKS 2025 結果報告</a></li>
+    <li><a href="https://www.softbank.jp/sbnews/entry/20251205_01" target="_blank" rel="noopener">ソフトバンクニュース：JPHACKS 2025</a></li>
+    <li><a href="https://forest.watch.impress.co.jp/docs/special/2067831.html" target="_blank" rel="noopener">窓の杜：全日本AIハッカソン2025 決勝レポート</a></li>
+    <li><a href="https://browser-use.com/posts/how-to-win-hackathons" target="_blank" rel="noopener">Browser Use：How to Win Hackathons</a></li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

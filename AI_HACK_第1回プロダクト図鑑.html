@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="第1回AI HACK 2026の参加8プロダクトを、チーム背景・ビジネス価値・ツール・アーキテクチャ・審査観点で整理した図鑑">
+<title>AI HACK 第1回プロダクト図鑑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F6F8F6;
+    --surface: #FFFFFF;
+    --surface-2: #ECF1EF;
+    --ink: #22302E;
+    --ink-soft: #5C6E6B;
+    --line: #D7DFDC;
+    --accent: #0B7285;
+    --accent-ink: #085A6A;
+    --accent-soft: #E1F0F3;
+    --warn-bg: #FBF2DF;
+    --warn-ink: #7E5508;
+    --good: #2B8A3E;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101716;
+      --surface: #17201E;
+      --surface-2: #1E2A28;
+      --ink: #E3ECEA;
+      --ink-soft: #96A8A4;
+      --line: #2B3936;
+      --accent: #4FC3D9;
+      --accent-ink: #7ED4E4;
+      --accent-soft: #123037;
+      --warn-bg: #322909;
+      --warn-ink: #E5BA5E;
+      --good: #69C57C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101716;
+    --surface: #17201E;
+    --surface-2: #1E2A28;
+    --ink: #E3ECEA;
+    --ink-soft: #96A8A4;
+    --line: #2B3936;
+    --accent: #4FC3D9;
+    --accent-ink: #7ED4E4;
+    --accent-soft: #123037;
+    --warn-bg: #322909;
+    --warn-ink: #E5BA5E;
+    --good: #69C57C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 40px 20px 80px; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  /* ---- header ---- */
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent-ink); margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(26px, 4.5vw, 38px); font-weight: 700; line-height: 1.3;
+    margin: 0 0 12px; text-wrap: balance;
+  }
+  .lede { color: var(--ink-soft); max-width: 46em; margin: 0; }
+
+  /* ---- generic ---- */
+  section { margin-top: 56px; }
+  h2 {
+    font-size: 21px; font-weight: 700; margin: 0 0 6px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+    display: flex; align-items: baseline; gap: 8px; text-wrap: balance;
+  }
+  h2 .n { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--accent-ink); }
+  .sub { color: var(--ink-soft); font-size: 13.5px; margin: 6px 0 18px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px 20px;
+  }
+
+  /* ---- key findings ---- */
+  .keyrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
+  .key {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .key .k-emoji { font-size: 20px; }
+  .key .k-title { font-weight: 700; margin: 4px 0 2px; font-size: 14.5px; }
+  .key .k-body { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .callout {
+    margin-top: 16px; border-radius: 10px; padding: 14px 16px;
+    background: var(--warn-bg); color: var(--warn-ink);
+    font-size: 13.5px; line-height: 1.7;
+  }
+  .callout strong { font-weight: 700; }
+
+  /* ---- overview map ---- */
+  .map { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-top: 16px; }
+  .map a {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; transition: border-color .15s;
+  }
+  .map a:hover, .map a:focus-visible { border-color: var(--accent); outline: none; }
+  .map .m-name { font-weight: 700; font-size: 14.5px; }
+  .map .m-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* ---- tables ---- */
+  .tblwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 780px; font-size: 13px; }
+  th, td { padding: 9px 12px; text-align: left; vertical-align: top; border-top: 1px solid var(--line); line-height: 1.6; }
+  thead th {
+    border-top: none; background: var(--surface-2);
+    font-size: 12px; letter-spacing: .04em; white-space: nowrap;
+  }
+  td.pname { font-weight: 700; white-space: nowrap; }
+  .tag {
+    display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-ink); font-weight: 500; white-space: nowrap;
+  }
+
+  /* ---- product cards ---- */
+  .prod {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 22px; margin-top: 20px;
+  }
+  .prod h3 {
+    margin: 0; font-size: 18px; font-weight: 700;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 10px;
+  }
+  .prod .p-domain { font-size: 12px; font-weight: 500; color: var(--accent-ink); background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; }
+  .prod .p-one { margin: 8px 0 14px; font-size: 14px; color: var(--ink-soft); max-width: 52em; }
+  .facts { display: grid; grid-template-columns: 110px 1fr; gap: 6px 14px; font-size: 13.5px; margin: 0; }
+  .facts dt { font-weight: 700; white-space: nowrap; }
+  .facts dd { margin: 0; color: var(--ink); }
+  .facts dd .soft { color: var(--ink-soft); }
+  @media (max-width: 560px) {
+    .facts { grid-template-columns: 1fr; gap: 2px; }
+    .facts dt { margin-top: 8px; }
+  }
+  .flow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    margin-top: 12px; padding: 10px 12px;
+    background: var(--surface-2); border-radius: 8px;
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+  }
+  .flow .f {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 3px 8px; white-space: nowrap;
+  }
+  .flow .f.hi { border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+  .flow .a { color: var(--ink-soft); }
+  .flowlabel { font-size: 11px; letter-spacing: .1em; color: var(--ink-soft); margin-top: 14px; font-family: "IBM Plex Mono", monospace; }
+
+  /* ---- figure ---- */
+  figure { margin: 20px 0 0; }
+  figure svg { max-width: 100%; height: auto; display: block; margin: 0 auto; color: var(--ink); }
+  figcaption { font-size: 12.5px; color: var(--ink-soft); text-align: center; margin-top: 10px; }
+  .svg-accent { color: var(--accent-ink); }
+
+  /* ---- judge criteria ---- */
+  .crit { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin-top: 14px; }
+  .crit div {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 12px; font-size: 13px; font-weight: 500;
+  }
+  .crit div span { display: block; font-size: 11.5px; font-weight: 400; color: var(--ink-soft); }
+
+  /* ---- sources ---- */
+  a { color: var(--accent-ink); }
+  ul.src { padding-left: 1.3em; font-size: 13px; line-height: 2; margin: 10px 0 0; }
+  footer { margin-top: 60px; font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">AI HACK 2026 — 1st Edition Review</p>
+  <h1>📚 AI HACK 第1回プロダクト図鑑</h1>
+  <p class="lede">第1回 AI HACK 2026(2026/8/8〜8/16・9日間)の参加者による公開記事 <strong>8プロダクト分</strong> を全件読み込み、チーム背景・ビジネス価値・ツール・アーキテクチャを整理したものです。</p>
+</header>
+
+<section id="summary">
+  <h2><span class="n">00</span>🎯 まず結論</h2>
+  <div class="keyrow">
+    <div class="key"><div class="k-emoji">🐋</div><div class="k-title">全プロダクトがOrcaRouter経由</div><div class="k-body">協賛のマルチLLMゲートウェイ(OpenAI互換)が事実上の共通基盤。用途別にモデルを使い分けるのが定石だった。</div></div>
+    <div class="key"><div class="k-emoji">🧭</div><div class="k-title">共通思想「AIに断定させない」</div><div class="k-body">計算は決定的コード、AIは読解と表現に限定。根拠ID照合・人間承認・フォールバックが頻出パターン。</div></div>
+    <div class="key"><div class="k-emoji">💴</div><div class="k-title">原価を実測して語る文化</div><div class="k-body">「1件◯円」「89.4%削減」など、LLMコストの実測値をほぼ全チームが提示。審査基準にもLLMコストがある。</div></div>
+    <div class="key"><div class="k-emoji">👥</div><div class="k-title">1〜3人・非エンジニアも入賞圏</div><div class="k-body">元会計士×元広告プロデューサーの非エンジニア2人組も、Codex/Claude Codeとの協働で完成品を提出。</div></div>
+  </div>
+  <div class="callout">⚠️ <strong>審査員評価・受賞結果は、8記事のいずれにも記載がありませんでした。</strong>各記事は参加者本人の開発記であり、順位・審査員コメントは未公開(または記事外)。X(@aihack2026)の投稿とDiscordの過去ログが確認先の候補です(Xはツール側の制約で今回取得できず)。なお審査基準8項目は記事内で判明→<a href="#judge">セクション05</a>へ。</div>
+</section>
+
+<section id="map">
+  <h2><span class="n">01</span>🗺️ 8プロダクト全体マップ</h2>
+  <p class="sub">クリックで各カードへジャンプ</p>
+  <div class="map">
+    <a href="#p1"><div class="m-name">🍼 泣きやみなさいわが子よ</div><div class="m-desc">保育現場向け・保護者の顔と声で返すAIビデオメッセージ</div></a>
+    <a href="#p2"><div class="m-name">🧓 ツマヅキ</div><div class="m-desc">AIペルソナに「演技させず」測るWebユーザビリティテスト</div></a>
+    <a href="#p3"><div class="m-name">🌡️ CROWD WEATHER</div><div class="m-desc">イベントの混雑×暑熱を予報し運営計画書を自動生成</div></a>
+    <a href="#p4"><div class="m-name">🧑‍🏫 SocraMetry</div><div class="m-desc">エラーに答えでなく「問い」を返すAIメンター</div></a>
+    <a href="#p5"><div class="m-name">💰 Ergarch</div><div class="m-desc">受託チームの報酬分配交渉を消す業務基盤</div></a>
+    <a href="#p6"><div class="m-name">🗂️ KYAKUMAP</div><div class="m-desc">散在する顧客情報を根拠付きでつなぐ営業準備AI</div></a>
+    <a href="#p7"><div class="m-name">🔁 pakulist</div><div class="m-desc">SNS重複投稿を「人が判断できる候補」に整理</div></a>
+    <a href="#p8"><div class="m-name">🚶 Routeoff</div><div class="m-desc">過去の一枚から次の「寄り道」をつくる記録アプリ</div></a>
+  </div>
+</section>
+
+<section id="event">
+  <h2><span class="n">02</span>🏟️ 第1回の開催概要</h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td class="pname">📅 期間</td><td>2026年8月8日〜16日の <strong>9日間</strong>(※第2回は9/19〜23の5日間に短縮)</td></tr>
+      <tr><td class="pname">🎯 テーマ</td><td>「<strong>本番で通用する次世代のAI Product</strong>」</td></tr>
+      <tr><td class="pname">👥 参加形態</td><td>個人 または <strong>3名以下</strong>のチーム。使用モデル・言語・フレームワークは自由</td></tr>
+      <tr><td class="pname">🏆 賞金</td><td>総額100万円</td></tr>
+      <tr><td class="pname">🐋 参加者特典</td><td><strong>OrcaRouter</strong>(協賛):OpenAI/Anthropic/Google等を単一のOpenAI互換APIで呼べるゲートウェイ。原価そのままのルーティング+Guardrails(PIIマスク等)を提供</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="compare">
+  <h2><span class="n">03</span>📊 横断比較表</h2>
+  <p class="sub">8プロダクト × チーム背景・スタック・AIの使いどころ・設計思想</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>プロダクト</th><th>領域</th><th>チーム(人数・背景)</th><th>主要スタック</th><th>AIの使いどころ</th><th>設計思想の核</th></tr></thead>
+    <tbody>
+      <tr><td class="pname">🍼 泣きやみなさい<br>わが子よ</td><td><span class="tag">保育×感情ケア</span></td><td>3名(詳細非公開)</td><td>Node.js / ElevenLabs / Tavus Echo+Daily</td><td>安全判定・返答文生成・音声クローン・アバター動画</td><td>4段階safetyLevel+4段階縮退</td></tr>
+      <tr><td class="pname">🧓 ツマヅキ</td><td><span class="tag">UXテスト</span></td><td>teamK 2名(詳細非公開)</td><td>Playwright / Next.js / Node.js</td><td>4モデル役割分担(読取・次手・判定・説明)</td><td>演技でなく「制約」で高齢者を再現</td></tr>
+      <tr><td class="pname">🌡️ CROWD WEATHER</td><td><span class="tag">イベント運営</span></td><td>非エンジニア2名(元会計士/元広告代理店プロデューサー)</td><td>Next.js / TypeScript / Vercel / Vitest</td><td>非構造資料の読解・計画書の文章生成</td><td>「AIに計算はさせない」決定的計算層</td></tr>
+      <tr><td class="pname">🧑‍🏫 SocraMetry</td><td><span class="tag">エンジニア育成</span></td><td>2名(リーダーは組み込み/IoTエンジニア・Uhuru所属)</td><td>TypeScript / enebular / GitHub Actions</td><td>診断(高品質モデル)と出題(安価モデル)の2段分離</td><td>答えを構造的に漏らさないゲート設計</td></tr>
+      <tr><td class="pname">💰 Ergarch</td><td><span class="tag">受託業務SaaS</span></td><td>個人?(クラウドエンジニア1年目・Azure系/元IBM Champion・MLSA)</td><td>Next.js 16 / Hono / Cloud Run / Firestore</td><td>要件定義支援・見積工数付きタスク自動分解</td><td>金額計算は純粋関数+Security Rulesで改変不可</td></tr>
+      <tr><td class="pname">🗂️ KYAKUMAP</td><td><span class="tag">法人営業SaaS</span></td><td>個人(Java/Kotlinエンジニア)。営業経験者にインタビュー実施</td><td>Next.js / PostgreSQL / Drizzle / Notion API</td><td>人物相関抽出・音声質問応答・充足度可視化</td><td>「知識はDB、表現はLLM、リンクはサーバー検証」</td></tr>
+      <tr><td class="pname">🔁 pakulist</td><td><span class="tag">SNS運用</span></td><td>2名(エンジニア・1名はパーソルクロステクノロジー所属)</td><td>Node.js 22 / Playwright / node:test</td><td>将来接続のみ。検出は決定的アルゴリズム</td><td>AIで断定せず「候補と根拠」を人に渡す</td></tr>
+      <tr><td class="pname">🚶 Routeoff</td><td><span class="tag">ライフログ</span></td><td>teamR(OCIクラウドエンジニア・日本オラクル所属)</td><td>HTML/CSS/JS / Node.js(将来OCI: OKE・ADB)</td><td>寄り道提案・写真からの観察抽出・週次振り返り生成</td><td>JSON検証+根拠ID+固定文フォールバック</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="arch">
+  <h2><span class="n">04</span>🏗️ 共通アーキテクチャパターン</h2>
+  <p class="sub">8プロダクト中ほぼ全てが、この「検証を挟んでOrcaRouterへ」という同型の構成だった</p>
+  <div class="card">
+  <figure>
+    <svg viewBox="0 0 880 300" role="img" aria-label="共通アーキテクチャ:フロントエンドからAPIサーバー、検証層を経てOrcaRouter経由で複数のLLMへ。決定的ロジックとDBはAPI側に分離し、失敗時は固定文へフォールバック">
+      <defs>
+        <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="1.3">
+        <rect x="20" y="90" width="130" height="60" rx="8"/>
+        <rect x="230" y="90" width="150" height="60" rx="8"/>
+        <rect x="230" y="200" width="150" height="54" rx="8" stroke-dasharray="4 3"/>
+        <rect x="460" y="90" width="120" height="60" rx="8"/>
+        <rect x="460" y="16" width="120" height="46" rx="8" stroke-dasharray="4 3"/>
+      </g>
+      <g class="svg-accent" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="650" y="90" width="120" height="60" rx="8"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.1">
+        <rect x="800" y="40" width="66" height="34" rx="6"/>
+        <rect x="800" y="103" width="66" height="34" rx="6"/>
+        <rect x="800" y="166" width="66" height="34" rx="6"/>
+      </g>
+      <g stroke="currentColor" stroke-width="1.3" marker-end="url(#arw)">
+        <line x1="150" y1="120" x2="224" y2="120"/>
+        <line x1="380" y1="120" x2="454" y2="120"/>
+        <line x1="520" y1="90" x2="520" y2="68"/>
+        <line x1="305" y1="150" x2="305" y2="194"/>
+      </g>
+      <g class="svg-accent" stroke="currentColor" stroke-width="2" marker-end="url(#arw)">
+        <line x1="580" y1="120" x2="644" y2="120"/>
+        <line x1="770" y1="105" x2="794" y2="72"/>
+        <line x1="770" y1="120" x2="794" y2="120"/>
+        <line x1="770" y1="135" x2="794" y2="168"/>
+      </g>
+      <g font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor" text-anchor="middle">
+        <text x="85" y="115">フロント</text><text x="85" y="132" font-size="10.5">Next.js / HTML+JS</text>
+        <text x="305" y="115">APIサーバー</text><text x="305" y="132" font-size="10.5">Node.js / Hono</text>
+        <text x="305" y="222">決定的ロジック</text><text x="305" y="238" font-size="10.5">計算・検出はコードで</text>
+        <text x="520" y="115">検証層</text><text x="520" y="132" font-size="10.5">Zod/JSON/根拠ID照合</text>
+        <text x="520" y="36">フォールバック</text><text x="520" y="51" font-size="10.5">失敗時は固定文へ縮退</text>
+        <text x="833" y="61">OpenAI</text>
+        <text x="833" y="124">Claude</text>
+        <text x="833" y="187">Gemini</text>
+      </g>
+      <g class="svg-accent" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor" text-anchor="middle">
+        <text x="710" y="115">OrcaRouter</text><text x="710" y="132" font-size="10.5">用途別に振り分け</text>
+      </g>
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" text-anchor="middle" opacity="0.75">
+        <text x="187" y="112">リクエスト</text>
+        <text x="417" y="112">構造化出力</text>
+        <text x="612" y="112">用途名で呼ぶ</text>
+        <text x="540" y="80">API失敗時</text>
+      </g>
+    </svg>
+    <figcaption>共通パターン:LLM呼び出しはOrcaRouterに集約し、計算・検出は決定的コードに分離。出力は検証層を通し、失敗時は縮退する</figcaption>
+  </figure>
+  </div>
+</section>
+
+<section id="judge">
+  <h2><span class="n">05</span>⚖️ 審査基準(記事から判明した8項目)</h2>
+  <p class="sub">KYAKUMAPの記事に明記。各記事の書きぶり(コスト実測・セキュリティ章立て)もこの8項目に沿っている</p>
+  <div class="crit">
+    <div>1. 課題実在性<span>本当にある課題か</span></div>
+    <div>2. ビジネス成立性<span>収益構造が描けるか</span></div>
+    <div>3. 完成度<span>動くものになっているか</span></div>
+    <div>4. AI必然性<span>AIでなければならないか</span></div>
+    <div>5. 技術的作り込み<span>実装の深さ</span></div>
+    <div>6. LLMコスト<span>原価の妥当性</span></div>
+    <div>7. セキュリティ<span>データ保護・ガードレール</span></div>
+    <div>8. 次世代性<span>次のAIプロダクト像</span></div>
+  </div>
+  <div class="callout">💡 個別の審査員コメント・順位は8記事とも未記載。ただし全チームが上の8項目(特に <strong>LLMコスト実測</strong> と <strong>セキュリティ</strong>)を意識した記事構成にしており、審査で強く問われたことがうかがえます。</div>
+</section>
+
+<section id="products">
+  <h2><span class="n">06</span>🔍 プロダクト個別カルテ</h2>
+
+  <article class="prod" id="p1">
+    <h3>🍼 泣きやみなさいわが子よ <span class="p-domain">保育 × 感情ケア</span></h3>
+    <p class="p-one">延長保育・一時預かりの3〜6歳児の「ママに会いたい」に、<strong>保護者の顔と声のAI動画</strong>で応えるシステム。AIは親の代替ではなく、現場の大人が寄り添う「きっかけ」を作る。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>3名(人間3名がレビューと意思決定を担当。背景は非公開)</dd>
+      <dt>💼 価値</dt><dd>月額原価 約8,600円(直接4,100+管理4,500)に対し <strong>売価9,800円/月</strong> を想定。親子分離不安の軽減+保育士の負担軽減</dd>
+      <dt>🛠️ ツール</dt><dd>Node.js / OrcaRouter(STT・安全判定・返答生成) / <strong>ElevenLabs</strong>(音声クローン) / <strong>Tavus Echo + Daily</strong>(アバター動画) / AES-256-GCM暗号化</dd>
+      <dt>🛡️ 安全設計</dt><dd>safetyLevelを4段階判定(normal→adult_required→urgent→uncertain)。虐待・自傷の訴えでは保護者メディアを停止し大人へ。API失敗時は 映像→写真→テキスト→中立案内 の4段階縮退</dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">🎤 子どもの音声</span><span class="a">→</span><span class="f">STT</span><span class="a">→</span><span class="f">👩 大人確認</span><span class="a">→</span><span class="f hi">OrcaRouter 安全判定+返答文</span><span class="a">→</span><span class="f">ElevenLabs 音声</span><span class="a">→</span><span class="f">Tavus 表情動画</span></div>
+  </article>
+
+  <article class="prod" id="p2">
+    <h3>🧓 ツマヅキ <span class="p-domain">UXテスト自動化</span></h3>
+    <p class="p-one">AIペルソナで自治体サイト等のユーザビリティを測る。「高齢者らしく演技して」では嘘になるため、<strong>理解できる語彙・見える画面範囲を実データで制約</strong>して測定。同一サイトで対照群43秒 vs 高齢者ペルソナ2分27秒の差を検出した。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>teamK・2名(背景は非公開。記事はPython/Java/React系タグをフォローするエンジニア)</dd>
+      <dt>💼 価値</dt><dd>「使いにくい」という感想を<strong>出典付きの数字</strong>に変え、改善の優先順位付けを可能に。モデル使い分けでLLM費用<strong>89.4%削減</strong>($39.98→$4.23)</dd>
+      <dt>🛠️ ツール</dt><dd>Playwright(システムChrome操作) / Next.js / Node.js / OrcaRouter / 国立国語研究所「外来語定着度調査」等の公的データ</dd>
+      <dt>🤖 モデル分担</dt><dd>画面読取=Gemini flash-lite、次手決定=GPT-5-mini、到達判定=Gemini flash、説明生成=GPT-5-mini <span class="soft">(用途×コストで4役に分割)</span></dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">observe() 画面把握</span><span class="a">→</span><span class="f">shield() 危険入力遮断</span><span class="a">→</span><span class="f hi">constrain() 語彙・視野を制約 ←本体</span><span class="a">→</span><span class="f hi">OrcaRouter 4モデル</span><span class="a">→</span><span class="f">Playwright操作</span></div>
+  </article>
+
+  <article class="prod" id="p3">
+    <h3>🌡️ CROWD WEATHER <span class="p-domain">イベント安全運営</span></h3>
+    <p class="p-one">開催日・天候・チケット販売数から<strong>混雑と暑熱(WBGT)の「予報」</strong>を作り、会場図に危険箇所を色付けして運営計画書まで自動生成。紙とPowerPointと経験者の勘をデータに置き換える。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd><strong>非エンジニア2名</strong>:元会計士+元広告代理店のイベントプロデューサー。Codex/Claude Codeと「協働開発」し、企画段階からAIと壁打ち</dd>
+      <dt>💼 価値</dt><dd>AI原価を試算で<strong>-94%</strong>(18,000枚規模で¥116,940→¥7,414)。属人的な運営ノウハウをチームの共有物に。制作/現場/参加者の3画面構成</dd>
+      <dt>🛠️ ツール</dt><dd>Next.js(App Router) / React / TypeScript / Vercel / Vitest(331件) / OrcaRouter(GPT-4o読解・Claude Sonnet計画書・Gemini Flash Lite指示)</dd>
+      <dt>🧮 設計原則</dt><dd>「<strong>AIに計算はさせない</strong>」— 混雑指数・WBGT・経路探索は決定的なTypeScript実装。LLMは資料読解と文章生成のみ。計画書配信は人間の明示操作が必須</dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">📄 非構造資料</span><span class="a">→</span><span class="f hi">LLM層 読解のみ</span><span class="a">→</span><span class="f">決定的計算層 混雑・WBGT</span><span class="a">→</span><span class="f">🗺️ 会場図の色付け</span><span class="a">→</span><span class="f">計画書生成</span><span class="a">→</span><span class="f">👩 人間承認→配信</span></div>
+  </article>
+
+  <article class="prod" id="p4">
+    <h3>🧑‍🏫 SocraMetry <span class="p-domain">エンジニア育成</span></h3>
+    <p class="p-one">エラーを3秒でAIに丸投げする若手から「答えを取り上げる」AIメンター。エラーを投げると修正コードではなく<strong>ソクラテス式の「問い」</strong>が返り、理解の深さを組織の評価データにもする。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>2名。リーダーは組み込みソフトウェアエンジニア(Uhuru所属・enebular/IoTコミュニティで89記事の発信歴)。マネージャーとして若手の課題を目撃したのが着想</dd>
+      <dt>💼 価値</dt><dd>月額1,000〜2,000円/人を想定、LLM原価は月39〜55円で粗利十分。SES・派遣のスキルシートに実績の裏付け、過去障害の演習問題化</dd>
+      <dt>🛠️ ツール</dt><dd>TypeScript / <strong>enebular</strong>(クラウド実行環境) / OrcaRouter / GitHub Actions + enebular CLI / enebularデータストア(KVS)</dd>
+      <dt>🚪 ゲート設計</dt><dd>Gate A(ヒント)→B(設問)→C(答え開示)が時間経過で自動進行し業務は止めない。診断モデルは出題モデルに「着眼点だけ」を渡し、<strong>答えの漏洩を構造的に防ぐ</strong></dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">🐛 エラー投稿</span><span class="a">→</span><span class="f hi">Diagnoser 高品質モデルで原因特定(1回)</span><span class="a">→ 着眼点のみ →</span><span class="f hi">Questioner 安価モデルで問い生成</span><span class="a">→</span><span class="f">Gate A→B→C</span></div>
+  </article>
+
+  <article class="prod" id="p5">
+    <h3>💰 Ergarch <span class="p-domain">共同受託の業務基盤</span></h3>
+    <p class="p-one">フリーランス連合・LLPの「案件後の報酬分配交渉」を消す。AIが要件定義を支援し<strong>見積工数付きタスクへ自動分解</strong>、同じ数字からクライアント見積とメンバー報酬見込みを同時算出。タスク完了と同時に報酬が見える。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>著者はクラウドエンジニア1年目(Azure中心)。学生時代にIBM Champion 2020-21・AWS/Microsoftの学生アンバサダー歴という早熟型</dd>
+      <dt>💼 価値</dt><dd>金銭交渉の摩擦を排し「進む過程で分け方が見えている」心理的安全性。実績蓄積でチーム固有の補正係数を継続改善</dd>
+      <dt>🛠️ ツール</dt><dd>Next.js 16 / React 19 / TypeScript / Hono / Node.js 22 / Cloud Run / Firestore / Firebase Auth / Vercel AI SDK + OrcaRouter + Zod / Puppeteer(PDF)</dd>
+      <dt>🔒 堅牢化</dt><dd>金額計算は共有パッケージの<strong>純粋関数に一本化</strong>(Web/API同一実装)。工数・単価・承認状態はFirestore Security Rulesで直接変更不可。LLMはモデルIDでなく「用途名」で呼び環境変数で差し替え</dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">Next.js + Firebase Auth</span><span class="a">→</span><span class="f">Hono API on Cloud Run</span><span class="a">→</span><span class="f hi">OrcaRouter → 各LLM</span><span class="a">/</span><span class="f">Firestore リアルタイム購読</span><span class="a">/</span><span class="f">Puppeteer → PDF</span></div>
+  </article>
+
+  <article class="prod" id="p6">
+    <h3>🗂️ KYAKUMAP <span class="p-domain">法人営業の訪問準備</span></h3>
+    <p class="p-one">日報・商談メモ・議事録に散らばる顧客情報をつなぎ、<strong>「チームが何を知らないか」の境界</strong>を可視化する営業準備AI。関係者マップと5領域の情報充足度、根拠付きの質問応答を提供。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>個人開発。Javaメイン(+Kotlin/React)のエンジニアで、<strong>営業経験者へのユーザーインタビュー</strong>から課題を発掘。普段は初心者向け記事を書く発信者</dd>
+      <dt>💼 価値</dt><dd>準備の質が成約速度に直結(できる担当者は1〜2ヶ月、できない担当者は半年〜1年)。CRMの置き換えではなく既存記録の横断活用に特化</dd>
+      <dt>🛠️ ツール</dt><dd>Next.js / PostgreSQL / Drizzle ORM / OrcaRouter(マルチLLM+音声API) / Notion API連携</dd>
+      <dt>🛡️ 3層防御</dt><dd>①質問対象の周辺データのみLLMへ ②OrcaRouter Guardrailsでメール・電話マスク、APIキー等はブロック ③LLMが返す根拠ID・人物IDを<strong>DBの許可リストで再照合</strong></dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">📚 日報・議事録・Notion</span><span class="a">→</span><span class="f">PostgreSQL 知識はDB</span><span class="a">→</span><span class="f hi">OrcaRouter 表現はLLM</span><span class="a">→</span><span class="f">サーバーで根拠ID検証</span><span class="a">→</span><span class="f">🗺️ 関係者マップ+充足度</span></div>
+  </article>
+
+  <article class="prod" id="p7">
+    <h3>🔁 pakulist <span class="p-domain">SNS運用・権利保全</span></h3>
+    <p class="p-one">SNSの重複・類似投稿(パクリ投稿)を検出し、<strong>断定せずに「人が判断できる候補と根拠」</strong>(投稿URL・時刻・本文・判定方法・時間差)へ整理するWebアプリ。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>2名(@tmyymmt + @rkyymmt)。tmyymmt氏はパーソルクロステクノロジー所属、Scala/Ubuntu系のエンジニアで技術書レビュー等も発信</dd>
+      <dt>💼 価値</dt><dd>目視比較の時間を削減しつつ、権利・料金・責任分界を先に設計して「何を今は実装しないか」を成果物に。誤断定リスクをAIに負わせない</dd>
+      <dt>🛠️ ツール</dt><dd>HTML/CSS/JS / Node.js 22(静的サーバー) / 検出は正規化・トークン類似度・時系列比較の決定的実装 / node:test + Playwright + 性能ベンチ / OrcaRouterは将来接続</dd>
+      <dt>📐 特徴</dt><dd>唯一の「<strong>AIをまだ入れない</strong>」設計。ローカル処理優先で、実データ送信は導入ゲート確認後に限定。APIキーはブラウザから分離した最小サーバーに隔離</dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">CSV / JSON / X API形式</span><span class="a">→</span><span class="f hi">検出層 完全一致・近似・時系列</span><span class="a">→</span><span class="f">画面 / CSV / HTML証拠パッケージ</span><span class="a">⋯</span><span class="f">AI層(将来・分離API)</span></div>
+  </article>
+
+  <article class="prod" id="p8">
+    <h3>🚶 Routeoff <span class="p-domain">ライフログ × 行動変容</span></h3>
+    <p class="p-one">気分と過去の記録から日常を小さく外れる<strong>「寄り道」を提案</strong>し、撮った一枚から観察候補を抽出、週次の振り返りへ循環させるアプリ。「何もできなかった」という後悔を減らす。</p>
+    <dl class="facts">
+      <dt>👥 チーム</dt><dd>teamR。著者は日本オラクルのクラウドエンジニア(OCI記事84%、Claude Code/Codex活用のスキル自作経験あり)</dd>
+      <dt>💼 価値</dt><dd>学生層がターゲット。記録を公開競争でなく「自分だけの根拠」として保存する差別化。週次視点→次の寄り道の循環設計</dd>
+      <dt>🛠️ ツール</dt><dd>HTML/CSS/JS + Node.js / OrcaRouter(提案・写真解析・週次生成の3用途) / Claude Codeでセキュリティレビュー、Codex併用 / 将来はOKE + Autonomous AI Database + Object Storage + Vault</dd>
+      <dt>🛡️ 工夫</dt><dd>画像はブラウザ側で最大1400pxに再圧縮してから送信。用途ごとにJSONで受け、必須項目・文字数・根拠IDをサーバー検証。失敗時は固定文へフォールバック</dd>
+    </dl>
+    <p class="flowlabel">ARCHITECTURE</p>
+    <div class="flow"><span class="f">📷 写真+気分入力</span><span class="a">→</span><span class="f">ブラウザで画像圧縮</span><span class="a">→</span><span class="f">Node.js API</span><span class="a">→</span><span class="f hi">OrcaRouter 3用途</span><span class="a">→</span><span class="f">JSON検証</span><span class="a">→</span><span class="f">📅 週次振り返り</span></div>
+  </article>
+</section>
+
+<section id="insights">
+  <h2><span class="n">07</span>💡 第2回に向けて読み取れること</h2>
+  <div class="keyrow">
+    <div class="key"><div class="k-emoji">📝</div><div class="k-title">記事は審査基準の鏡</div><div class="k-body">全記事が「原価実測」「セキュリティ」「何を実装しないか」を章立てで説明。提出物+公開記事セットで評価軸に答える構成が標準だった。</div></div>
+    <div class="key"><div class="k-emoji">🎭</div><div class="k-title">勝ち筋は「AIの役割を削る」</div><div class="k-body">計算・検出・金額はコード、AIは読解と表現だけ——という役割分離の明確さが、そのままプロダクトの説得力になっていた。</div></div>
+    <div class="key"><div class="k-emoji">🐋</div><div class="k-title">OrcaRouter前提で設計する</div><div class="k-body">用途別モデル振り分け+Guardrails+原価計測が特典として使える。第2回でも同様なら、最初からモデル役割表を作る価値が高い。</div></div>
+    <div class="key"><div class="k-emoji">🤝</div><div class="k-title">AIコーディング協働が標準装備</div><div class="k-body">Claude Code / Codexとの協働開発は非エンジニアチームでも完成品到達を可能にしていた。5日間の第2回では特に効く。</div></div>
+  </div>
+</section>
+
+<section id="sources">
+  <h2><span class="n">08</span>🔗 出典(全8記事+ツール記事)</h2>
+  <ul class="src">
+    <li><a href="https://qiita.com/t-ry/items/ba3bf2973a3b52641746">「泣きやみなさいわが子よ」:3〜6歳の「ママに会いたい」にAIはどう応える?(@t-ry)</a></li>
+    <li><a href="https://qiita.com/tokyosini573/items/85ba4eec246a83c2aa33">AIに演技をさせないユーザーテストを作ったら、同じサイトが43秒と2分27秒に分かれた。— ツマヅキ(@tokyosini573)</a></li>
+    <li><a href="https://qiita.com/a2239154301/items/ec0dd58a85dbf4db759b">非エンジニア2人が、AIと一緒に「混雑と暑熱の予報」を作ってハッカソンに出た話 — CROWD WEATHER(@a2239154301)</a></li>
+    <li><a href="https://qiita.com/jksoft/items/65f7824679ddf171a93d">エラーを3秒でAIに丸投げする若手を見て、AIから答えを取り上げることにした — SocraMetry(@jksoft)</a></li>
+    <li><a href="https://qiita.com/RyogaTakao/items/8fb3b300dfdd95db4728">AI HACK 2026で、受託チームの「報酬会議を消す」Ergarchを開発した(@RyogaTakao)</a></li>
+    <li><a href="https://qiita.com/iineineno03k/items/dd76886fce0fbbfae492">社内に散らばる顧客情報を、根拠付きでつなげて読む — KYAKUMAP(@iineineno03k)</a></li>
+    <li><a href="https://qiita.com/tmyymmt/items/48429e733db7c0311325">AI HACK 2026で、SNS重複投稿を「人が判断できる候補」に変える pakulist を作った(@tmyymmt)</a></li>
+    <li><a href="https://qiita.com/araidon/items/466dd1b6d5421e7ae5fe">【AI HACK 2026】過去の一枚から次の寄り道をつくるAIアプリ「Routeoff」(@araidon)</a></li>
+    <li><a href="https://qiita.com/arishow/items/759908c62d1b0fe29f04">5分で始める OrcaRouter 〜無料アカウント作成から最初のAPI呼び出しまで〜(@arishow・ツール解説)</a></li>
+    <li><a href="https://aihackathon.jp/">AI HACK 2026 公式サイト(取得不可・タイトル情報のみ)</a></li>
+  </ul>
+</section>
+
+<footer>
+  調査日: 2026-08-25 ｜ 元のX投稿(@aihack2026)はツール制約で取得できなかったため、検索で到達できた公開記事を全件収集。チーム背景は記事本文+著者のQiitaプロフィールから補完。審査員評価・受賞結果は公開記事に記載なし。
+</footer>
+
+</div>
+</body>
+</html>
