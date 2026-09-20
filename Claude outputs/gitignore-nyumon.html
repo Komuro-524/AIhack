@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>gitignore ってなに</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:15px;line-height:1.85}
+.core b{color:var(--accent)}
+
+/* 流れ図 */
+.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px}
+.node{flex:1 1 0;min-width:132px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--k);border-radius:14px;padding:13px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.node .em{font-size:22px;line-height:1}
+.node .nm{font-family:var(--f-d);font-weight:800;font-size:14.5px;color:var(--k)}
+.node .de{font-size:12px;color:var(--ink2);line-height:1.6}
+.n1{--k:var(--g1)}.n2{--k:var(--g2)}.n3{--k:var(--g3)}.n4{--k:var(--g4)}
+.arrow{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 6px;min-width:76px}
+.arrow .cmd{font-family:var(--f-m);font-size:10.5px;color:var(--ink2);background:var(--sunken);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.arrow .ar{font-size:19px;color:var(--ink2);line-height:1}
+.arrow.gate .ar{color:var(--hot)}
+.arrow.gate .cmd{background:var(--hots);color:var(--hot);font-weight:700;border:1px solid var(--hot)}
+@media (max-width:720px){
+  .flow{flex-direction:column}
+  .arrow{flex-direction:row;min-width:0;padding:7px 0;justify-content:flex-start;gap:9px}
+  .arrow .ar{transform:rotate(90deg)}
+}
+.gatebox{background:var(--hots);border:1px solid var(--hot);border-radius:14px;padding:13px 17px;font-size:13.5px;line-height:1.75}
+.gatebox b{color:var(--hot)}
+
+/* 表 */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:540px;font-size:13.5px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.65}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,li code,p code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+
+.warn{background:var(--hots);border:2px solid var(--hot);border-radius:16px;padding:18px 21px;display:flex;flex-direction:column;gap:11px}
+.warn h3{color:var(--hot);font-size:17px}
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;line-height:1.8}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+ul{margin:0;padding-left:1.2em;line-height:1.75}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">Git · 3分</div>
+  <h1>🚧 .gitignore ってなに</h1>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>「このファイルは Git に持っていかないで」と書いておくメモ書き。</b><br>
+    リポジトリの一番上に置いてある<strong>ただのテキストファイル</strong>で、ファイル名やフォルダ名を1行ずつ並べるだけ。そこに書いたものは <code>git add</code> しても入らない。
+  </div>
+  <p>🏠 たとえるなら <strong>引っ越しのときに玄関に貼る「これは持っていかない」の紙</strong>。段ボールに詰める人（Git）が玄関で毎回それを見て、書いてあるものは詰めずに家に置いていく。</p>
+</section>
+
+<section>
+  <h2>🗺️ ファイルが GitHub に届くまで</h2>
+  <p class="lead">Git ではファイルが3つの場所を通って GitHub に着く。<strong>.gitignore は一番最初の門</strong>にいる。</p>
+  <div class="flow">
+    <div class="node n1">
+      <div class="em">💻</div>
+      <div class="nm">作業フォルダ</div>
+      <div class="de">いま手元にあるファイル全部。PC の中</div>
+    </div>
+    <div class="arrow gate">
+      <div class="cmd">🚧 .gitignore</div>
+      <div class="ar">➜</div>
+      <div class="cmd">git add</div>
+    </div>
+    <div class="node n2">
+      <div class="em">📦</div>
+      <div class="nm">ステージ</div>
+      <div class="de">次の記録に入れるものを並べる台</div>
+    </div>
+    <div class="arrow">
+      <div class="ar">➜</div>
+      <div class="cmd">git commit</div>
+    </div>
+    <div class="node n3">
+      <div class="em">📚</div>
+      <div class="nm">履歴</div>
+      <div class="de">PCの中に残る記録。ここに入ると消しにくい</div>
+    </div>
+    <div class="arrow">
+      <div class="ar">➜</div>
+      <div class="cmd">git push</div>
+    </div>
+    <div class="node n4">
+      <div class="em">🌍</div>
+      <div class="nm">GitHub</div>
+      <div class="de">public にした瞬間 全世界が読める</div>
+    </div>
+  </div>
+  <div class="gatebox">
+    🚧 <b>.gitignore に書いたファイルは、最初の門で止まる。</b>だから <code>git add .</code>（今あるもの全部を詰めて）と打っても入らない。「全部」と言っても玄関の紙に書いてあるものは詰まれない。
+  </div>
+</section>
+
+<section>
+  <h2>📄 いまのリポジトリにも すでにある</h2>
+  <p class="lead">AIhack フォルダの一番上にもう置いてあって、こんなことが書いてある。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>書いてある行</th><th>なぜ持っていかないか</th></tr></thead>
+    <tbody>
+      <tr><td><code>.env</code> / <code>.env.*</code></td><td><strong>APIキーが入っている。</strong><code>sk-orca-</code> が public に出たら一発で終わる</td></tr>
+      <tr><td><code>node_modules/</code></td><td>ダウンロードし直せるだけの大量のファイル。持っていく意味がない</td></tr>
+      <tr><td><code>.next/</code> <code>out/</code> <code>build/</code></td><td>ビルドすればまた作られるもの</td></tr>
+      <tr><td><code>.DS_Store</code> <code>Thumbs.db</code></td><td>OS が勝手に作る要らないファイル</td></tr>
+      <tr><td><code>.vscode/</code> <code>.idea/</code></td><td>自分のエディタの設定。他の人には関係ない</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">💡 <div>つまり書く対象は3種類 → <strong>①秘密のもの ②作り直せるもの ③自分だけのもの</strong>。<br>今回のトランスクリプトは<strong>①秘密のもの</strong>に当たる</div></div>
+</section>
+
+<section>
+  <h2>⚠️ いちばん大事な性質</h2>
+  <div class="warn">
+    <h3>一度コミットしたファイルは あとから .gitignore に書いても消えない</h3>
+    <p>.gitignore が効くのは<strong>まだ門を通っていないファイルだけ</strong>。一度 📚履歴 に入ったものは、あとで削除しても<strong>「あの日こういう中身だった」という記録が履歴に残り続ける</strong>。public にすれば誰でも遡って読める。</p>
+    <p>🔑 だから合言葉は <b>「入れてから消す」ではなく「最初から入れない」</b>。</p>
+    <p class="muted">これが、トランスクリプトを B（最初から入れない）で行きたい理由です。いまはまだ一度もコミットされていないので、<strong>今なら1行足すだけで終わる</strong>。</p>
+  </div>
+</section>
+
+<section>
+  <h2>✍️ やるとしたらこれだけ</h2>
+  <p class="lead">AIhack フォルダの <code>.gitignore</code> の末尾に足す3行。</p>
+  <pre># 議事録（実名の会話が入っている。publicリポジトリには出さない）
+docs/transcripts/*
+!docs/transcripts/.gitkeep</pre>
+  <div class="tw">
+  <table>
+    <thead><tr><th>行</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td><code>docs/transcripts/*</code></td><td>このフォルダの中身を全部持っていかない</td></tr>
+      <tr><td><code>!docs/transcripts/.gitkeep</code></td><td><code>!</code> は<strong>例外</strong>の印。これだけは持っていく。<br>Git は空のフォルダを記録できないので、<code>.gitkeep</code> という空ファイルを1個だけ残して<strong>フォルダの存在だけ</strong>を伝える</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">🤝 <div>ファイルは PC の中には<strong>そのまま残る</strong>。消えるわけではないので、Cowork からは今までどおり読める。変わるのは「GitHub に行かなくなる」ことだけ</div></div>
+</section>
+
+<footer>
+  AI HACK 2026 ／ 2026-09-20
+</footer>
+
+</div>
+</body>
+</html>

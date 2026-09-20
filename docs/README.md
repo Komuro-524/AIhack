@@ -8,6 +8,10 @@
 | [orcarouter-nyumon.html](orcarouter-nyumon.html) | OrcaRouter 入門 |
 | [AI_HACK_第1回プロダクト図鑑.html](AI_HACK_第1回プロダクト図鑑.html) | 前回開催の参加プロダクト一覧 |
 | [feature-board.html](feature-board.html) | 機能のたな卸し |
+| [agent-design.html](agent-design.html) | **自律型エージェント設計メモ** — 一文定義・自律ループ・ツール一覧・採点基準5軸への当てはめ・未決の4つの分かれ道 |
+| [gap-check.html](gap-check.html) | **設計の穴チェック** — 16個の見落とし。提出でpublicになるトランスクリプトの扱いは赤 |
+| [agent-split.html](agent-split.html) | **2体のエージェント設計** — 記録係と幹事の役割分担・権限分離・危険20件と対策・9日間の「企て」シナリオ |
+| [scoring-map.html](scoring-map.html) | **採点基準5軸マップ** — 設計ぜんぶを50点の配点に組み直したもの。打ち手・撮る証拠・記事の目次案 |
 
 ## サブフォルダ
 

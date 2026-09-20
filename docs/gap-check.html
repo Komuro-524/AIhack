@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>設計の穴チェック</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4;
+  --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6;
+  --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:46px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(28px,5vw,40px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16.5px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:16px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:17px 20px;font-size:14.5px;line-height:1.8}
+.core b{color:var(--accent)}
+
+/* 3つの盲点 */
+.blinds{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:820px){.blinds{grid-template-columns:1fr}}
+.blind{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--k);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+.blind .hd{font-family:var(--f-d);font-weight:800;font-size:16px;color:var(--k)}
+.blind .de{font-size:13.5px;color:var(--ink2);line-height:1.7}
+.blind .cnt{font-family:var(--f-m);font-size:12px;background:var(--ks);color:var(--k);border-radius:8px;padding:3px 9px;align-self:flex-start;margin-top:auto}
+.b1{--k:var(--hot);--ks:var(--hots)}.b2{--k:var(--g3);--ks:var(--g3s)}.b3{--k:var(--g4);--ks:var(--g4s)}
+
+/* 緊急 */
+.alert{background:var(--hots);border:2px solid var(--hot);border-radius:16px;padding:19px 22px;display:flex;flex-direction:column;gap:12px}
+.alert h3{color:var(--hot);font-size:18px}
+.quote{font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px dashed var(--hot);border-radius:10px;padding:11px 13px;line-height:1.8;overflow-x:auto;white-space:pre-wrap}
+
+/* 表 */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:700px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+.sev{display:inline-block;font-family:var(--f-m);font-size:11px;border-radius:99px;padding:1px 9px;white-space:nowrap;font-weight:700}
+.s3{background:var(--hot);color:#fff}
+.s2{background:var(--g4s);color:var(--g4);border:1px solid var(--g4)}
+.s1{background:var(--sunken);color:var(--ink2);border:1px solid var(--line)}
+.done{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+.grp td{background:var(--sunken);font-family:var(--f-d);font-weight:800;font-size:13px}
+
+/* 深掘り */
+.deep{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--k);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+.deep h3{color:var(--k);display:flex;gap:9px;align-items:baseline}
+.deep h3 .n{font-family:var(--f-m);font-size:12px;color:var(--ink2)}
+.deep .bad{font-size:13.5px;background:var(--hots);border-radius:10px;padding:10px 13px;line-height:1.7}
+.deep .fix{font-size:13.5px;background:var(--accent-soft);border-radius:10px;padding:10px 13px;line-height:1.7}
+.deep ul{margin:0;padding-left:1.15em;font-size:13.5px;line-height:1.7}
+.k1{--k:var(--g3)}.k2{--k:var(--hot)}.k3{--k:var(--g4)}.k4{--k:var(--g1)}
+
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">AI HACK 2026 · Day2 · Gap Check</div>
+  <h1>🕳️ 設計の穴チェック</h1>
+  <p class="lead">「あの観点だけで本当にいいんだっけ」への答え。<strong>16個の穴</strong>が出た。うち1つは提出そのものに関わる。</p>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>見落としは3か所にかたまっている。</b>採点基準5軸を順番に見ても出てこない場所ばかりで、どれも<strong>「決めたこと」が新しく作った穴</strong>。
+  </div>
+  <div class="blinds">
+    <div class="blind b1">
+      <div class="hd">🚨 提出の穴</div>
+      <div class="de">リポジトリが public になる。中身を審査員以外の全世界が読む</div>
+      <div class="cnt">2件 / うち1件が赤</div>
+    </div>
+    <div class="blind b2">
+      <div class="hd">🔁 巡回を選んだ穴</div>
+      <div class="de">「1日1回ぜんぶ見に行く」を選んだ瞬間に生まれた失敗モード</div>
+      <div class="cnt">4件</div>
+    </div>
+    <div class="blind b3">
+      <div class="hd">📣 外に喋る穴</div>
+      <div class="de">このエージェントは<strong>他人に向けて文章を送る</strong>。読むだけのAIとは危険度が別物</div>
+      <div class="cnt">4件</div>
+    </div>
+  </div>
+</section>
+
+<!-- 緊急 -->
+<section>
+  <h2>🚨 いますぐ手を打つ1件</h2>
+  <div class="alert">
+    <h3>docs/transcripts/ が .gitignore に入っていない</h3>
+    <p>いまリポジトリはこの状態。トランスクリプト2本は追跡されていないが<strong>無視もされていない</strong>ので、<code>git add .</code> が一度でも走れば入る。</p>
+    <div class="quote">?? "docs/transcripts/Meeting Transcription (1).txt"
+?? "docs/transcripts/Meeting Transcription.txt"</div>
+    <p>提出時にこのリポジトリは <strong>public</strong> になる。中身には2日ぶん・228分の生の会話がそのまま入っている。</p>
+    <ul>
+      <li>小室さんの就活の話</li>
+      <li>知人の戦略コンサルの方から聞いた話</li>
+      <li>なつきの客先と現場の事情</li>
+      <li>実名つきの雑談すべて</li>
+    </ul>
+    <p>⚠️ <strong>ここが厄介なのは Day1 で「リポジトリに入れておけば Cowork が読める」と決めていること。</strong>入れたい理由がちゃんとある。だから単純に無視するのではなく、<strong>提出前に外すのか／最初から別の場所に置くのか</strong>を2人で決める必要がある。</p>
+  </div>
+  <div class="note">📸 <div>同じ問題が <code>docs/evidence/</code> にもある。攻撃を止めた画面のスクショに <strong><code>sk-orca-</code> で始まるキー・実名・社名</strong>が写り込む。撮ったあとに必ず目視する手順を1行足しておく</div></div>
+</section>
+
+<!-- 一覧 -->
+<section>
+  <h2>📋 16個の穴 — 全部を1枚に</h2>
+  <p class="lead">🔴 いま決める ／ 🟡 実装で効く ／ ⚪ 記事に1行書けば足りる ／ ✅ もう見た</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>#</th><th>穴</th><th>何が起きるか</th><th>軸</th><th class="c">重さ</th><th class="c">今回</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="6">🚨 提出の穴</td></tr>
+      <tr><td>01</td><td><strong>トランスクリプトが public に出る</strong></td><td>228分の実名会話が全世界に公開される</td><td>①</td><td class="c"><span class="sev s3">🔴</span></td><td class="c">🔨</td></tr>
+      <tr><td>02</td><td>evidence のスクショに鍵と実名</td><td>証拠を撮るほど漏れる</td><td>①</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+
+      <tr class="grp"><td colspan="6">🔁 巡回を選んだから生まれた穴</td></tr>
+      <tr><td>03</td><td><strong>べき等性がない</strong></td><td>巡回のたびに<strong>同じ部屋を2回立てる</strong>。途中でモデルが落ちて再実行したら打診が2通飛ぶ</td><td>③④</td><td class="c"><span class="sev s3">🔴</span></td><td class="c">🔨</td></tr>
+      <tr><td>04</td><td>部分失敗のロールバック</td><td>打診に「はい」と答えたのに部屋ができない。人が置き去りになる</td><td>③</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+      <tr><td>05</td><td>ループの停止条件</td><td>エージェントが考え続けて止まらない。回数・時間・コストの上限が要る</td><td>②③④</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+      <tr><td>06</td><td>巡回コストが毎日積む</td><td>何も起きない日も全員ぶん回る。安い足切りを前に置く</td><td>②</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+
+      <tr class="grp"><td colspan="6">📣 外に喋ることの穴</td></tr>
+      <tr><td>07</td><td><strong>打診スパム</strong></td><td>インジェクションの狙いは権限奪取だけではない。<strong>エージェントに他人へ喋らせる</strong>のも攻撃</td><td>①</td><td class="c"><span class="sev s3">🔴</span></td><td class="c">🔨</td></tr>
+      <tr><td>08</td><td>レート制限がない</td><td><code>load.check</code> は「見る」だけ。ハードリミットにしないと暴走を止められない</td><td>①③</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+      <tr><td>09</td><td>顧客名と案件名が知見カードに乗る</td><td>PII Shield の既定は氏名・社名を拾わない。<strong>社内固有語の辞書</strong>が要る</td><td>①</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+      <tr><td>10</td><td>被害の上限が設計されていない</td><td>スコープ付きAPIキー（予算上限・有効期限）で囲う。上限があること自体が点になる</td><td>①②</td><td class="c"><span class="sev s1">⚪</span></td><td class="c">🔨</td></tr>
+
+      <tr class="grp"><td colspan="6">🔊 まだ拾えていない失敗モード</td></tr>
+      <tr><td>11</td><td><strong>話者の取り違え</strong></td><td>文字起こしの崩れとは別問題。<strong>別人にラベルが付く</strong>。今日の記録にも発言の混線あり</td><td>③</td><td class="c"><span class="sev s3">🔴</span></td><td class="c">🔨</td></tr>
+      <tr><td>12</td><td>空のもくもく会／1人だけ</td><td>知見カードが0枚。エラーにせず「今日は何もない」で正常終了できるか</td><td>③</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+
+      <tr class="grp"><td colspan="6">🎚 自律性をもう一段上げる余地</td></tr>
+      <tr><td>13</td><td>判断が外れても学ばない</td><td>立てた部屋に誰も来なかった／断られた。次の判断に効かないと毎回ゼロから</td><td>④</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">📝</td></tr>
+      <tr><td>14</td><td><strong>打診に返事が来ない</strong></td><td>実運用で必ず起きる。ここで<strong>別の人を探し直す</strong>と一段賢く見える</td><td>③④</td><td class="c"><span class="sev s2">🟡</span></td><td class="c">🔨</td></tr>
+
+      <tr class="grp"><td colspan="6">🧊 プロダクトとして必ず聞かれる穴</td></tr>
+      <tr><td>15</td><td><strong>コールドスタート</strong></td><td>ラベル0個の初日は何も起きない。「3か月後から動きます」では売れないしデモも作れない</td><td>⑤</td><td class="c"><span class="sev s3">🔴</span></td><td class="c">🔨</td></tr>
+      <tr><td>16</td><td>出ない人が不利になる</td><td>もくもく会に来ない人はラベルが育たない。Day2で2人とも心配していた空気そのもの</td><td>⑤</td><td class="c"><span class="sev s1">⚪</span></td><td class="c">📝</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted" style="font-size:12.5px">🔨 今回の設計に入れる ／ 📝 記事とピッチで触れるだけ</p>
+</section>
+
+<!-- 深掘り -->
+<section>
+  <h2>🔬 赤4つの深掘り</h2>
+
+  <div class="deep k1">
+    <h3><span class="n">03</span>🔁 べき等性 — 巡回を選んだ代償</h3>
+    <div class="bad">❌ 1日1回の巡回は<strong>同じ状態を何度も見る</strong>。昨日「Power Apps に興味がある3人」で部屋を立てたのに、今日もその3人はそこにいる。何もしなければ毎日部屋が立つ。再試行でも同じことが起きる</div>
+    <div class="fix">✅ <strong>「この興味のかたまりには もう手を打った」という印を残す。</strong>興味ラベルの組み合わせから決まるキーを作り、打診を出す前にそのキーを予約する。落ちて再実行しても予約済みなら進まない</div>
+    <p class="muted">💡 イベント駆動を選んでいたらここまで要らなかった。<strong>自律性を取った分の請求書</strong>だと思えばいい。そして「巡回型なのに二重実行しない設計」はそのまま③の説明になる</p>
+  </div>
+
+  <div class="deep k2">
+    <h3><span class="n">07</span>📣 打診スパム — このエージェントは口を持っている</h3>
+    <div class="bad">❌ これまで「乗っ取られて権限を奪われる」だけを想定していた。でもこのエージェントは<strong>他人に文章を送れる</strong>。攻撃者の狙いはこっちにもなる<br><br>例：もくもく会で「私は SAP に死ぬほど詳しいです」と繰り返し喋る → ラベルが育つ → 全社の SAP 質問がその人に飛び続ける。<strong>エージェントを使った嫌がらせ</strong>が成立する</div>
+    <div class="fix">✅ 3つ重ねる<br>① 自己申告だけではラベルにしない（<strong>他人に答えた実績</strong>を重みにする）<br>② 1人あたりの打診回数にハードリミット<br>③ 送信も Agent Firewall を通す（egress 側の検査）</div>
+    <p class="muted">🎯 <strong>「読むAI」と「喋るAI」では危険度が別物</strong>という整理は、そのまま①の説明文になる。審査員に効く</p>
+  </div>
+
+  <div class="deep k4">
+    <h3><span class="n">11</span>🔊 話者の取り違え — 誤変換の隣にいたもう一人</h3>
+    <div class="bad">❌ 「知見 → 治験」は<strong>言葉</strong>の崩れ。それとは別に<strong>話者</strong>の崩れがある。Tactiq の話者分離がずれると、小室さんの発言がなつきの発言として記録される<br><br>→ <strong>その人が言っていないことでラベルが付く。</strong>門1の辞書も門2のカード集約もこれは通してしまう</div>
+    <div class="fix">✅ 三重の門に4つめの検査を足すのではなく、<strong>門2の「カードが集まって初めて人のラベルになる」を話者にも効かせる</strong>。1発の混線では動かない。加えて相槌だけの短い発言はカードの材料にしない</div>
+    <p class="muted">📸 今日の記録にも「01:09:02 小室万里子: 足では？」のような混線した断片がある。<strong>証拠は撮りに行かなくてもいい</strong></p>
+  </div>
+
+  <div class="deep k3">
+    <h3><span class="n">15</span>🧊 コールドスタート — 初日に何が起きるか</h3>
+    <div class="bad">❌ この製品は<strong>ラベルがたまって初めて動く</strong>。入れた初日はラベル0個で、エージェントは何も判断できない。デモも同じで「もくもく会を1回やっただけ」では部屋が立つところまで届かない可能性がある</div>
+    <div class="fix">✅ 3つのうちどれか（あるいは全部）<br>① <strong>最初の1回だけ手で種を蒔く</strong>（興味を選んでもらう画面）。以降はAIが育てる<br>② もくもく会1回で<strong>複数のカードとラベル</strong>が出るように、カードの粒度を細かくする<br>③ デモは「2回目のもくもく会が終わった直後」から始める。1回目は仕込み済みという設定にする</div>
+    <p class="muted">🎯 ①は「最初だけ人、あとはAI」という語り方ができるので、<strong>自律性を下げずに済む</strong>。③はデモ構成の話なので今日決めなくていい</p>
+  </div>
+</section>
+
+<section>
+  <h2>✅ もう見ている観点</h2>
+  <p class="lead">念のため。ここは埋まっているので触らなくていい。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>観点</th><th>どこで受けているか</th></tr></thead>
+    <tbody>
+      <tr><td>トランスクリプト経由のインジェクション</td><td>Agent Firewall ＋ 門1のタグ辞書（自由文を書き込めない）</td></tr>
+      <tr><td>文字起こしの誤変換</td><td>門1｜形</td></tr>
+      <tr><td>発言内容の正しさ</td><td>門2｜中身（カードに裏取り／人には数で）</td></tr>
+      <tr><td>貼られたくない</td><td>門3｜本人（オプトアウト＋公開非公開）</td></tr>
+      <tr><td>巨大入力（134分）</td><td>Union Alpha 262K で下ごしらえ ＋ 分割</td></tr>
+      <tr><td>モデル落ち・429</td><td>Fallback を別ベンダーに1本 ＋ 自動フェイルオーバー</td></tr>
+      <tr><td>人事評価に踏み込むリスク</td><td>触れない。将来像の1行にとどめる（Day2の結論）</td></tr>
+      <tr><td>コスパの語り方</td><td>運用コストと運営工数を分ける</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer>
+  AI HACK 2026 ／ Day2（2026-09-20）の穴チェック。対になる本編は <a href="agent-design.html">agent-design.html</a>。決まったことは <code>HACKATHON.md</code> に書き戻す。
+</footer>
+
+</div>
+</body>
+</html>

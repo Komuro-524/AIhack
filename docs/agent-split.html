@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2体のエージェント設計</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:46px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(27px,5vw,39px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16.5px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:14.5px;line-height:1.85}
+.core b{color:var(--accent)}
+
+/* 2体カード */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.pair{grid-template-columns:1fr}}
+.ag{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+.ag .tag{font-family:var(--f-m);font-size:11px;color:var(--k);border:1px solid var(--k);border-radius:99px;padding:1px 9px;align-self:flex-start}
+.ag .nm{font-family:var(--f-d);font-weight:800;font-size:21px;color:var(--k);display:flex;gap:9px;align-items:center}
+.ag .one{font-size:14px;line-height:1.7}
+.ag .lv{font-size:13px;background:var(--ks);color:var(--k);border-radius:10px;padding:8px 12px;font-weight:700}
+.ag ul{margin:0;padding-left:1.15em;font-size:13.5px;line-height:1.7;color:var(--ink2)}
+.agA{--k:var(--g2);--ks:var(--g2s)}
+.agB{--k:var(--g4);--ks:var(--g4s)}
+
+/* 表 */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+td.id{font-family:var(--f-m);font-size:12px;color:var(--ink2);white-space:nowrap}
+.yes{color:var(--accent);font-weight:700}
+.no{color:var(--hot);font-weight:700}
+.ax{display:inline-block;font-family:var(--f-m);font-size:11px;background:var(--sunken);border:1px solid var(--line);border-radius:99px;padding:0 7px}
+
+/* 企て / タイムライン */
+.tl{display:flex;flex-direction:column;gap:0;position:relative;padding-left:8px}
+.ev{display:grid;grid-template-columns:82px 1fr;gap:16px;align-items:stretch}
+@media (max-width:620px){.ev{grid-template-columns:62px 1fr;gap:11px}}
+.ev .day{font-family:var(--f-m);font-size:12px;color:var(--ink2);padding-top:14px;text-align:right;white-space:nowrap}
+.ev .body{border-left:3px solid var(--line);padding:11px 0 11px 18px;position:relative}
+.ev .body::before{content:"";position:absolute;left:-8px;top:17px;width:13px;height:13px;border-radius:50%;background:var(--surface);border:3px solid var(--k,var(--ink2))}
+.ev .ti{font-family:var(--f-d);font-weight:800;font-size:15px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ev .de{font-size:13.5px;color:var(--ink2);line-height:1.7;margin-top:3px}
+.ev .jd{font-size:13px;background:var(--g4s);color:var(--ink);border-radius:10px;padding:8px 12px;margin-top:8px;line-height:1.7}
+.ev .jd b{color:var(--g4)}
+.ev.h{--k:var(--accent)}
+.ev.h .jd{background:var(--accent-soft)}
+.ev.h .jd b{color:var(--accent)}
+.ev.b{--k:var(--g4)}
+.ev.a{--k:var(--g2)}
+.ev.end .body{border-left-color:transparent}
+.who{font-family:var(--f-m);font-size:11px;border-radius:99px;padding:1px 8px;white-space:nowrap}
+.whoA{background:var(--g2s);color:var(--g2);border:1px solid var(--g2)}
+.whoB{background:var(--g4s);color:var(--g4);border:1px solid var(--g4)}
+.whoH{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+
+.quest{background:var(--g3s);border:1px solid var(--g3);border-radius:16px;padding:18px 21px;display:flex;flex-direction:column;gap:11px}
+.quest h3{color:var(--g3)}
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;line-height:1.8}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+.warn{background:var(--hots);border:1px solid var(--hot);border-radius:14px;padding:14px 18px;font-size:13.5px;line-height:1.75}
+.warn b{color:var(--hot)}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">AI HACK 2026 · Day2 · Two Agents</div>
+  <h1>👥 2体のエージェント設計</h1>
+  <p class="lead">「2つに分けられるのでは」への答えと、それぞれの危険20件、そして<strong>ながいタスクをどこに盛り込むか</strong>。</p>
+</header>
+
+<section>
+  <h2>🎯 結論 — 合っている。しかも切り方がいい</h2>
+  <div class="core">
+    ✅ <b>この2分割は「機能で割った」のではなく「自律のレベルで割れている」。</b>だから設計としても守りとしてもきれいに分かれる。<br>
+    A は<strong>入力が来たら必ず走る</strong>。やるかやらないかを決めない。<br>
+    B は<strong>自分で起きて やるかやらないかを決める</strong>。ここだけが④の点になる。
+  </div>
+  <div class="pair">
+    <div class="ag agA">
+      <div class="tag">agent A / archivist</div>
+      <div class="nm">🎙️ 記録係</div>
+      <p class="one">会話が終わるたびに起きて<strong>拾って積む</strong></p>
+      <div class="lv">⚙️ Lv.2 自動化 — 判断しないのが正しい</div>
+      <ul>
+        <li>トランスクリプトを読む</li>
+        <li>知見カードを切り出す</li>
+        <li>知見ラベルと興味ラベルを貼る</li>
+        <li>怪しいものだけ裏を取る</li>
+      </ul>
+    </div>
+    <div class="ag agB">
+      <div class="tag">agent B / organizer</div>
+      <div class="nm">🎪 幹事</div>
+      <p class="one">1日1回 自分で起きて<strong>場を立てるか決める</strong></p>
+      <div class="lv">🫀 Lv.3 自律 — ここが心臓</div>
+      <ul>
+        <li>興味のかたまりを探す</li>
+        <li>知見を持つ人を探す</li>
+        <li>打診する</li>
+        <li>部屋を立てて最初の一言を書く</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>🔑 分けると何が良いか — 一番効くのは権限の分離</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th>🎙️ A｜記録係</th><th>🎪 B｜幹事</th></tr></thead>
+    <tbody>
+      <tr><td><strong>起動</strong></td><td>会議が終わったら</td><td>1日1回 自分で</td></tr>
+      <tr><td><strong>読む</strong></td><td>トランスクリプト</td><td>ラベル・企て・過去の結末</td></tr>
+      <tr><td><strong>書く</strong></td><td>知見カード・ラベル</td><td>企て・部屋</td></tr>
+      <tr><td><strong>人に喋る</strong></td><td class="no">❌ できない</td><td class="yes">✅ 打診と最初の一言</td></tr>
+      <tr><td><strong>APIキー</strong></td><td>予算小・<strong>通知権限なし</strong></td><td>予算あり・通知権限あり・期限つき</td></tr>
+      <tr><td><strong>主に使うモデル</strong></td><td>安い担当（量が多い）</td><td>強い担当（回数は少ない）</td></tr>
+      <tr><td><strong>壊れ方</strong></td><td>入力の汚染</td><td>判断の暴走</td></tr>
+      <tr><td><strong>守り方</strong></td><td>入口の検査</td><td>出口とレート制限</td></tr>
+      <tr><td><strong>自律レベル</strong></td><td>⚙️ Lv.2</td><td>🫀 Lv.3</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">🔑 <div><strong>口を持っているのは B だけ。</strong>だから通知を送る権限は B のキーにしか渡さない。乗っ取られても A は他人に何も言えない。──<strong>これが①セキュリティで一番強い説明になる。</strong>「機能を分けた」ではなく「<strong>権限を分けた</strong>」と言えるのが大きい</div></div>
+  <div class="note">💰 <div>おまけに②の説明もこの表で済む。<strong>安いモデルを大量に使う係と 強いモデルを少しだけ使う係に分かれている</strong>ので、レシートがそのまま設計の証明になる</div></div>
+</section>
+
+<!-- A の危険 -->
+<section>
+  <h2>🎙️ A｜記録係 の危険 10件</h2>
+  <p class="lead">Aの危険はほぼ全部<strong>「入ってくるもの」</strong>に起因する。守りは入口に置く。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>#</th><th>危険</th><th>何が起きるか</th><th>対策</th><th class="c">軸</th></tr></thead>
+    <tbody>
+      <tr><td class="id">A1</td><td><strong>間接プロンプトインジェクション</strong></td><td>会議で喋った命令文がそのまま入力になる</td><td>Agent Firewall（inbound）＋ <strong>出力をタグ辞書に縛る</strong>ので任意の文字列を書き込めない</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="id">A2</td><td>顧客名・案件名が知見カードに乗る</td><td>秘密が全社に横展開される</td><td>PII Shield ＋ <strong>社内固有語のカスタム辞書</strong>。既定では氏名も社名も拾わない</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="id">A3</td><td>文字起こしの誤変換</td><td>知見 → 治験 でラベルが付く</td><td>門1｜タグ辞書 ＋ 構造化出力</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="id">A4</td><td><strong>話者の取り違え</strong></td><td>言っていないことでラベルが付く</td><td>カードが複数たまって初めて人のラベル。相槌だけの短い発言は材料にしない</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="id">A5</td><td>発言内容が事実として誤り</td><td>誤ったナレッジがたまる</td><td>カード側に裏取りバッジ。人のラベルは「正しいか」ではなく「詳しいか」で見る</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="id">A6</td><td>134分の巨大入力</td><td>高い・落ちる・溢れる</td><td>無料モデルで足切り → 残った発言だけ強いモデルへ。時間で分割</td><td class="c"><span class="ax">②③</span></td></tr>
+      <tr><td class="id">A7</td><td>空の会議／1人だけの会議</td><td>カード0枚でエラー扱いになる</td><td><strong>0枚を正常終了として扱う。</strong>「今日は何もなかった」も記録する</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="id">A8</td><td>同じ会議を2回取り込む</td><td>カードが倍になりラベルが水増しされる</td><td>トランスクリプトIDで重複を弾く</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="id">A9</td><td><strong>ラベルの自己申告</strong></td><td>「私はSAPに死ぬほど詳しい」と喋るだけで育つ</td><td><strong>他人に答えた実績</strong>を重みにする。自己申告だけではラベルにしない</td><td class="c"><span class="ax">①⑤</span></td></tr>
+      <tr><td class="id">A10</td><td>本人が貼られたくない</td><td>参加をやめる。場が死ぬ</td><td>オプトアウト ＋ 公開非公開の選択（決定済み）</td><td class="c"><span class="ax">⑤</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- B の危険 -->
+<section>
+  <h2>🎪 B｜幹事 の危険 10件</h2>
+  <p class="lead">Bの危険はほぼ全部<strong>「出ていくもの」と「繰り返すこと」</strong>に起因する。守りは出口と上限に置く。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>#</th><th>危険</th><th>何が起きるか</th><th>対策</th><th class="c">軸</th></tr></thead>
+    <tbody>
+      <tr><td class="id">B1</td><td><strong>同じ部屋を毎日立てる</strong></td><td>昨日の3人は今日もそこにいる。巡回のたびに立つ</td><td><strong>企てレコード</strong>で状態を持つ。進行中なら新しく立てない</td><td class="c"><span class="ax">③④</span></td></tr>
+      <tr><td class="id">B2</td><td><strong>打診スパム</strong></td><td>特定の人に飛び続ける。攻撃の道具にされる</td><td>1人あたりの打診上限（ハードリミット）＋ 送信も Firewall（egress）を通す</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="id">B3</td><td>部分失敗</td><td>「はい」と答えたのに部屋ができず人が置き去り</td><td>企ての状態を先に進めてから実行。落ちたら次の巡回が続きから再開する</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="id">B4</td><td><strong>打診に返事が来ない</strong></td><td>企てが永久に止まる</td><td>リマインド → 打ち切り → <strong>別の人を探し直す</strong> → 3人で諦めて管理者へ</td><td class="c"><span class="ax">③④</span></td></tr>
+      <tr><td class="id">B5</td><td>ループが止まらない</td><td>考え続けて課金され続ける</td><td>ツール呼び出し回数・時間・コストの上限。スコープ付きAPIキーの予算上限で外側からも縛る</td><td class="c"><span class="ax">②③</span></td></tr>
+      <tr><td class="id">B6</td><td>巡回コストが毎日積む</td><td>何も起きない日も全員ぶん回る</td><td>安い判定で足切り → 通ったものだけ強いモデルへ</td><td class="c"><span class="ax">②</span></td></tr>
+      <tr><td class="id">B7</td><td>判断が毎回ゼロから</td><td>失敗しても学ばない</td><td>企ての<strong>結末</strong>（来た／来なかった／断られた）を次の判断材料に入れる</td><td class="c"><span class="ax">④</span></td></tr>
+      <tr><td class="id">B8</td><td>暴走時の被害上限がない</td><td>全社にスパムが飛ぶ</td><td>スコープ付きAPIキー（予算・期限）＋ 通知の1日あたり総量上限</td><td class="c"><span class="ax">①②</span></td></tr>
+      <tr><td class="id">B9</td><td>詳しい人に偏る</td><td>同じ人ばかり呼ばれて疲れる</td><td><code>load.check</code> を判断材料に入れる。連続指名を避ける</td><td class="c"><span class="ax">⑤</span></td></tr>
+      <tr><td class="id">B10</td><td><strong>コールドスタート</strong></td><td>ラベル0個の初日は何も起きない</td><td>最初の1回だけ手で種を蒔く。以降はAが育てる</td><td class="c"><span class="ax">⑤</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn">⚠️ <b>B1 と B3 と B4 は全部おなじ原因。</b>「エージェントが未完了の仕事を覚えていない」こと。だから3つまとめて1つの仕組みで解ける。それが次の章</div>
+</section>
+
+<!-- ながいタスク -->
+<section>
+  <h2>🧵 ながいタスク — もう設計の中にいる</h2>
+  <div class="core">
+    🎯 <b>「場を立てる」は1回で終わらない。</b>打診して 断られて 探し直して やっと立って 沈黙したら呼び水を投げる。<strong>日をまたいで1つのゴールを追い続ける</strong>タスクで、各段で判断が要る。<br>
+    エージェントループの見せどころは<strong>わざわざ作らなくていい。すでにここにある。</strong>
+  </div>
+
+  <div class="quest">
+    <h3>📜 「企て」というレコードをひとつ持たせる</h3>
+    <p>エージェントが抱えている<strong>未完了の仕事</strong>。Bは巡回のたびに進行中の企てを全部見て、それぞれの次の一手を決める。</p>
+<pre>企て #17
+  きっかけ  : Power Apps の興味ラベルが4人ぶんたまった
+  ねらい    : この4人が学べる場を立てる
+  状態      : 打診中（2人目）
+  やったこと: 1人目 → 3日待って返事なし → 打ち切り
+  次の一手  : 2人目の返事を待つ。明日までに無ければリマインド
+  のこり    : 候補あと1人。尽きたら管理者へ上げる</pre>
+    <p class="muted">💡 これが <strong>B1・B3・B4 の答えを同時に</strong>出している。進行中の企てがあるから同じ部屋を2回立てない（B1）。状態が残っているから落ちても続きから再開できる（B3）。次の一手を持っているから返事が来なくても止まらない（B4）</p>
+  </div>
+
+  <h3 style="margin-top:8px">📅 1つの部屋が立つまでの7日間</h3>
+  <p class="lead">🎙️ A ／ 🎪 B ／ 🙋 人 の誰が動いたか。<strong>7日で判断は6回</strong>、人が出てくるのは<strong>2回だけ</strong>。</p>
+
+  <div class="tl">
+    <div class="ev a">
+      <div class="day">Day 1 火</div>
+      <div class="body">
+        <div class="ti"><span class="who whoA">🎙️ A</span>もくもく会が終わった</div>
+        <div class="de">トランスクリプトから知見カード6枚。4人に Power Apps の興味ラベルが付いた</div>
+      </div>
+    </div>
+    <div class="ev b">
+      <div class="day">Day 2 水</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>巡回 — 企てを立てる</div>
+        <div class="de">4人の興味が重なっている。詳しい人は社内に3人いる</div>
+        <div class="jd">🧠 判断①<b>「立てる価値がある」</b>／ 判断②<b>「最初に声をかけるのは佐藤さん」</b>（知見が厚く 今月まだ1度も頼まれていない）</div>
+      </div>
+    </div>
+    <div class="ev b">
+      <div class="day">Day 2 水</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>佐藤さんに打診</div>
+        <div class="de">「Power Apps を知りたい人が4人います。相談相手になってもらえませんか」</div>
+      </div>
+    </div>
+    <div class="ev b">
+      <div class="day">Day 4 金</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>巡回 — 返事がない</div>
+        <div class="jd">🧠 判断③<b>「まだ待つ。ただし1回だけリマインドする」</b>（出張中かもしれない。いきなり他の人に回さない）</div>
+      </div>
+    </div>
+    <div class="ev b">
+      <div class="day">Day 5 土</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>巡回 — まだ返事がない</div>
+        <div class="jd">🧠 判断④<b>「打ち切って2人目の鈴木さんへ」</b>（佐藤さんは記録上「断った」にはしない。責めない設計）</div>
+      </div>
+    </div>
+    <div class="ev h">
+      <div class="day">Day 5 土</div>
+      <div class="body">
+        <div class="ti"><span class="who whoH">🙋 人</span>鈴木さんが「はい」を押す</div>
+        <div class="jd">🚪 <b>人の門 その1｜同意</b>　人がやったのはボタン1つだけ</div>
+      </div>
+    </div>
+    <div class="ev b">
+      <div class="day">Day 5 土</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>部屋を立てて最初の一言を書く</div>
+        <div class="de">「Power Apps の話がしたい人が4人いたので部屋を作りました。鈴木さんが相談に乗ってくれます」</div>
+      </div>
+    </div>
+    <div class="ev b">
+      <div class="day">Day 7 月</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>巡回 — 誰も喋っていない</div>
+        <div class="jd">🧠 判断⑤<b>「呼び水を1つ投げる」</b>（知見カードから具体的な問いを作って置く）</div>
+      </div>
+    </div>
+    <div class="ev a">
+      <div class="day">Day 9 水</div>
+      <div class="body">
+        <div class="ti"><span class="who whoA">🎙️ A</span>その部屋の会が終わった</div>
+        <div class="de">新しい知見カードが8枚。鈴木さんの知見ラベルが濃くなり 4人に新しい興味が生えた</div>
+      </div>
+    </div>
+    <div class="ev b end">
+      <div class="day">Day 10 木</div>
+      <div class="body">
+        <div class="ti"><span class="who whoB">🎪 B</span>企て #17 を閉じる</div>
+        <div class="jd">🧠 判断⑥<b>「この企ては成功。同じ型をもう一度使う」</b>　→ 次の判断の材料になる（B7）<br>🔄 <strong>そしてAが積んだ新しいラベルから 次の企てが生まれる。輪が閉じた</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">📸 <div><strong>記事の主役になる1文。</strong>「1つの部屋が立つまでに、エージェントは9日かけて6回判断し、1人目には振られ、2人目で同意をもらった。人が触ったのはボタン1つ」</div></div>
+
+  <div class="warn">
+    ⚠️ <b>ながいタスクには必ず停止条件が要る。</b>「ループ＝いつ止めるかまで設計」がテーマの4部品に入っている。この企てなら<strong>候補3人で打ち切り／14日で打ち切り／コスト上限</strong>の3つ。尽きたら🚨例外の門から管理者へ上げる。<strong>止まれることを見せるのが③の点。</strong>
+  </div>
+</section>
+
+<section>
+  <h2>🎬 デモにどう載せるか</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>やり方</th><th>中身</th><th>向き不向き</th></tr></thead>
+    <tbody>
+      <tr><td><strong>時計を早める</strong></td><td>「1日」を実際には数十秒にして 9日ぶんを早回しで流す</td><td>◎ 一番わかりやすい。巡回型の証明にもなる</td></tr>
+      <tr><td><strong>企ての履歴を見せる</strong></td><td>企て #17 の「やったこと」を画面に並べる</td><td>◎ 作るのが安い。リポジトリと記事だけの一次審査に強い</td></tr>
+      <tr><td>本当に9日待つ</td><td>—</td><td>✕ 5日しかない</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">🎯 <div><strong>一次審査はリポジトリと記事だけで決まる</strong>ので、まず「企ての履歴」を作るのが確実。早回しデモは最終プレゼンに残った時の武器にする</div></div>
+</section>
+
+<footer>
+  AI HACK 2026 ／ Day2（2026-09-20）。関連 → <a href="agent-design.html">agent-design.html</a> ／ <a href="gap-check.html">gap-check.html</a>
+</footer>
+
+</div>
+</body>
+</html>
