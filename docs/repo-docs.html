@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>リポジトリの .md 一族</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:42px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:14.5px;line-height:1.85}
+.core b{color:var(--accent)}
+
+/* 本棚 */
+.shelf{display:flex;flex-direction:column;gap:11px}
+.sh{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--k);border-radius:14px;padding:14px 17px;display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start;box-shadow:var(--shadow)}
+@media (max-width:660px){.sh{grid-template-columns:1fr;gap:7px}}
+.sh .l{display:flex;flex-direction:column;gap:5px}
+.sh .q{font-family:var(--f-d);font-weight:800;font-size:15.5px;color:var(--k)}
+.sh .f{font-family:var(--f-m);font-size:12px;color:var(--ink2);line-height:1.7}
+.sh .f b{color:var(--ink);font-weight:700}
+.sh .d{font-size:13.5px;line-height:1.75}
+.sh .d em{font-style:normal;background:var(--ks);border-radius:6px;padding:1px 6px;font-weight:700;color:var(--k)}
+.k1{--k:var(--g1);--ks:var(--g1s)}
+.k2{--k:var(--accent);--ks:var(--accent-soft)}
+.k3{--k:var(--g4);--ks:var(--g4s)}
+.k4{--k:var(--g3);--ks:var(--g3s)}
+.k5{--k:var(--ink2);--ks:var(--sunken)}
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+.col{font-family:var(--f-m);font-size:12px;white-space:nowrap}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+@media (max-width:700px){.vs{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:15px;padding:16px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+.card .hd{font-family:var(--f-m);font-weight:700;font-size:16px;color:var(--k)}
+.card .one{font-family:var(--f-d);font-weight:800;font-size:15px}
+.card ul{margin:0;padding-left:1.15em;font-size:13px;line-height:1.7;color:var(--ink2)}
+.cA{--k:var(--g4)}.cB{--k:var(--accent)}
+
+.warn{background:var(--hots);border:2px solid var(--hot);border-radius:16px;padding:17px 20px;display:flex;flex-direction:column;gap:10px}
+.warn h3{color:var(--hot)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;line-height:1.85;box-shadow:var(--shadow)}
+pre .c{color:var(--ink2)}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">Repository Docs · 5分</div>
+  <h1>📚 リポジトリの .md 一族</h1>
+  <p class="lead">README・DESIGN・ARCHITECTURE・CLAUDE・AGENTS … 何がどう違うのか。</p>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>全部「誰が いつ読むか」で分かれているだけ。</b><br>
+    中身が違うのではなく<strong>読む相手が違う</strong>。そう思うと一気に整理がつく。<br><br>
+    そして <b>今回 ARCHITECTURE.md は作らなくていい。</b>理由は下に。
+  </div>
+</section>
+
+<section>
+  <h2>🗂️ 5つの棚に分かれている</h2>
+  <div class="shelf">
+
+    <div class="sh k1">
+      <div class="l">
+        <div class="q">🚪 玄関</div>
+        <div class="f"><b>README.md</b></div>
+      </div>
+      <div class="d">初めて来た人が<em>最初に開く</em>。「これは何？ なぜ作った？ どう動かす？」<br>
+      <span class="muted">読む人：訪問者・審査員・未来の自分。<strong>いちばん読まれる1枚</strong></span></div>
+    </div>
+
+    <div class="sh k2">
+      <div class="l">
+        <div class="q">🧠 なぜこう作ったか</div>
+        <div class="f"><b>DESIGN.md</b><br>docs/adr/*.md</div>
+      </div>
+      <div class="d"><em>判断と根拠</em>を置く。仕様・データモデル・ルール・やらないと決めたこと。<br>
+      <span class="muted">読む人：一緒に作る人と そのAI。<strong>「なぜ」に答える棚</strong></span><br>
+      <span class="muted">ADR は「1つの決定＝1ファイル」で歴史を積む形式。長く続くプロジェクト向け</span></div>
+    </div>
+
+    <div class="sh k3">
+      <div class="l">
+        <div class="q">🗺️ どこに何があるか</div>
+        <div class="f"><b>ARCHITECTURE.md</b></div>
+      </div>
+      <div class="d"><em>コードの地図</em>。どのフォルダが何を担当し どこから読み始めればいいか。<br>
+      <span class="muted">読む人：新しく入った開発者。<strong>コードが大きくなってから効く</strong></span></div>
+    </div>
+
+    <div class="sh k4">
+      <div class="l">
+        <div class="q">🤖 AIへの作業指示</div>
+        <div class="f"><b>CLAUDE.md</b><br><b>AGENTS.md</b><br>.cursorrules など</div>
+      </div>
+      <div class="d"><em>このリポジトリで作業するときの約束</em>。「先にこれを読め」「テストが通らないコミットはするな」<br>
+      <span class="muted">読む人：AI。CLAUDE.md は Claude Code 向け、AGENTS.md はツール横断の共通規格</span></div>
+    </div>
+
+    <div class="sh k5">
+      <div class="l">
+        <div class="q">🤝 参加と履歴</div>
+        <div class="f">CONTRIBUTING.md<br>CHANGELOG.md<br>LICENSE / SECURITY.md</div>
+      </div>
+      <div class="d">外の人が関わるようになってから要るもの。PRの出し方・変更履歴・権利・脆弱性の報告先。<br>
+      <span class="muted">読む人：他人。<strong>公開して人が集まってから作ればいい</strong></span></div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>🤔 いちばん紛らわしい2つ</h2>
+  <div class="vs">
+    <div class="card cA">
+      <div class="hd">ARCHITECTURE.md</div>
+      <div class="one">🗺️ 物理の話</div>
+      <ul>
+        <li>フォルダ構成</li>
+        <li>モジュールの依存関係</li>
+        <li>どのファイルが何をするか</li>
+        <li>どこから読み始めるか</li>
+      </ul>
+      <div class="note" style="font-size:12.5px;padding:9px 12px">📦 <div><strong>コードを案内する</strong>ための地図</div></div>
+    </div>
+    <div class="card cB">
+      <div class="hd">DESIGN.md</div>
+      <div class="one">🧠 論理の話</div>
+      <ul>
+        <li>何を解くのか</li>
+        <li>どんなルールで動くのか</li>
+        <li>データはどう持つのか</li>
+        <li><strong>なぜそう決めたのか</strong></li>
+      </ul>
+      <div class="note" style="font-size:12.5px;padding:9px 12px">💡 <div><strong>判断を残す</strong>ための記録</div></div>
+    </div>
+  </div>
+  <div class="note">📏 <div><strong>見分け方：「コードを全部消しても意味が残るか」。</strong><br>
+  残るなら DESIGN.md、残らないなら ARCHITECTURE.md</div></div>
+</section>
+
+<section>
+  <h2>⚠️ AGENTS.md の罠</h2>
+  <div class="warn">
+    <h3>「作るエージェントの設計書」ではない</h3>
+    <p><code>AGENTS.md</code> は <strong>AIコーディングツールへの作業指示書</strong>。「このリポジトリで作業するAIへのルール」を書く場所で、<code>CLAUDE.md</code> のツール横断版。</p>
+    <p>いま学びの輪は<strong>3体のエージェントを作っている</strong>ので、ここが混ざりやすい。</p>
+    <ul>
+      <li>🤖 <strong>A・B・C の設計</strong> → <code>DESIGN.md §3</code>（作るもの）</li>
+      <li>🛠️ <strong>Claude Code への指示</strong> → <code>CLAUDE.md</code>（作る道具への指示）</li>
+    </ul>
+    <p>名前が似ているだけで<strong>別のレイヤー</strong>。</p>
+  </div>
+</section>
+
+<section>
+  <h2>✅ 今回どうするか</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>ファイル</th><th>今回</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td class="col">README.md</td><td class="c">⭕️ 作った</td><td>審査員が最初に開く。<strong>いちばん効く1枚</strong></td></tr>
+      <tr><td class="col">DESIGN.md</td><td class="c">⭕️ 作った</td><td>設計の正。§8 が事故を防ぐ</td></tr>
+      <tr><td class="col">ARCHITECTURE.md</td><td class="c">❌ いらない</td><td><strong>まだコードがほぼ無い。</strong>フォルダ構成は README の1ブロックで足りる。<br>5日で終わるプロジェクトに「案内図」は要らない</td></tr>
+      <tr><td class="col">CLAUDE.md</td><td class="c">🤔 検討</td><td>いま <code>manabi-no-wa</code> では gitignore 済み。下のメモ参照</td></tr>
+      <tr><td class="col">AGENTS.md</td><td class="c">❌ いらない</td><td>CLAUDE.md と役割が同じ。<strong>2枚あると どっちが正か分からなくなる</strong></td></tr>
+      <tr><td class="col">CONTRIBUTING / CHANGELOG / LICENSE</td><td class="c">❌ いらない</td><td>外の人が入ってきてから</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">🧭 <div><strong>ファイルを増やすほど「どれが正か」が薄まる。</strong>いまは <code>DESIGN.md</code> が唯一の正という状態がいちばん強い。<br>
+  迷ったら足すのではなく<strong>1枚に寄せる</strong></div></div>
+</section>
+
+<section>
+  <h2>💭 CLAUDE.md だけ 少し迷う</h2>
+  <p class="lead">いま <code>manabi-no-wa/.gitignore</code> に入れて 提出リポジトリから外している。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>外したまま</th><th>入れる</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>リポジトリがきれいに見える。作業メモが混ざらない</td>
+        <td>小室さんのClaudeが<strong>毎回確実に DESIGN.md §8 を読む</strong>ようになる。<br>審査でも「<strong>自分たちが使うAIにもガードレールを敷いた</strong>」と言える</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:14px;line-height:1.8">入れるなら<strong>3行で足りる</strong>。作業メモにはならない。</p>
+<pre><span class="c"># 作業を始める前に</span>
+
+**必ず `DESIGN.md` を読むこと。**
+
+- 実装の前に `DESIGN.md §8 絶対に壊してはいけないルール` を読み直す
+- 決めたことは会話に残さず `DESIGN.md` に書き戻す
+- テーブルを作るときは <b>RLS を同じ回で書く</b></pre>
+  <div class="note">🙋 <div>どちらでもよい。<strong>無くても DESIGN.md を最初に渡せば同じ</strong>なので、今夜は気にしなくていい</div></div>
+</section>
+
+<footer>
+  学びの輪 ／ AI HACK 2026 ／ 2026-09-20
+</footer>
+
+</div>
+</body>
+</html>

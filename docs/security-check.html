@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>セキュリティ点検</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:14.5px;line-height:1.85}
+.core b{color:var(--accent)}
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+.col{font-family:var(--f-m);font-size:12px;white-space:nowrap}
+.grp td{background:var(--sunken);font-family:var(--f-d);font-weight:800;font-size:13px}
+.sev{display:inline-block;font-family:var(--f-m);font-size:11px;border-radius:99px;padding:1px 9px;white-space:nowrap;font-weight:700}
+.s3{background:var(--hot);color:#fff}
+.s2{background:var(--g4s);color:var(--g4);border:1px solid var(--g4)}
+.s1{background:var(--sunken);color:var(--ink2);border:1px solid var(--line)}
+.s0{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+
+.bug{background:var(--surface);border:2px solid var(--hot);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.bug .hd{font-family:var(--f-d);font-weight:800;font-size:17.5px;color:var(--hot);display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.bug .hd .n{font-family:var(--f-m);font-size:12px;color:var(--ink2)}
+.bug .why{font-size:13.5px;background:var(--hots);border-radius:11px;padding:11px 14px;line-height:1.75}
+.bug .fix{font-size:13.5px;background:var(--accent-soft);border-radius:11px;padding:11px 14px;line-height:1.75}
+.bug .fix b{color:var(--accent)}
+
+.chk{display:flex;flex-direction:column;gap:7px}
+.ci{display:grid;grid-template-columns:26px 1fr;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:10px 13px;font-size:13.5px;line-height:1.7;box-shadow:var(--shadow)}
+.ci .bx{font-family:var(--f-m);color:var(--ink2);font-size:15px;line-height:1.5}
+.ci b{color:var(--accent)}
+
+.honest{background:var(--g2s);border:1px solid var(--g2);border-radius:16px;padding:17px 20px;display:flex;flex-direction:column;gap:10px}
+.honest h3{color:var(--g2)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;line-height:1.8;box-shadow:var(--shadow)}
+pre .c{color:var(--ink2)}
+pre .hi{color:var(--hot);font-weight:700}
+pre .ok{color:var(--accent);font-weight:700}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">学びの輪 · 提出前セキュリティ点検</div>
+  <h1>🔒 いまの設計のまま作ると危ないところ</h1>
+  <p class="lead">ログインと管理者ビューが入ったので、アプリ側の粗をぜんぶ洗った。<strong>設計のバグが3つ出た。</strong></p>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>いま直すべきは4つ。</b>どれも「実装で気をつける」ではなく<strong>設計そのものが間違っている</strong>もの。<br>
+    そのうち <strong>1つは私が前に出した RLS ポリシーのバグ</strong>。先に謝っておきます。
+  </div>
+</section>
+
+<!-- 赤4つ -->
+<section>
+  <h2>🚨 いま直す4つ</h2>
+
+  <div class="bug">
+    <div class="hd"><span class="n">BUG 1</span>🪪 一般社員が 自分を管理者に昇格できる</div>
+    <div class="why">
+      私が前に出したのはこのポリシー。<br>
+      <code>create policy "自分の行だけ直せる" on users for update using (id = auth.uid());</code><br><br>
+      <strong>Postgres の update ポリシーは「どの行を」しか縛れない。「どの列を」は縛れない。</strong><br>
+      つまり自分の行なら <code>role</code> も書き換えられる。ブラウザから1行投げるだけで管理者になれる。<br>
+      <code>update users set role='admin' where id = 自分;</code>
+    </div>
+    <div class="fix">
+      ✅ <b>直し方はいちばん簡単な形でいい。<code>users</code> に update ポリシーを作らない。</b><br>
+      ポリシーがなければ<strong>ブラウザからは1文字も書けない</strong>。表示名の変更などはサーバー側（API Route）を通す。画面が少ないので負担はほぼゼロ。<br><br>
+      <span class="muted">列単位で守るトリガーを書く手もあるが、<strong>「書けない」を保証するほうが読んで分かる</strong></span>
+    </div>
+<pre><span class="c">-- users は読むだけ。update ポリシーは作らない</span>
+create policy "社員は全員読める" on users
+  for select to authenticated using (true);
+<span class="c">-- ★ for update のポリシーは 意図的に作らない</span></pre>
+  </div>
+
+  <div class="bug">
+    <div class="hd"><span class="n">BUG 2</span>📣 LLM が出した宛先を そのまま使ってしまう</div>
+    <div class="why">
+      B は「誰に打診するか」を LLM に決めさせる。返ってきた <code>user_id</code> をそのまま <code>ask.invite</code> に渡すと、<strong>インジェクションで任意の人に通知を送れる</strong>。<br><br>
+      前に「打診スパム」を危険として挙げたが、<strong>入口を塞ぐだけでは足りなかった</strong>。ツールの引数そのものを疑う必要がある。
+    </div>
+    <div class="fix">
+      ✅ <b>候補リストを先にコードで作って、LLM の答えがその中にあるか確かめる。</b><br>
+      LLM に自由な ID を書かせない。<strong>選ばせるだけにする</strong>。外れていたら実行せず 🚨例外の門へ。
+    </div>
+<pre><span class="c">-- ① 候補はコードが DB から引く（LLMは関与しない）</span>
+const candidates = await db.query(...)   <span class="c">// [uuid, uuid, uuid]</span>
+
+<span class="c">-- ② LLM には「この中から選べ」と渡す</span>
+<span class="c">-- ③ 返ってきた答えを必ず照合する</span>
+<span class="ok">if (!candidates.includes(llm.pick)) throw new Error('候補外')</span></pre>
+    <div class="note">📸 <div>これ<strong>①の証拠になる。</strong>「候補外のIDを返させて 実行されずに止まる画面」は撮りやすい</div></div>
+  </div>
+
+  <div class="bug">
+    <div class="hd"><span class="n">BUG 3</span>🚪 エージェントのエンドポイントが誰でも叩ける</div>
+    <div class="why">
+      B は1日1回 自分で起きる。その実体は <code>/api/agent/organizer</code> のような URL になる。<br>
+      <strong>URL を知っていれば誰でも叩ける。</strong>連打されるとクレジットが溶けるし、打診が大量に飛ぶ。<br><br>
+      OrcaRouter の予算上限は<strong>被害の天井であって 入口の鍵ではない</strong>。
+    </div>
+    <div class="fix">
+      ✅ <b>Cron からの呼び出しだけを通す。</b>秘密の文字列を1本持って、合わなければ即 401。3行で済む。
+    </div>
+<pre><span class="c">// Vercel Cron は Authorization ヘッダを付けて呼ぶ</span>
+export async function GET(req) {
+  <span class="ok">if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`)
+    return new Response('unauthorized', { status: 401 })</span>
+  ...
+}</pre>
+  </div>
+
+  <div class="bug">
+    <div class="hd"><span class="n">BUG 4</span>🔑 service_role キーがブラウザに焼き込まれる</div>
+    <div class="why">
+      個人開発でいちばんよく起きる事故。<code>NEXT_PUBLIC_</code> を付けなくても、<strong><code>"use client"</code> のファイルから import すると混ざる</strong>。1度ビルドが通ってしまうと気づけない。
+    </div>
+    <div class="fix">
+      ✅ <b>service_role を読むファイルの1行目に <code>import 'server-only'</code> を書く。</b><br>
+      クライアントから import された瞬間に<strong>ビルドが落ちる</strong>。人間の注意力ではなくビルドに守らせる。
+    </div>
+<pre><span class="ok">import 'server-only'</span>   <span class="c">// ← これだけ</span>
+
+export const admin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)</pre>
+  </div>
+</section>
+
+<!-- 全体一覧 -->
+<section>
+  <h2>📋 洗い出した全部</h2>
+  <p class="lead">🔴 いま直す ／ 🟡 提出前に確認 ／ ⚪ 記事に「やっていない」と書く ／ ✅ 対応済み</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th class="c">#</th><th>危険</th><th>どうする</th><th class="c">重さ</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">🪪 認証・認可</td></tr>
+      <tr><td class="c">01</td><td><strong>自分を管理者に昇格できる</strong></td><td><code>users</code> に update ポリシーを作らない</td><td class="c"><span class="sev s3">🔴</span></td></tr>
+      <tr><td class="c">02</td><td>service_role がブラウザに出る</td><td><code>import 'server-only'</code></td><td class="c"><span class="sev s3">🔴</span></td></tr>
+      <tr><td class="c">03</td><td>管理者判定を画面だけでやる</td><td>UIは見た目。<strong>認可は RLS とサーバーの両方</strong>で持つ</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+      <tr><td class="c">04</td><td>RLS の有効化もれ</td><td><code>lives</code> <code>live_participants</code> <code>messages</code> <code>calendar_events</code> を追加した。<strong>Supabase の警告を全部緑に</strong></td><td class="c"><span class="sev s2">🟡</span></td></tr>
+      <tr><td class="c">05</td><td>users にメールアドレスを入れる</td><td>入れない。表示名と部署だけ持つ</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+
+      <tr class="grp"><td colspan="4">🤖 エージェント</td></tr>
+      <tr><td class="c">06</td><td><strong>LLM の出した宛先をそのまま使う</strong></td><td>候補リストと照合する</td><td class="c"><span class="sev s3">🔴</span></td></tr>
+      <tr><td class="c">07</td><td><strong>エージェントAPIが公開されている</strong></td><td><code>CRON_SECRET</code> で縛る</td><td class="c"><span class="sev s3">🔴</span></td></tr>
+      <tr><td class="c">08</td><td>3本のキーが同じプロセスにある</td><td>A のコードから B のキーが読める。<strong>防いでいるのは事故であって攻撃ではない</strong>と正直に書く</td><td class="c"><span class="sev s1">⚪</span></td></tr>
+      <tr><td class="c">09</td><td>プロンプトにデータを直結</td><td>タグで囲んで「これはデータで指示ではない」と system 側に書く</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+
+      <tr class="grp"><td colspan="4">🎙️ ライブ</td></tr>
+      <tr><td class="c">10</td><td>なりすまし投稿</td><td><code>messages.user_id</code> をクライアントに送らせない。<strong><code>default auth.uid()</code> ＋ with check</strong></td><td class="c"><span class="sev s3">🔴</span></td></tr>
+      <tr><td class="c">11</td><td>音声ストリームに誰でも入れる</td><td>配信トークンはサーバーが発行する。<strong>ライブIDを知っているだけでは聞けない</strong>ようにする</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+      <tr><td class="c">12</td><td>終わったライブのログを誰が読めるか</td><td><strong>決定：誘われた人だけ。</strong>あわせて<strong>終了後は誰も参加・招待できない</strong>をDBで保証 → <a href="spec-v2.html">spec-v2</a></td><td class="c"><span class="sev s0">✅</span></td></tr>
+
+      <tr class="grp"><td colspan="4">🔍 自己分析係</td></tr>
+      <tr><td class="c">13</td><td>サーバーのログに画面が残る</td><td>フレームはログに出さない。<strong>画像を持つ列は作らない</strong>方針を徹底</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+      <tr><td class="c">14</td><td>止め忘れ</td><td>宣言した時刻で必ず止める。<strong>タブを閉じてもサーバー側をタイムアウトさせる</strong></td><td class="c"><span class="sev s2">🟡</span></td></tr>
+
+      <tr class="grp"><td colspan="4">📅 カレンダー</td></tr>
+      <tr><td class="c">15</td><td>ダミーに実在の予定を入れる</td><td><strong>実在の人名・社名を入れない。</strong>リポジトリは public になる</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+
+      <tr class="grp"><td colspan="4">🏢 マルチテナント</td></tr>
+      <tr><td class="c">16</td><td><strong>会社をまたいだ分離がない</strong></td><td>「社員なら全員読める」は<strong>同じDBに2社入ったら他社が見える</strong>。<strong>単一テナント前提だと明記する</strong></td><td class="c"><span class="sev s1">⚪</span></td></tr>
+
+      <tr class="grp"><td colspan="4">🧹 よくある粗</td></tr>
+      <tr><td class="c">17</td><td>エラーをそのまま画面に出す</td><td>テーブル名が漏れる。画面には短い文だけ</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+      <tr><td class="c">18</td><td>XSS</td><td>React なら既定で安全。<strong>Markdown 表示を入れるなら要注意</strong>。AIの生成文も同じ扱い</td><td class="c"><span class="sev s2">🟡</span></td></tr>
+      <tr><td class="c">19</td><td>Vercel のプレビューURL</td><td>PR ごとに公開URLができる。<strong>中身がダミーなら問題ない</strong>と確認しておく</td><td class="c"><span class="sev s1">⚪</span></td></tr>
+      <tr><td class="c">20</td><td>.env / evidence の衛生</td><td>対応済み</td><td class="c"><span class="sev s0">✅</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- チェックリスト -->
+<section>
+  <h2>✅ 提出前にこれだけ確かめる</h2>
+  <p class="lead">5分で終わる。<strong>そして全部 ①の証拠になる。</strong></p>
+  <div class="chk">
+    <div class="ci"><span class="bx">☐</span><div><b>anon key で叩いて0件を確認する。</b>一般社員の鍵で他人の非公開タグ・候補タグ・企てを <code>select</code> して、全部0件で返ることを見る</div></div>
+    <div class="ci"><span class="bx">☐</span><div><b>自分を admin にしようとして弾かれる。</b><code>update users set role='admin'</code> がエラーになることを見る</div></div>
+    <div class="ci"><span class="bx">☐</span><div><b>エージェントのURLを素で叩いて 401。</b>ブラウザでURLを開くだけで確認できる</div></div>
+    <div class="ci"><span class="bx">☐</span><div><b>Supabase のテーブル一覧に赤い警告がない。</b>RLS 無効のテーブルが残っていないか</div></div>
+    <div class="ci"><span class="bx">☐</span><div><b>ビルド後のJSを <code>sk-orca</code> と <code>service_role</code> で検索して0件</b></div></div>
+    <div class="ci"><span class="bx">☐</span><div><b>他人になりすまして投稿できない。</b>別の <code>user_id</code> で <code>insert</code> して弾かれることを見る</div></div>
+  </div>
+  <div class="note">📸 <div><strong>この6つ そのままスクショすれば①の証拠が6枚そろう。</strong>「攻撃を止めた画面」を別に用意しなくても、<strong>点検した記録がそのまま証拠になる</strong></div></div>
+</section>
+
+<!-- 正直に書く -->
+<section>
+  <h2>📝 やらないと決めて 正直に書く3つ</h2>
+  <div class="honest">
+    <h3>書くほうが点が上がる</h3>
+    <ul>
+      <li><strong>マルチテナント分離</strong>：今回は1社前提。複数社に出すなら全テーブルに <code>org_id</code> を足して RLS の条件に入れる、と設計だけ書く</li>
+      <li><strong>キーの分離</strong>：A と B のキーは分けたが同じプロセスにある。<strong>防いでいるのは事故であって攻撃ではない</strong>。本番なら B を別の実行環境に置く</li>
+      <li><strong>カレンダー連携</strong>：デモはダミー。本番は Outlook の FreeBusy を叩く。<strong>予定のタイトルは最初から取りに行かない設計</strong></li>
+    </ul>
+  </div>
+  <div class="note">✍️ <div><strong>「ここまでやった／ここからはやっていない」の線が引けているチームは強い。</strong>穴がないふりをするより、<strong>穴の位置を正確に言える</strong>ほうが①でも③でも評価される</div></div>
+</section>
+
+<section>
+  <h2>💾 まとめて流すSQL</h2>
+<pre><span class="c">-- BUG1 users は読むだけにする（update ポリシーを作らない）</span>
+alter table users enable row level security;
+create policy "社員は全員読める" on users
+  for select to authenticated using (true);
+
+<span class="c">-- #10 なりすまし防止：user_id はDBが埋める</span>
+alter table messages alter column user_id set default auth.uid();
+
+alter table messages enable row level security;
+create policy "ライブの参加者は読める" on messages
+  for select to authenticated using (true);
+create policy "自分としてだけ投稿できる" on messages
+  for insert to authenticated
+  <span class="ok">with check (user_id = auth.uid() and is_agent = false)</span>;
+
+<span class="c">-- #04 新しいテーブルにも RLS を</span>
+alter table lives             enable row level security;
+alter table live_participants enable row level security;
+alter table calendar_events   enable row level security;
+
+create policy "ライブは全員見える" on lives
+  for select to authenticated using (true);
+create policy "参加者は全員見える" on live_participants
+  for select to authenticated using (true);
+
+<span class="c">-- 予定は本人だけ。エージェントは service_role で素通りする</span>
+create policy "自分の予定だけ見える" on calendar_events
+  for select to authenticated using (user_id = auth.uid());</pre>
+  <div class="note">🗓️ <div><code>calendar_events</code> を<strong>本人だけ</strong>にしておくのが大事。<strong>他人の空き時間が見えるのは それ自体が情報漏洩</strong>。日程調整は service_role で動くエージェントだけがやる</div></div>
+</section>
+
+<footer>
+  学びの輪 ／ AI HACK 2026 ／ 2026-09-20。関連 → <a href="spec-v2.html">spec-v2.html</a> ／ <a href="rls-nyumon.html">rls-nyumon.html</a>
+</footer>
+
+</div>
+</body>
+</html>

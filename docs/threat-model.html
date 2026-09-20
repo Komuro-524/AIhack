@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>危険と防御 総まとめ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:14.5px;line-height:1.85}
+.core b{color:var(--accent)}
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+.col{font-family:var(--f-m);font-size:12px;white-space:nowrap}
+.grp td{background:var(--sunken);font-family:var(--f-d);font-weight:800;font-size:13.5px}
+.ax{display:inline-block;font-family:var(--f-m);font-size:11px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:0 7px;white-space:nowrap}
+
+/* top10 */
+.top{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+@media (max-width:780px){.top{grid-template-columns:1fr}}
+.t10{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--hot);border-radius:13px;padding:13px 15px;display:flex;flex-direction:column;gap:7px;box-shadow:var(--shadow)}
+.t10 .n{font-family:var(--f-m);font-size:11px;color:var(--ink2)}
+.t10 .q{font-family:var(--f-d);font-weight:800;font-size:15px;color:var(--hot);line-height:1.5}
+.t10 .a{font-size:13px;line-height:1.7;background:var(--accent-soft);border-radius:9px;padding:8px 11px}
+.t10 .a b{color:var(--accent)}
+
+/* エージェント別 */
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:860px){.three{grid-template-columns:1fr}}
+.ag{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:15px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+.ag .nm{font-family:var(--f-d);font-weight:800;font-size:17px;color:var(--k)}
+.ag .br{font-size:12.5px;background:var(--ks);border-radius:9px;padding:7px 11px;line-height:1.6}
+.ag .br b{color:var(--k)}
+.ag ul{margin:0;padding-left:1.1em;font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.agA{--k:var(--g2);--ks:var(--g2s)}
+.agB{--k:var(--g4);--ks:var(--g4s)}
+.agC{--k:var(--g3);--ks:var(--g3s)}
+
+
+/* 図 */
+.svgwrap{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);overflow-x:auto}
+svg.dia{display:block;width:100%;min-width:720px;height:auto}
+.b-box{fill:var(--surface);stroke-width:2}
+.b-fill{stroke-width:2}
+.t-ttl{font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:15px;fill:var(--ink)}
+.t-sub{font-family:"Zen Kaku Gothic New",sans-serif;font-size:11px;fill:var(--ink2)}
+.t-lab{font-family:"JetBrains Mono",monospace;font-size:10.5px;fill:var(--ink2)}
+.t-gate{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:11.5px}
+.ln{stroke:var(--ink2);stroke-width:1.8;fill:none}
+.ln-d{stroke:var(--ink2);stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+.honest{background:var(--g2s);border:1px solid var(--g2);border-radius:16px;padding:17px 20px}
+.honest h3{color:var(--g2);margin-bottom:8px}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">学びの輪 · 危険と防御 総まとめ</div>
+  <h1>🛡️ 何が危なくて どう守ったか</h1>
+  <p class="lead">Day1〜Day2で出した危険を 全部1枚にした。<strong>そのまま記事の①③の材料になる。</strong></p>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>守りの考え方は3つだけ。</b><br>
+    ① <strong>口を持つのは幹事だけ</strong>（権限の分離）　② <strong>入口は辞書で縛る</strong>（自由文を書かせない）　③ <strong>止まれるようにする</strong>（上限はコードで持つ）<br>
+    あとは全部この3つの応用になっている。
+  </div>
+</section>
+
+
+<section>
+  <h2>🗺️ エージェント設計図</h2>
+  <p class="lead">3体ともトリガーが違う。<strong>口を持っているのは 🎪B だけ。</strong></p>
+  <div class="svgwrap">
+  <svg class="dia" viewBox="0 0 900 310" role="img" aria-label="まなびのライブが終わるとA記録係が知見カードとタグを作り、タグが溜まるとB幹事が判断してライブを予約する輪。C自己分析係は本人のボタンでタグ候補を出す">
+    <defs>
+      <marker id="tm-ah" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+        <path d="M0 0 L10 4 L0 8 z" fill="var(--ink2)"/>
+      </marker>
+    </defs>
+
+    <rect x="20"  y="46" width="150" height="66" rx="13" class="b-box" stroke="var(--g3)"/>
+    <text x="34" y="74" class="t-ttl">🎙️ まなびのライブ</text>
+    <text x="34" y="94" class="t-sub">スピーカー ＋ リスナー</text>
+
+    <rect x="225" y="46" width="160" height="66" rx="13" class="b-box" stroke="var(--g2)"/>
+    <text x="239" y="74" class="t-ttl">🎙️ A 記録係</text>
+    <text x="239" y="94" class="t-sub">Lv.2 判断しない</text>
+
+    <rect x="440" y="46" width="160" height="66" rx="13" class="b-box" stroke="var(--g1)"/>
+    <text x="454" y="74" class="t-ttl">🏷️ タグ</text>
+    <text x="454" y="94" class="t-sub">tags / user_tags</text>
+
+    <rect x="655" y="46" width="160" height="66" rx="13" class="b-fill" fill="var(--g4s)" stroke="var(--g4)"/>
+    <text x="669" y="74" class="t-ttl">🎪 B 幹事</text>
+    <text x="669" y="94" class="t-sub">Lv.3 自律・心臓</text>
+
+    <path d="M170 79 L221 79" class="ln" marker-end="url(#tm-ah)"/>
+    <text x="172" y="38" class="t-lab">終わると</text>
+    <path d="M385 79 L436 79" class="ln" marker-end="url(#tm-ah)"/>
+    <text x="387" y="38" class="t-lab">カードとタグ</text>
+    <path d="M600 79 L651 79" class="ln" marker-end="url(#tm-ah)"/>
+    <text x="602" y="38" class="t-lab">溜まると</text>
+
+    <path d="M735 112 L735 168 Q735 180 723 180 L107 180 Q95 180 95 168 L95 116" class="ln" marker-end="url(#tm-ah)"/>
+    <text x="360" y="173" class="t-lab">判断して 打診して 日程を決めて 予約する</text>
+
+    <rect x="330" y="196" width="180" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="344" y="214" class="t-gate" fill="var(--accent)">🚪 本人の同意（はい／いいえ）</text>
+
+    <rect x="560" y="196" width="180" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="574" y="214" class="t-gate" fill="var(--accent)">🏷️ 管理者がタグを承認</text>
+    <path d="M560 209 L520 209 Q510 209 510 199 L510 120" class="ln-d"/>
+
+    <rect x="440" y="252" width="160" height="50" rx="13" class="b-box" stroke="var(--g3)"/>
+    <text x="454" y="274" class="t-ttl">🔍 C 自己分析係</text>
+    <text x="454" y="292" class="t-sub">本人がボタンを押したら</text>
+    <path d="M470 252 L470 120" class="ln" marker-end="url(#tm-ah)"/>
+    <text x="336" y="240" class="t-lab">タグ候補（本人にだけ）</text>
+  </svg>
+  </div>
+  <div class="note">🔑 <div><strong>A は他人に何も言えない。</strong>通知を送る権限は B のキーにしか渡していないので、A が乗っ取られても外に出ていくものがない。──これが「機能の分離」ではなく <strong>「権限の分離」</strong></div></div>
+</section>
+
+<section>
+  <h2>🗃️ テーブル設計図</h2>
+  <p class="lead">データも輪になっている。<strong>ライブ → 知見カード → 人のタグ → 企て → またライブ。</strong></p>
+  <div class="svgwrap">
+  <svg class="dia" viewBox="0 0 900 450" role="img" aria-label="livesからknowledge_cards、user_tags、quests、そしてlivesに戻る輪。中心にtagsとusersが支えている">
+    <defs>
+      <marker id="tm-ah2" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+        <path d="M0 0 L10 4 L0 8 z" fill="var(--ink2)"/>
+      </marker>
+    </defs>
+
+    <rect x="355" y="24" width="190" height="64" rx="13" class="b-box" stroke="var(--g3)"/>
+    <text x="370" y="50" class="t-ttl">lives</text>
+    <text x="370" y="70" class="t-sub">まなびのライブ ＋ 予約</text>
+
+    <rect x="680" y="182" width="195" height="64" rx="13" class="b-box" stroke="var(--g2)"/>
+    <text x="695" y="208" class="t-ttl">knowledge_cards</text>
+    <text x="695" y="228" class="t-sub">知見カード（タグと1対1）</text>
+
+    <rect x="355" y="340" width="190" height="64" rx="13" class="b-box" stroke="var(--g1)"/>
+    <text x="370" y="366" class="t-ttl">user_tags</text>
+    <text x="370" y="386" class="t-sub">知見タグ ＋ 興味タグ</text>
+
+    <rect x="28" y="182" width="190" height="64" rx="13" class="b-fill" fill="var(--g4s)" stroke="var(--g4)"/>
+    <text x="43" y="208" class="t-ttl">quests</text>
+    <text x="43" y="228" class="t-sub">企て（未完了の仕事）</text>
+
+    <path d="M548 62 Q690 80 760 178" class="ln" marker-end="url(#tm-ah2)"/>
+    <text x="620" y="110" class="t-lab">🎙️A 終わると切り出す</text>
+
+    <path d="M760 250 Q690 350 548 372" class="ln" marker-end="url(#tm-ah2)"/>
+    <text x="612" y="330" class="t-lab">🎙️A 人に貼る</text>
+
+    <path d="M352 372 Q205 350 140 250" class="ln" marker-end="url(#tm-ah2)"/>
+    <text x="150" y="330" class="t-lab">🎪B 溜まると企てる</text>
+
+    <path d="M140 178 Q205 80 352 62" class="ln" marker-end="url(#tm-ah2)"/>
+    <text x="150" y="110" class="t-lab">🎪B 予約する</text>
+
+    <rect x="300" y="172" width="140" height="50" rx="12" class="b-box" stroke="var(--hot)"/>
+    <text x="314" y="194" class="t-ttl">tags</text>
+    <text x="314" y="212" class="t-sub">タグ辞書</text>
+
+    <rect x="462" y="172" width="140" height="50" rx="12" class="b-box" stroke="var(--g1)"/>
+    <text x="476" y="194" class="t-ttl">users</text>
+    <text x="476" y="212" class="t-sub">社員</text>
+
+    <path d="M370 170 L370 120 Q370 108 382 108 L430 108" class="ln-d"/>
+    <path d="M400 224 L400 300 Q400 312 412 312 L430 312" class="ln-d"/>
+    <path d="M530 170 L530 120 Q530 108 518 108 L480 108" class="ln-d"/>
+    <path d="M500 224 L500 300 Q500 312 488 312 L470 312" class="ln-d"/>
+
+    <text x="300" y="424" class="t-sub">— — 点線 ＝ tags と users が 4つすべてを支えている</text>
+  </svg>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>かたまり</th><th>テーブル</th><th>守りの要</th></tr></thead>
+    <tbody>
+      <tr><td><strong>👤 人</strong></td><td class="col">users ／ user_tags</td><td><code>users</code> に <strong>update ポリシーを作らない</strong>／<code>visibility</code></td></tr>
+      <tr><td><strong>🏷️ 知識</strong></td><td class="col">tags ／ knowledge_cards</td><td><strong>カードの tag_id が tags を参照＝辞書外は入らない</strong></td></tr>
+      <tr><td><strong>🎙️ 場</strong></td><td class="col">lives ／ live_participants ／ messages</td><td><code>source_ref</code> UNIQUE／<strong>終了後は参加できない</strong></td></tr>
+      <tr><td><strong>🎪 自律</strong></td><td class="col">quests ／ quest_steps ／ invitations</td><td><strong>タグごとに進行中は1つまで</strong>／ブラウザから見えない</td></tr>
+      <tr><td><strong>📅 予定</strong></td><td class="col">calendar_events</td><td><strong>本人だけ。</strong>タイトルも参加者も持たない</td></tr>
+      <tr><td><strong>🧾 記録</strong></td><td class="col">agent_runs</td><td>②のレシートと ③の再開。ブラウザから見えない</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>🚨 踏むと終わる10個</h2>
+  <p class="lead">実装で特に気をつけるところ。<strong>DESIGN.md の §8 と同じ内容。</strong></p>
+  <div class="top">
+    <div class="t10"><div class="n">01</div><div class="q">一般社員が 自分を管理者にできる</div><div class="a">✅ <b><code>users</code> に update ポリシーを作らない。</b>update ポリシーは「どの行を」しか縛れず「どの列を」は縛れないため</div></div>
+    <div class="t10"><div class="n">02</div><div class="q">LLM が返した宛先を そのまま使う</div><div class="a">✅ <b>候補リストをコードで作り LLM の答えを照合する。</b>自由にIDを書かせず 選ばせるだけにする</div></div>
+    <div class="t10"><div class="n">03</div><div class="q">エージェントのAPIを誰でも叩ける</div><div class="a">✅ <b><code>CRON_SECRET</code> で縛る。</b>予算上限は被害の天井であって 入口の鍵ではない</div></div>
+    <div class="t10"><div class="n">04</div><div class="q">service_role がブラウザに出る</div><div class="a">✅ <b><code>import 'server-only'</code> を1行目に。</b>クライアントから読まれたらビルドが落ちる</div></div>
+    <div class="t10"><div class="n">05</div><div class="q">AIが自分の発言から知見を作る</div><div class="a">✅ <b>A は <code>is_agent = false</code> だけ読む。</b>放っておくとタグが自己増殖する</div></div>
+    <div class="t10"><div class="n">06</div><div class="q">知見カードに発言がそのまま載る</div><div class="a">✅ <b>本文は必ず要約。</b>逐語だと「元発言は参加者だけ」が形だけになる</div></div>
+    <div class="t10"><div class="n">07</div><div class="q">あとから招待して過去ログを読む</div><div class="a">✅ <b>終了したライブには誰も参加できない。</b>画面のボタンではなく DB が断る</div></div>
+    <div class="t10"><div class="n">08</div><div class="q">承認待ちで 場がひとつも立たなくなる</div><div class="a">✅ <b>企てはタグの状態を条件にしない。</b><code>user_tags</code> の重なりだけで判断する</div></div>
+    <div class="t10"><div class="n">09</div><div class="q">ループが止まらず課金され続ける</div><div class="a">✅ <b>停止条件はコードで持つ。</b>14日／候補3人／コスト上限。LLMに任せない</div></div>
+    <div class="t10"><div class="n">10</div><div class="q">カレンダーから予定の中身が漏れる</div><div class="a">✅ <b>free/busy だけ取る。</b>タイトルも参加者も最初から取りに行かない</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>👥 エージェント別 — 壊れ方が違う</h2>
+  <div class="three">
+    <div class="ag agA">
+      <div class="nm">🎙️ A 記録係</div>
+      <div class="br">🔧 <b>壊れ方</b>：入力の汚染<br>🛡️ <b>守り</b>：入口の検査</div>
+      <ul>
+        <li>会議で喋った命令文が入力になる</li>
+        <li>顧客名・案件名がカードに乗る</li>
+        <li>文字起こしの誤変換</li>
+        <li>話者の取り違え</li>
+        <li>同じ会を2回取り込む</li>
+        <li>自己申告でタグが育つ</li>
+      </ul>
+    </div>
+    <div class="ag agB">
+      <div class="nm">🎪 B 幹事</div>
+      <div class="br">🔧 <b>壊れ方</b>：判断の暴走<br>🛡️ <b>守り</b>：出口と上限</div>
+      <ul>
+        <li>同じ部屋が毎日立つ</li>
+        <li>打診スパム・嫌がらせに使われる</li>
+        <li>返事が来ず企てが止まる</li>
+        <li>部分失敗で人が置き去り</li>
+        <li>ループが止まらない</li>
+        <li>詳しい人に偏る</li>
+      </ul>
+    </div>
+    <div class="ag agC">
+      <div class="nm">🔍 C 自己分析係</div>
+      <div class="br">🔧 <b>壊れ方</b>：見すぎる<br>🛡️ <b>守り</b>：持たない・止まる</div>
+      <ul>
+        <li>うっかり社外秘が写る</li>
+        <li>止め忘れて一日中録られる</li>
+        <li>勝手にタグが全社に出る</li>
+        <li>画面にプロンプトが写り込む</li>
+        <li>vision は高い</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">🔑 <div><strong>壊れ方が違うから 守り方も違う。</strong>この整理そのものが記事の①の骨になる。「読むAIと 喋るAIと 見るAIでは 危険度が別物」</div></div>
+</section>
+
+<section>
+  <h2>📋 全危険と防御策</h2>
+  <p class="lead">🔨 実装で守る ／ 🗃️ DBの制約で守る ／ 📝 記事に正直に書く</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th class="c">#</th><th>危険</th><th>防御策</th><th class="c">どこで</th><th class="c">軸</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="5">🎙️ A 記録係 — 入ってくるもの</td></tr>
+      <tr><td class="c col">A1</td><td>間接プロンプトインジェクション</td><td>Agent Firewall（inbound）＋ <strong>出力をタグ辞書に縛る</strong>ので任意の文字列を書けない</td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">A2</td><td>顧客名・案件名がカードに乗る</td><td>PII Shield ＋ <strong>社内固有語の禁止リスト</strong>。既定では氏名も社名も拾わない</td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">A3</td><td>文字起こしの誤変換（知見→治験）</td><td>門1｜タグ辞書 ＋ <strong>かな読みで空似を判定</strong></td><td class="c">🔨🗃️</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">A4</td><td>話者の取り違え</td><td><strong>カードが集まって初めて人のタグになる</strong>。1発では動かない</td><td class="c">🔨</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">A5</td><td>発言内容が事実として誤り</td><td>カード側に裏取りバッジ。人のタグは「正しいか」ではなく「詳しいか」で見る</td><td class="c">🔨</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">A6</td><td>巨大入力（134分）</td><td>無料モデルで足切り → 残りだけ強いモデルへ</td><td class="c">🔨</td><td class="c"><span class="ax">②③</span></td></tr>
+      <tr><td class="c col">A7</td><td>空のライブ／1人だけ</td><td><strong>0枚を正常終了として扱う</strong></td><td class="c">🔨</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">A8</td><td>同じライブを2回取り込む</td><td><code>lives.source_ref</code> <strong>UNIQUE</strong></td><td class="c">🗃️</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">A9</td><td>自己申告でタグが育つ</td><td><code>user_tags.answer_count</code>（他人に答えた実績）を重みにする</td><td class="c">🔨</td><td class="c"><span class="ax">①⑤</span></td></tr>
+      <tr><td class="c col">A10</td><td>貼られたくない</td><td>オプトアウト ＋ <code>visibility</code></td><td class="c">🗃️</td><td class="c"><span class="ax">⑤</span></td></tr>
+      <tr><td class="c col">A11</td><td><strong>AIの発言から知見を作る</strong></td><td><code>is_agent = false</code> だけ読む</td><td class="c">🔨</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">A12</td><td>候補タグ経由で入口が開く</td><td>新語は<strong>3つの検査</strong>（形／固有名詞／空似）を通す</td><td class="c">🔨</td><td class="c"><span class="ax">①③</span></td></tr>
+
+      <tr class="grp"><td colspan="5">🎪 B 幹事 — 出ていくもの</td></tr>
+      <tr><td class="c col">B1</td><td>同じ部屋が毎日立つ</td><td><strong>タグごとに進行中の企ては1つまで</strong>（部分ユニーク）</td><td class="c">🗃️</td><td class="c"><span class="ax">③④</span></td></tr>
+      <tr><td class="c col">B2</td><td>打診スパム・嫌がらせ</td><td>1人あたりの打診上限 ＋ 送信も Firewall（egress）</td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">B3</td><td>部分失敗で人が置き去り</td><td><code>quests.status</code> ＋ <code>agent_runs.status</code> で続きから再開</td><td class="c">🗃️</td><td class="c"><span class="ax">③</span></td></tr>
+      <tr><td class="c col">B4</td><td>返事が来ず止まる</td><td><code>next_action_at</code> → リマインド → 打ち切り → <strong>別の人を探し直す</strong></td><td class="c">🔨</td><td class="c"><span class="ax">③④</span></td></tr>
+      <tr><td class="c col">B5</td><td>ループが止まらない</td><td>停止条件3つ（14日／3人／コスト上限）を<strong>コードで持つ</strong></td><td class="c">🔨</td><td class="c"><span class="ax">②③</span></td></tr>
+      <tr><td class="c col">B6</td><td>巡回コストが毎日積む</td><td>安い判定で足切り → 通ったものだけ強いモデル</td><td class="c">🔨</td><td class="c"><span class="ax">②</span></td></tr>
+      <tr><td class="c col">B7</td><td>判断が毎回ゼロから</td><td><code>quests.outcome</code> を次の判断材料に</td><td class="c">🗃️</td><td class="c"><span class="ax">④</span></td></tr>
+      <tr><td class="c col">B8</td><td>暴走の被害に天井がない</td><td>スコープ付きAPIキー（予算・期限）</td><td class="c">🔨</td><td class="c"><span class="ax">①②</span></td></tr>
+      <tr><td class="c col">B9</td><td>詳しい人に偏る</td><td><code>load.check</code> を判断材料に。連続指名を避ける</td><td class="c">🔨</td><td class="c"><span class="ax">⑤</span></td></tr>
+      <tr><td class="c col">B10</td><td>コールドスタート</td><td>最初だけ手で種を蒔く（<code>source='manual'</code>）</td><td class="c">🔨</td><td class="c"><span class="ax">⑤</span></td></tr>
+      <tr><td class="c col">B11</td><td><strong>LLM の出した宛先をそのまま使う</strong></td><td>候補リストと<strong>照合してから</strong>使う</td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">B12</td><td>承認待ちで場が立たなくなる</td><td>企ては<strong>タグの状態を条件にしない</strong></td><td class="c">🔨</td><td class="c"><span class="ax">④</span></td></tr>
+      <tr><td class="c col">B13</td><td>カレンダーの中身が漏れる</td><td><strong>free/busy だけ取る。</strong>タイトルも参加者も読まない</td><td class="c">🔨🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">B14</td><td>同じ会が短期間に再開催される</td><td><strong>14日のハードリミット</strong>＋ 判断は3値（open / wait / skip）</td><td class="c">🔨</td><td class="c"><span class="ax">④⑤</span></td></tr>
+
+      <tr class="grp"><td colspan="5">🔍 C 自己分析係 — 見るもの</td></tr>
+      <tr><td class="c col">C1</td><td>うっかり社外秘が写る</td><td><strong>画像を保存しない。DBに画像の列を作らない</strong></td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">C2</td><td>止め忘れ</td><td>開始時に終了時刻を宣言し 自分で止まる</td><td class="c">🔨</td><td class="c"><span class="ax">①③</span></td></tr>
+      <tr><td class="c col">C3</td><td>勝手にタグが全社に出る</td><td>本人にだけ見せる。採用を押して初めて公開の土俵へ</td><td class="c">🔨</td><td class="c"><span class="ax">①⑤</span></td></tr>
+      <tr><td class="c col">C4</td><td>画面にプロンプトが写り込む</td><td>A と同じ。出力をタグ辞書に縛る</td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">C5</td><td>vision は高い</td><td>差分の少ないフレームを捨てる ＋ 縮小 ＋ 終了時に1回だけ</td><td class="c">🔨</td><td class="c"><span class="ax">②</span></td></tr>
+
+      <tr class="grp"><td colspan="5">🗃️ DB とアプリ</td></tr>
+      <tr><td class="c col">D1</td><td><strong>自分を管理者に昇格できる</strong></td><td><code>users</code> に <strong>update ポリシーを作らない</strong></td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D2</td><td>service_role がブラウザに出る</td><td><code>import 'server-only'</code></td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D3</td><td>エージェントAPIが公開されている</td><td><code>CRON_SECRET</code> で401</td><td class="c">🔨</td><td class="c"><span class="ax">①②</span></td></tr>
+      <tr><td class="c col">D4</td><td>RLS の有効化もれ</td><td>全テーブル。<strong>DDLと同じ回で書く</strong></td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D5</td><td>なりすまし投稿</td><td><code>user_id default auth.uid()</code> ＋ <code>with check</code></td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D6</td><td><strong>あとから招待して過去ログを読む</strong></td><td><strong>終了したライブには参加できない</strong>（insert ポリシー）</td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D7</td><td>カードからトーク履歴に飛べる</td><td>件数は見せる。中身は <code>messages</code> の RLS が弾く</td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D8</td><td>カードに発言が逐語で載る</td><td><strong>本文は必ず要約</strong></td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D9</td><td>管理者判定を画面だけでやる</td><td>UIは見た目。<strong>認可は RLS とサーバーの両方</strong></td><td class="c">🔨🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D10</td><td>他人の空き時間が見える</td><td><code>calendar_events</code> は<strong>本人だけ</strong></td><td class="c">🗃️</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D11</td><td>エラーに内部情報が出る</td><td>画面には短い文だけ。テーブル名を出さない</td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+      <tr><td class="c col">D12</td><td>.env と evidence の衛生</td><td>対応済み。<strong>スクショは貼る前に目視</strong></td><td class="c">🔨</td><td class="c"><span class="ax">①</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>📝 やらないと決めて 正直に書く</h2>
+  <div class="honest">
+    <h3>穴の位置を正確に言えるほうが評価される</h3>
+    <ul>
+      <li><strong>マルチテナント分離</strong>：今回は1社前提。複数社に出すなら全テーブルに <code>org_id</code> を足して RLS の条件に入れる</li>
+      <li><strong>キーの完全分離</strong>：A と B のキーは分けたが同じプロセスにある。<strong>防いでいるのは事故であって攻撃ではない</strong></li>
+      <li><strong>カレンダー実連携</strong>：デモはダミー。本番は Outlook の FreeBusy を叩く</li>
+      <li><strong>リアルタイムの「現在の話題」</strong>：コストと、雑談が部屋の外に漏れる懸念のため見送り</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  学びの輪 ／ AI HACK 2026 ／ 2026-09-20。実装向けの正は <code>manabi-no-wa/DESIGN.md</code>。関連 → <a href="spec-v2.html">spec-v2.html</a> ／ <a href="security-check.html">security-check.html</a>
+</footer>
+
+</div>
+</body>
+</html>

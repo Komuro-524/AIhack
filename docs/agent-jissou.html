@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>コードでエージェントを作るとは</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:42px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:14.5px;line-height:1.85}
+.core b{color:var(--accent)}
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+.col{font-family:var(--f-m);font-size:12px;white-space:nowrap}
+
+/* ループ6段 */
+.loop{display:flex;flex-direction:column;gap:8px}
+.st{display:grid;grid-template-columns:34px 1fr;gap:13px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow)}
+.st .n{font-family:var(--f-m);font-weight:700;font-size:13px;color:var(--surface);background:var(--accent);border-radius:8px;text-align:center;padding:3px 0}
+.st .t{font-size:14px;line-height:1.7}
+.st .t b{font-family:var(--f-d)}
+.st.hi{border-color:var(--g4);background:var(--g4s)}
+.st.hi .n{background:var(--g4)}
+.back{display:flex;align-items:center;gap:10px;font-size:13.5px;background:var(--accent-soft);border-radius:12px;padding:11px 16px;line-height:1.7}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+@media (max-width:700px){.vs{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:15px;padding:16px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+.card .hd{font-family:var(--f-d);font-weight:800;font-size:16.5px;color:var(--k)}
+.card ul{margin:0;padding-left:1.15em;font-size:13.5px;line-height:1.75}
+.cA{--k:var(--g1)}.cB{--k:var(--accent)}
+
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 17px;overflow-x:auto;line-height:1.85;box-shadow:var(--shadow)}
+pre .c{color:var(--ink2)}
+pre .hi{color:var(--hot);font-weight:700}
+pre .k{color:var(--g3);font-weight:700}
+pre .s{color:var(--g2)}
+.warn{background:var(--hots);border:2px solid var(--hot);border-radius:16px;padding:17px 20px;display:flex;flex-direction:column;gap:10px}
+.warn h3{color:var(--hot)}
+.good{background:var(--g2s);border:1px solid var(--g2);border-radius:14px;padding:14px 18px;font-size:13.5px;line-height:1.75}
+.good b{color:var(--g2)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">実装 · エージェントとは何か</div>
+  <h1>🤖 コードでエージェントを作るとは</h1>
+  <p class="lead">Copilot Studio が裏でやっていたことを 自分で書くだけ。<strong>特別な部品は存在しない。</strong></p>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>「エージェント」という名前のライブラリも ファイル形式も存在しない。</b><br>
+    実体は <strong>LLMを呼ぶ → 返ってきた指示で関数を実行する → 結果をまた渡す</strong> のくり返し。<strong>ただのループ。</strong><br><br>
+    だから <code>AGENT.md</code> のような<strong>決まったファイルを置く必要はない</strong>。
+  </div>
+</section>
+
+<section>
+  <h2>🆚 Copilot Studio と何が違うか</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>やること</th><th>Copilot Studio</th><th>コードで書く場合</th></tr></thead>
+    <tbody>
+      <tr><td>役割を教える</td><td>画面に「指示」を書く</td><td><strong>システムプロンプト</strong>（ただの文字列）</td></tr>
+      <tr><td>道具を持たせる</td><td>アクションを画面でつなぐ</td><td><strong>関数を書いて スキーマをLLMに渡す</strong></td></tr>
+      <tr><td>会話を回す</td><td>Microsoftが裏でやる</td><td><strong>自分で for ループを書く</strong> ← ここだけ新しい</td></tr>
+      <tr><td>モデルを選ぶ</td><td>選べない</td><td>OrcaRouter に任せる</td></tr>
+      <tr><td>置き場所</td><td>Microsoftのクラウド</td><td>Vercel の API Route</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">💡 <div><strong>知らなかったのは「ループを自分で書く」ところだけ。</strong>あとは Copilot Studio でやっていたことと同じ</div></div>
+</section>
+
+<section>
+  <h2>🔁 エージェントの中身は6段</h2>
+  <div class="loop">
+    <div class="st"><div class="n">1</div><div class="t"><b>役割を渡す</b>　システムプロンプト（「あなたは記録係です。ルールは…」）</div></div>
+    <div class="st"><div class="n">2</div><div class="t"><b>道具の一覧を渡す</b>　「こういう関数が使えます」という説明だけ。中身は渡さない</div></div>
+    <div class="st"><div class="n">3</div><div class="t"><b>LLMに聞く</b>　返ってくるのは答えか <strong>「この道具をこの引数で使って」</strong>という依頼</div></div>
+    <div class="st hi"><div class="n">4</div><div class="t"><b>道具を実行する</b>　<strong>ここは自分のコード。</strong>DBを引く・通知を送る。<strong>引数を検証するのもここ</strong></div></div>
+    <div class="st"><div class="n">5</div><div class="t"><b>結果をLLMに返す</b>　「その関数の答えはこれでした」</div></div>
+    <div class="st"><div class="n">6</div><div class="t"><b>道具を使わなくなったら終わり</b>　LLMがそのまま答えを返してきたらループを抜ける</div></div>
+  </div>
+  <div class="back">🔄 <div><strong>3〜5 をくり返す。</strong>これが「エージェントループ」。<strong>Copilot Studio が裏で回していたのもこれ</strong></div></div>
+</section>
+
+<section>
+  <h2>💻 実際に書くとこれだけ</h2>
+  <p class="lead">25行。これがエージェントの全部。</p>
+<pre><span class="k">import</span> <span class="s">'server-only'</span>          <span class="c">// ★ ブラウザから読まれたらビルドが落ちる</span>
+<span class="k">import</span> OpenAI <span class="k">from</span> <span class="s">'openai'</span>
+
+<span class="k">const</span> ai = <span class="k">new</span> OpenAI({
+  baseURL: process.env.ORCA_BASE_URL,
+  apiKey:  process.env.<span class="hi">ORCA_KEY_RECORDER</span>,   <span class="c">// ★ Aのキー。通知権限は無い</span>
+})
+
+<span class="k">export async function</span> runAgent(system, userInput, tools) {
+  <span class="k">const</span> messages = [
+    { role: <span class="s">'system'</span>, content: system },
+    { role: <span class="s">'user'</span>,   content: userInput },
+  ]
+
+  <span class="k">for</span> (<span class="k">let</span> i = 0; i &lt; <span class="hi">10</span>; i++) {          <span class="c">// ★ 停止条件。止まれるようにする</span>
+    <span class="k">const</span> res = <span class="k">await</span> ai.chat.completions.create({
+      model: <span class="s">'<span class="hi">manabi-recorder</span>'</span>,              <span class="c">// ★ Named Router の名前。モデル名を書かない</span>
+      messages,
+      tools: tools.map(t =&gt; t.schema),
+    })
+
+    <span class="k">const</span> msg = res.choices[0].message
+    messages.push(msg)
+
+    <span class="k">if</span> (!msg.tool_calls) <span class="k">return</span> msg.content   <span class="c">// 道具を使わない ＝ 終わり</span>
+
+    <span class="k">for</span> (<span class="k">const</span> call <span class="k">of</span> msg.tool_calls) {
+      <span class="k">const</span> tool = tools.find(t =&gt; t.name === call.function.name)
+      <span class="k">const</span> args = JSON.parse(call.function.arguments)
+      <span class="k">const</span> result = <span class="k">await</span> tool.run(args)      <span class="c">// ★ この中で引数を検証する</span>
+      messages.push({ role: <span class="s">'tool'</span>, tool_call_id: call.id,
+                      content: JSON.stringify(result) })
+    }
+  }
+  <span class="k">throw new</span> Error(<span class="s">'上限に達した'</span>)              <span class="c">// ★ 🚨例外の門へ</span>
+}</pre>
+
+  <div class="good">
+    ✅ <b>設計で決めたルールが そのままコードの3か所に落ちている。</b>
+    <ul style="margin-top:7px">
+      <li><code>i &lt; 10</code> ＝ <strong>停止条件はコードで持つ</strong>（DESIGN.md §8-10）</li>
+      <li><code>model: 'manabi-recorder'</code> ＝ <strong>モデル名をコードに書かない</strong>（§9）</li>
+      <li><code>tool.run(args)</code> の中 ＝ <strong>LLMの出した引数を照合する</strong>（§8-2）</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>⚡ 今夜いちばん大事なこと</h2>
+  <div class="vs">
+    <div class="card cA">
+      <div class="hd">🎙️ A 記録係 ＆ 🔍 C</div>
+      <ul>
+        <li>やることが<strong>決まっている</strong></li>
+        <li>道具を選ぶ必要がない</li>
+        <li>→ <strong>ループは要らない</strong></li>
+        <li>→ <strong>構造化出力を数回取るだけ</strong></li>
+      </ul>
+      <div class="note" style="font-size:13px;padding:10px 13px">🎉 <div><strong>今夜 A を作るのに 上のループは書かなくていい。</strong>「トランスクリプトを渡す → JSONで返させる」を数段つなぐだけ</div></div>
+    </div>
+    <div class="card cB">
+      <div class="hd">🎪 B 幹事</div>
+      <ul>
+        <li>状況で<strong>やることが変わる</strong></li>
+        <li>どの道具を使うかAIが選ぶ</li>
+        <li>→ <strong>ループが要る</strong></li>
+        <li>→ ここが④の見せ場</li>
+      </ul>
+      <div class="note" style="font-size:13px;padding:10px 13px">🫀 <div>ループを書くのは<strong>Bだけ</strong>。明日でいい</div></div>
+    </div>
+  </div>
+  <div class="note">📏 <div><strong>「決まった手順を必ずやる」のはループではなくチェーン。</strong>Aはチェーンで十分で、むしろ<strong>ループにしないのが正しい</strong>（Lv.2 のままにしておくため）</div></div>
+</section>
+
+<section>
+  <h2>📁 3体をどこに置くか</h2>
+<pre>app/api/agents/
+  recorder/route.ts     <span class="c">// 🎙️ A  ライブ終了で叩かれる</span>
+  organizer/route.ts    <span class="c">// 🎪 B  Vercel Cron が1日1回叩く</span>
+  mirror/route.ts       <span class="c">// 🔍 C  本人のボタンで叩かれる</span>
+
+lib/agents/
+  loop.ts               <span class="c">// 上の25行。Bだけが使う</span>
+  tools/
+    people.ts           <span class="c">// people.match など</span>
+    calendar.ts         <span class="c">// calendar.freebusy</span>
+    invite.ts           <span class="c">// ask.invite  ← 引数の照合はここ</span>
+  prompts/
+    <span class="hi">recorder.md</span>           <span class="c">// ★ A の役割とルールを .md で外に出す</span>
+    <span class="hi">organizer.md</span>
+    <span class="hi">mirror.md</span></pre>
+
+  <div class="good">
+    🎁 <b>プロンプトを <code>.md</code> に切り出すのを強く推す。</b>これが「エージェントフォルダに指示文書を置くイメージ」にいちばん近い形。
+    <ul style="margin-top:7px">
+      <li>コードを触らずに調整できる</li>
+      <li><strong>diff が読める</strong>（何をどう直したかが残る）</li>
+      <li><strong>審査員が読める</strong> ← これが大きい</li>
+    </ul>
+    「どんなルールでAIを動かしたか」が<strong>リポジトリの見どころになる</strong>。④の証拠として効く。
+  </div>
+</section>
+
+<section>
+  <h2>🧩 サブエージェントに切ればコストが下がる？</h2>
+  <div class="warn">
+    <h3>下がらない。そこは分ける理由にならない</h3>
+    <p>コストを決めるのは<strong>「何体いるか」ではなく「どの呼び出しにどのモデルを使うか」</strong>。同じ1体の中でも呼び出しは何回もある。</p>
+  </div>
+  <div class="tw">
+  <table>
+    <thead><tr><th>🎙️ A の中の呼び出し</th><th>使うモデル</th></tr></thead>
+    <tbody>
+      <tr><td>① 知見っぽい発言だけ拾う（足切り）</td><td><strong>無料</strong> Union Alpha</td></tr>
+      <tr><td>② 残った発言をカードにする</td><td>安い担当</td></tr>
+      <tr><td>③ 怪しいタグだけ検証する</td><td>安い担当</td></tr>
+      <tr><td>④ 昇格を提案するか最終確認</td><td><strong>強い担当</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:14px;line-height:1.8">これを「4体のサブエージェント」と呼ぶ必要はない。<strong>呼び出しごとにモデルを変えるだけ</strong>で、それは <strong>OrcaRouter の Named Router の仕事</strong>。</p>
+
+  <div class="core">
+    📐 <b>エージェントを分ける基準は コストではなく この3つ。</b>
+    <ul style="margin-top:7px">
+      <li><strong>トリガーが違う</strong>（いつ起きるか）</li>
+      <li><strong>権限が違う</strong>（何ができるか）</li>
+      <li><strong>壊れ方が違う</strong>（どう守るか）</li>
+    </ul>
+    A・B・C はこの3つが全部違う。だから3体で正しい。<strong>そしてこれ以上増やす理由はいまのところ無い。</strong>
+  </div>
+</section>
+
+<section>
+  <h2>⚠️ ふたつの「サブエージェント」は別物</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th>意味</th><th>今回</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Claude Code のサブエージェント</strong></td><td><strong>開発中に</strong>Claudeが仕事を分担する仕組み。調べ物を別のClaudeに投げるなど</td><td>作るものとは<strong>無関係</strong></td></tr>
+      <tr><td><strong>プロダクトのエージェント</strong></td><td>A・B・C。<strong>自分たちが書くコード</strong></td><td>これを作る</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">🏷️ <div>同じく <code>AGENTS.md</code> も <strong>「作るエージェントの設計」ではなく「コーディングAIへの作業指示」</strong>。今回は <code>DESIGN.md §3</code> が設計を持っているので<strong>作らなくていい</strong></div></div>
+</section>
+
+<section>
+  <h2>✅ まとめ</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>疑問</th><th>答え</th></tr></thead>
+    <tbody>
+      <tr><td>エージェント専用のファイル形式は？</td><td><strong>無い。</strong>ただのAPI Route とプロンプト</td></tr>
+      <tr><td>AGENT.md / AGENTS.md は作る？</td><td><strong>作らない。</strong>設計は DESIGN.md §3</td></tr>
+      <tr><td>指示文書はどこに置く？</td><td><code>lib/agents/prompts/*.md</code> ← <strong>これは作る価値がある</strong></td></tr>
+      <tr><td>サブエージェントでコスト削減？</td><td><strong>しない。</strong>モデルの振り分けは OrcaRouter の仕事</td></tr>
+      <tr><td>3体でいい？</td><td><strong>いい。</strong>トリガー・権限・壊れ方が全部違うので</td></tr>
+      <tr><td>今夜 A を作るのにループは要る？</td><td><strong>要らない。</strong>構造化出力を数段つなぐだけ</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer>
+  学びの輪 ／ AI HACK 2026 ／ 2026-09-20。関連 → <a href="repo-docs.html">repo-docs.html</a> ／ <code>manabi-no-wa/DESIGN.md</code>
+</footer>
+
+</div>
+</body>
+</html>

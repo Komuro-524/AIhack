@@ -15,7 +15,16 @@
 | [data-model.html](data-model.html) | **3体目のエージェントとテーブル設計** — 自己分析係の実装案・データの背骨・テーブル13枚・SupabaseのSQL |
 | [rls-nyumon.html](rls-nyumon.html) | **RLS入門** — なぜSupabaseでは必須か。学びの輪の各テーブルのポリシーとSQL |
 | [admin-view.html](admin-view.html) | **管理者ビュー** — 人材育成担当の画面。候補タグの拒否権・弾いた語の復活・知識地図の置き場 |
-| [chat-update.html](chat-update.html) | **チャット対応の設計変更** ★最新 — Aのトリガー一般化・meetings→sessions・messagesの昇格 |
+| [chat-update.html](chat-update.html) | チャット対応の設計変更（※一部 spec-v2 で更新） |
+| [spec-v2.html](spec-v2.html) | **★最新・確定仕様 v2** — まなびのライブ／予約と日程調整／タグ格上げの承認制／人の門3つ |
+| [security-check.html](security-check.html) | **★提出前セキュリティ点検** — 設計バグ4つと直し方・全20項目・提出前チェックリスト |
+| [threat-model.html](threat-model.html) | **★危険と防御 総まとめ**（小室さん連携用）— 踏むと終わる10個・エージェント別の壊れ方・全危険43件 |
+| [build-plan.md](build-plan.md) | **★実装の進め方と提出前チェック** — 今夜のゴール・撮る証拠・8項目チェック・記事の目次 |
+| [repo-docs.html](repo-docs.html) | README / DESIGN / ARCHITECTURE / CLAUDE / AGENTS の違い。今回どれを作るか |
+| [agent-jissou.html](agent-jissou.html) | **★コードでエージェントを作るとは** — Copilot Studioとの対比・ループの中身25行・3体の置き場所 |
+
+> 📘 **実装向けの正は `manabi-no-wa/DESIGN.md`。** このフォルダは考える過程の置き場。
+> 迷ったら `spec-v2.html`（最新の仕様）→ `threat-model.html`（危険と防御）の順に見る。
 
 ## サブフォルダ
 

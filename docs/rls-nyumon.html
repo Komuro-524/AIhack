@@ -206,8 +206,10 @@ alter table agent_runs      enable row level security;
 create policy "社員は全員読める" on users
   for select to authenticated using (true);
 
-create policy "自分の行だけ直せる" on users
-  for update to authenticated using (id = auth.uid());
+<span class="c">-- ⚠️ 下の update ポリシーは危険だった。role まで書き換えられてしまう。</span>
+<span class="c">--    users には update ポリシーを作らない → security-check.html の BUG1</span>
+<span class="c">-- create policy "自分の行だけ直せる" on users</span>
+<span class="c">--   for update to authenticated using (id = auth.uid());</span>
 
 <span class="c">-- ③ タグ辞書と知見カード：読むのは全員／書くのはエージェントだけ</span>
 <span class="c">--    （insert のポリシーを作らない＝ブラウザからは書けない）</span>
