@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>チャット対応の設計変更</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:14.5px;line-height:1.85}
+.core b{color:var(--accent)}
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+td.c{text-align:center;white-space:nowrap}
+.col{font-family:var(--f-m);font-size:12px;white-space:nowrap}
+.old{text-decoration:line-through;color:var(--ink2)}
+.new{color:var(--accent);font-weight:700}
+
+/* 統合の図 */
+.merge{display:grid;grid-template-columns:1fr 64px 1fr;gap:12px;align-items:center}
+@media (max-width:700px){.merge{grid-template-columns:1fr;gap:8px}}
+.src{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--k);border-radius:13px;padding:13px 15px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.src .t{font-family:var(--f-d);font-weight:800;font-size:15.5px;color:var(--k)}
+.src .d{font-size:13px;color:var(--ink2);line-height:1.6}
+.src .cut{font-size:12.5px;background:var(--ks);border-radius:9px;padding:6px 10px;line-height:1.55}
+.s1{--k:var(--g1);--ks:var(--g1s)}
+.s2{--k:var(--g3);--ks:var(--g3s)}
+.mid{text-align:center;font-size:22px;color:var(--ink2)}
+@media (max-width:700px){.mid{font-size:18px;transform:rotate(90deg)}}
+.dest{background:var(--accent-soft);border:2px solid var(--accent);border-radius:13px;padding:13px 15px;display:flex;flex-direction:column;gap:6px}
+.dest .t{font-family:var(--f-d);font-weight:800;font-size:15.5px;color:var(--accent)}
+.dest .d{font-size:13px;line-height:1.65}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+@media (max-width:740px){.vs{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+.card .hd{font-family:var(--f-d);font-weight:800;font-size:16.5px;color:var(--k)}
+.card ul{margin:0;padding-left:1.15em;font-size:13.5px;line-height:1.75}
+.cv{--k:var(--g1)}
+.cc{--k:var(--g3)}
+
+.warn{background:var(--hots);border:2px solid var(--hot);border-radius:16px;padding:17px 20px;display:flex;flex-direction:column;gap:10px}
+.warn h3{color:var(--hot)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;line-height:1.8;box-shadow:var(--shadow)}
+pre .c{color:var(--ink2)}
+pre .hi{color:var(--hot);font-weight:700}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">学びの輪 · 設計変更 · Chat</div>
+  <h1>💬 部屋でチャットもできるようにする</h1>
+  <p class="lead">A のトリガーとテーブルがどう変わるか。<strong>結論から言うと 得のほうが大きい。</strong></p>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>変更は小さい。テーブルは1枚のリネームと1枚の昇格だけ。</b><br>
+    そして<strong>トリガーは「会が終わったら」から「会話のかたまりが閉じたら」に一般化される</strong>。音声もチャットも同じ概念で扱えるようになる。
+  </div>
+  <div class="note">📌 <div><strong>そもそも画面はもうチャット前提だった。</strong>小室さんが作っているのは「グループチャットの入室画面」と「トーク画面」のモック。<strong>設計が画面に追いついていなかっただけ</strong>で、こちらを直すのが正しい</div></div>
+</section>
+
+<section>
+  <h2>⏰ トリガーをどう一般化するか</h2>
+  <p class="lead">音声には「終わり」があるがチャットにはない。ここが唯一の難所。</p>
+  <div class="merge">
+    <div class="src s1">
+      <div class="t">🎤 音声</div>
+      <div class="d">通話が切れる＝はっきりした区切り</div>
+      <div class="cut">切れ目：<strong>通話終了</strong></div>
+    </div>
+    <div class="mid">➜</div>
+    <div class="src s2">
+      <div class="t">💬 チャット</div>
+      <div class="d">終わりがない。ずっと続く</div>
+      <div class="cut">切れ目：<strong>30分の沈黙</strong></div>
+    </div>
+  </div>
+  <div class="dest" style="margin-top:4px">
+    <div class="t">🧩 どちらも「会話のかたまりが閉じた」</div>
+    <div class="d">A のトリガーはこれ1つ。<strong>音声かチャットかは中身の違いであって 起動条件の違いではない</strong></div>
+  </div>
+
+  <h3>🤖 切れ目の判定はAIにさせない</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>やり方</th><th>どうなるか</th><th class="c">判定</th></tr></thead>
+    <tbody>
+      <tr><td>メッセージが来るたびに走る</td><td>1行ごとにLLM。<strong>高いうえに文脈が足りない</strong>（1行では知見にならない）</td><td class="c">❌</td></tr>
+      <tr><td>AIに「ここで切っていいか」を判断させる</td><td>A が Lv.3 になってしまい<strong>自律の心臓が2つになる</strong>。Bとの役割分担が崩れる</td><td class="c">❌</td></tr>
+      <tr><td><strong>ルールで切る</strong>（30分沈黙 または 100件）</td><td>安い・読める・壊れにくい。<strong>A は Lv.2 自動化のままでいられる</strong></td><td class="c">✅</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">🫀 <div><strong>自律の心臓は B ひとつに集中させる。</strong>A まで賢くすると「どこが自律なのか」が説明しづらくなる。<strong>あえてルールで切るのは設計判断</strong>であって手抜きではない</div></div>
+</section>
+
+<section>
+  <h2>🗃️ テーブルの変更</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>いま</th><th>これから</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td class="col old">meetings</td><td class="col new">sessions</td><td>「会議」ではなく<strong>会話のかたまり</strong>になった。<code>kind</code> で voice / chat を分ける</td></tr>
+      <tr><td class="col old">transcript_id</td><td class="col new">source_ref</td><td>チャットには元のトランスクリプトがない。<strong>NULL を許す</strong></td></tr>
+      <tr><td class="col">messages <span class="muted">⚪ 画面のため</span></td><td class="col new">messages 🔴 コア</td><td><strong>A の入力になった</strong>ので昇格</td></tr>
+      <tr><td class="col">—</td><td class="col new">messages.session_id</td><td><strong>NULL なら未処理。</strong>これだけで冪等性が出る</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">🔑 <div><strong>二重取り込みの守りが自然に効く。</strong>音声は <code>source_ref</code> が UNIQUE、チャットは <code>session_id</code> が埋まったら処理済み。<strong>A が拾うのは <code>session_id is null</code> の発言だけ</strong>なので、同じ発言を2回拾えない</div></div>
+</section>
+
+<section>
+  <h2>🚨 新しい落とし穴がひとつ</h2>
+  <div class="warn">
+    <h3>AIの発言を A の入力にしてはいけない</h3>
+    <p>B は部屋に書き込む。<strong>「最初の一言」も「呼び水」も messages に入る。</strong></p>
+    <p>それを A が拾うと、<strong>AIが自分の書いた文章から知見カードを作る</strong>ループができる。タグは自己増殖し、知識地図はAIの言葉で埋まっていく。</p>
+    <p>✅ 守りは1行。<code>is_agent = false</code> の発言だけを拾う。</p>
+  </div>
+  <div class="note">✍️ <div><strong>これは記事に書く価値がある。</strong>「エージェントが2体いる系では <strong>片方の出力がもう片方の入力になる</strong>事故が起きる」──気づいて塞いだと書けると③の説得力が上がる</div></div>
+</section>
+
+<section>
+  <h2>⚖️ 音声とチャットで危険の形が逆になる</h2>
+  <div class="vs">
+    <div class="card cv">
+      <div class="hd">🎤 音声</div>
+      <ul>
+        <li>❌ <strong>誤変換する</strong>（知見 → 治験）</li>
+        <li>❌ <strong>話者を取り違える</strong></li>
+        <li>✅ 攻撃しにくい（<strong>声に出すのは目立つ</strong>）</li>
+        <li>❌ 長い ＝ 高い（134分）</li>
+      </ul>
+    </div>
+    <div class="card cc">
+      <div class="hd">💬 チャット</div>
+      <ul>
+        <li>✅ 誤変換しない（<strong>本人が書いた文字</strong>）</li>
+        <li>✅ 話者が確実（<code>user_id</code> が付く）</li>
+        <li>❌ <strong>攻撃しやすい</strong>（黙って貼れる）</li>
+        <li>✅ 短い ＝ 安い</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tw">
+  <table>
+    <thead><tr><th>だから</th><th>どうする</th><th class="c">軸</th></tr></thead>
+    <tbody>
+      <tr><td>チャット由来のカードは信頼できる</td><td><code>confidence</code> を高めに置く。<strong>裏取りが走る回数が減る＝安くなる</strong></td><td class="c">②③</td></tr>
+      <tr><td><strong>チャットのほうが攻撃されやすい</strong></td><td>入口の検査は同じだが、<strong>デモで攻撃を見せるならチャットが最適</strong></td><td class="c">①</td></tr>
+      <tr><td>安い入力と高い入力が同じ流れに来る</td><td><strong>ここでルーティングが効く。</strong>134分の音声と3行のチャットで同じモデルを使う理由がない</td><td class="c">②</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">📸 <div><strong>①の証拠が撮りやすくなった。</strong>これまでは「もくもく会で攻撃文を喋る」動画を撮る予定だった。<strong>チャットに1行貼るだけで済む</strong>。しかも画面に文字が残るので伝わりやすい</div></div>
+</section>
+
+<section>
+  <h2>🎁 ついでに得すること</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>これまでの弱点</th><th>チャットが入ると</th></tr></thead>
+    <tbody>
+      <tr><td><strong>コールドスタート（B10）</strong><br><span class="muted">もくもく会を開くまで何も始まらない</span></td><td><strong>チャットを打てばタグが育ち始める。</strong>会を開かなくても動く。デモも楽になる</td></tr>
+      <tr><td><strong>企てのループが閉じきらない</strong><br><span class="muted">部屋を立てたあと「で いつ話すの」が曖昧だった</span></td><td><strong>部屋を立てた瞬間から会話できる。</strong>9日間のシナリオが素直につながる</td></tr>
+      <tr><td><strong>呼び水が投げにくい</strong><br><span class="muted">音声だけだとAIが割り込めない</span></td><td><strong>B がチャットに1行書くだけ。</strong>実装がいちばん軽い形になる</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>💾 流すSQL</h2>
+<pre><span class="c">-- ① meetings を一般化する</span>
+alter table meetings rename to sessions;
+alter table sessions rename column transcript_id to source_ref;
+alter table sessions alter column source_ref drop not null;   <span class="c">-- チャットには無い</span>
+alter table sessions add column kind text not null default 'voice'
+  check (kind in ('voice','chat'));
+
+<span class="c">-- ② 参照名を合わせる</span>
+alter table knowledge_cards rename column meeting_id to session_id;
+
+<span class="c">-- ③ messages をコアに。未処理かどうかを自分で持つ</span>
+create table messages (
+  id         bigserial primary key,
+  room_id    bigint not null references rooms(id),
+  user_id    uuid references users(id),       <span class="c">-- AIの発言なら null</span>
+  body       text not null,
+  is_agent   boolean not null default false,
+  session_id bigint references sessions(id),  <span class="c">-- ★ null = まだ拾われていない</span>
+  created_at timestamptz not null default now()
+);
+create index on messages (room_id, session_id, created_at);</pre>
+
+  <h3>🔎 A が「閉じたかたまり」を探すクエリ</h3>
+<pre>select room_id,
+       min(created_at) as started_at,
+       max(created_at) as ended_at,
+       count(*)        as n
+from   messages
+where  session_id is null              <span class="c">-- まだ拾っていない</span>
+  and  <span class="hi">is_agent = false</span>          <span class="c">-- ★ AIの発言は入力にしない</span>
+group  by room_id
+having max(created_at) &lt; now() - interval '30 minutes'   <span class="c">-- 沈黙した</span>
+   and count(*) &gt;= 5;                                    <span class="c">-- 短すぎるものは知見にならない</span></pre>
+  <div class="note">🔁 <div>拾ったら <code>sessions</code> を1行つくって、そのメッセージ群の <code>session_id</code> を埋める。<strong>埋めた時点で二度と拾われない</strong></div></div>
+</section>
+
+<section>
+  <h2>📋 変わらないもの</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>もの</th><th>なぜ変わらないか</th></tr></thead>
+    <tbody>
+      <tr><td>🎪 B 幹事</td><td>入力は user_tags と企て。<strong>会話の中身を見ていない</strong>ので影響なし</td></tr>
+      <tr><td>🔍 C 自己分析係</td><td>入力は画面。無関係</td></tr>
+      <tr><td>三重の門</td><td>入口が増えただけで門はそのまま</td></tr>
+      <tr><td>タグの格上げ</td><td>材料が増えるだけ。むしろ<strong>早く育つ</strong></td></tr>
+      <tr><td>管理者ビュー</td><td>そのまま</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer>
+  学びの輪 ／ AI HACK 2026 ／ 2026-09-20。関連 → <a href="data-model.html">data-model.html</a> ／ <a href="agent-split.html">agent-split.html</a>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RLS ってなに</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFEEEA; --surface:#FDFCFA; --sunken:#E4E3DD; --ink:#1D211F; --ink2:#5C625F; --line:#D3D2CB;
+  --accent:#37776A; --accent-soft:#DEEBE7;
+  --g1:#3F6FA8; --g1s:#DEE9F4; --g2:#2E7D63; --g2s:#DCEDE5;
+  --g3:#7B57BC; --g3s:#E7E0F6; --g4:#B36A24; --g4s:#F6E7D5;
+  --hot:#B05252; --hots:#F6E0E0;
+  --shadow:0 1px 2px rgba(29,33,31,.05),0 10px 24px rgba(29,33,31,.07);
+  --f-d:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+  --f-b:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#16191A; --surface:#1E2224; --sunken:#282D2F; --ink:#E9EBE9; --ink2:#A4AAA8; --line:#383E40;
+  --accent:#6DC1B0; --accent-soft:#17332E;
+  --g1:#86B3E2; --g1s:#17293A; --g2:#6BC3A2; --g2s:#16322A; --g3:#B49BE8; --g3s:#271F3A; --g4:#DCA063; --g4s:#33261A;
+  --hot:#E08585; --hots:#3A1F1F;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.75;margin:0;padding-inline:16px;padding-block:28px 72px}
+.wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;line-height:1.35;text-wrap:balance}
+h1{font-family:var(--f-d);font-weight:800;font-size:clamp(26px,5vw,38px)}
+h2{font-family:var(--f-d);font-weight:800;font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-family:var(--f-d);font-weight:800;font-size:16px}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:15px}
+.kicker{font-family:var(--f-m);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.lead{color:var(--ink2);font-size:14px}
+.muted{color:var(--ink2)}
+.core{background:var(--accent-soft);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;font-size:15px;line-height:1.85}
+.core b{color:var(--accent)}
+
+/* 2枚の絵 */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:740px){.two{grid-template-columns:1fr}}
+.arch{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:16px;padding:17px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+.arch .hd{font-family:var(--f-d);font-weight:800;font-size:16.5px;color:var(--k)}
+.stack{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.lay{border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;font-size:13.5px;background:var(--bg);text-align:center;line-height:1.5}
+.lay b{font-family:var(--f-d);display:block;font-size:14px}
+.lay .s{font-size:11.5px;color:var(--ink2)}
+.lay.guard{background:var(--ks);border-color:var(--k);border-width:2px}
+.lay.guard b{color:var(--k)}
+.lay.gone{background:var(--hots);border-color:var(--hot);border-style:dashed}
+.lay.gone b{color:var(--hot)}
+.dn{text-align:center;font-size:17px;color:var(--ink2);line-height:1.1;padding:3px 0}
+.arch .fin{font-size:13px;background:var(--ks);border-radius:10px;padding:9px 12px;line-height:1.7;margin-top:auto}
+.arch .fin b{color:var(--k)}
+.old{--k:var(--g1);--ks:var(--g1s)}
+.new{--k:var(--accent);--ks:var(--accent-soft)}
+
+pre{margin:0;font-family:var(--f-m);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;line-height:1.8;box-shadow:var(--shadow)}
+pre .c{color:var(--ink2)}
+pre .hi{color:var(--hot);font-weight:700}
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+th{font-family:var(--f-d);font-weight:800;font-size:12.5px;background:var(--sunken);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--f-m);font-size:12px;background:var(--sunken);border-radius:5px;padding:1px 6px}
+.col{font-family:var(--f-m);font-size:12px;white-space:nowrap}
+
+.warn{background:var(--hots);border:2px solid var(--hot);border-radius:16px;padding:17px 20px;display:flex;flex-direction:column;gap:10px}
+.warn h3{color:var(--hot)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.7}
+ul{margin:0;padding-left:1.2em}
+footer{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="kicker">Supabase · 5分</div>
+  <h1>🔐 RLS ってなに</h1>
+</header>
+
+<section>
+  <div class="core">
+    🎯 <b>「この行は誰が見ていいか」をテーブル自身に書いておく仕組み。</b><br>
+    書いておくと <strong>DBが勝手に <code>WHERE</code> を足してくれる</strong>。<br>
+    Row Level Security ＝ 行レベルセキュリティ。Postgres の機能。
+  </div>
+</section>
+
+<section>
+  <h2>🧠 SQLで見るとこうなる</h2>
+  <p class="lead">これがいちばん腑に落ちる説明。</p>
+<pre><span class="c">-- アプリが投げるクエリ</span>
+select * from user_tags;
+
+<span class="c">-- DBが実際に実行するもの（RLSが勝手に足す）</span>
+select * from user_tags
+<span class="hi">where (visibility = 'public' or user_id = ログイン中の人)</span>;</pre>
+  <div class="note">💡 <div><strong>つまり「絶対に外せない WHERE 句」をテーブルに貼り付けておく機能。</strong>アプリ側が書き忘れても、DBが必ず足す</div></div>
+</section>
+
+<section>
+  <h2>🚪 なぜ Supabase では必須なのか</h2>
+  <p class="lead">前に作った Java の EC サイトと、いちばん違うのがここ。</p>
+  <div class="two">
+    <div class="arch old">
+      <div class="hd">🏢 これまでのWebアプリ</div>
+      <div class="stack">
+        <div class="lay"><b>🌍 ブラウザ</b><span class="s">利用者</span></div>
+        <div class="dn">↓</div>
+        <div class="lay guard"><b>🛡️ サーバー</b><span class="s">自分で書いたJavaの処理</span></div>
+        <div class="dn">↓</div>
+        <div class="lay"><b>🗃️ DB</b></div>
+      </div>
+      <div class="fin">🛡️ <b>門番はサーバー。</b>「この人にこの行を返していいか」を自分で書いたコードが判断していた。ブラウザはDBに直接さわれない</div>
+    </div>
+    <div class="arch new">
+      <div class="hd">☁️ Supabase</div>
+      <div class="stack">
+        <div class="lay"><b>🌍 ブラウザ</b><span class="s">利用者</span></div>
+        <div class="dn">↓</div>
+        <div class="lay gone"><b>🚫 サーバーがいない</b><span class="s">直接つながる</span></div>
+        <div class="dn">↓</div>
+        <div class="lay guard"><b>🗃️ DB ＋ 🛡️RLS</b><span class="s">門番がDBの中にいる</span></div>
+      </div>
+      <div class="fin">🛡️ <b>門番がDBの中に引っ越した。</b>ブラウザがDBを直接たたくので、<strong>RLSを書かないと門番が誰もいない</strong></div>
+    </div>
+  </div>
+  <div class="note">🏠 <div>たとえるなら<strong>マンションのオートロック</strong>。今までは1階に受付の人がいて、来た人を確認してから通していた。Supabase は受付がいなくて、誰でも各部屋の前まで来られる。<strong>だから部屋ごとに鍵が要る</strong></div></div>
+</section>
+
+<section>
+  <h2>⚠️ 書かないとどうなるか</h2>
+  <div class="warn">
+    <h3>anon key は ブラウザに焼き込まれている ＝ 公開されている</h3>
+    <p><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> は、ページのソースを見れば誰でも拾える。<strong>それは設計どおりで、問題ない。</strong>anon key は「公開される前提の鍵」だから。</p>
+    <p>問題は<strong>その鍵で何ができるか</strong>。RLSを書いていないと、拾った人が自分のPCから</p>
+    <pre style="background:var(--surface)">select * from user_tags;</pre>
+    <p>を投げるだけで、<strong>非公開にしたはずのタグも全部返ってくる</strong>。画面で隠していても関係ない。画面を通さずにDBを直接たたかれるから。</p>
+  </div>
+  <div class="note">🎯 <div>だから <code>user_tags.visibility = 'private'</code>（隠しタグ）は、<strong>RLSを書いて初めて本物になる。</strong>ここは採点①で突かれたら一発で崩れる場所</div></div>
+</section>
+
+<section>
+  <h2>🧨 よくあるハマりどころ</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>起きること</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td><strong>RLSを有効にしたらデータが1件も出なくなった</strong></td><td>有効にしてポリシーを1つも書かないと<strong>全部拒否</strong>になる。「誰も入れない部屋」の状態。ポリシーを書けば出る</td></tr>
+      <tr><td>エージェントは動くのに画面だけ空っぽ</td><td>正常。<strong><code>service_role</code> キーはRLSを素通りする</strong>ので、サーバー側のエージェントは影響を受けない</td></tr>
+      <tr><td>Supabase の画面で赤い警告が出ている</td><td>RLSが無効なテーブルがあると教えてくれる。<strong>提出前に全部緑にする</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>📋 学びの輪ではこうする</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>テーブル</th><th>読める人</th><th>書ける人</th></tr></thead>
+    <tbody>
+      <tr><td class="col">users</td><td>社員なら全員</td><td>自分の行だけ本人</td></tr>
+      <tr><td class="col">tags</td><td>社員なら全員</td><td>🎙️A だけ</td></tr>
+      <tr><td class="col">knowledge_cards</td><td>社員なら全員</td><td>🎙️A だけ</td></tr>
+      <tr><td class="col">user_tags</td><td><strong>公開タグは全員 ／ 非公開は本人だけ</strong></td><td>公開設定だけ本人。中身は 🎙️A 🔍C</td></tr>
+      <tr><td class="col">invitations</td><td><strong>自分宛だけ</strong></td><td>返事だけ本人</td></tr>
+      <tr><td class="col">quests / quest_steps</td><td>誰も読めない（エージェント専用）</td><td>🎪B だけ</td></tr>
+      <tr><td class="col">agent_runs</td><td>誰も読めない</td><td>全エージェント</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted" style="font-size:13px">※「🎙️A だけ」は <code>service_role</code> キーで動くサーバー側という意味。ポリシーを作らなければブラウザからは書けない</p>
+</section>
+
+<section>
+  <h2>💾 そのまま貼れるSQL</h2>
+  <p class="lead">テーブルを作ったあとに、これを実行する。</p>
+<pre><span class="c">-- ① まず全テーブルで有効にする（これを忘れると素通り）</span>
+alter table users           enable row level security;
+alter table tags            enable row level security;
+alter table knowledge_cards enable row level security;
+alter table user_tags       enable row level security;
+alter table quests          enable row level security;
+alter table quest_steps     enable row level security;
+alter table invitations     enable row level security;
+alter table agent_runs      enable row level security;
+
+<span class="c">-- ② 社員名簿：ログインしていれば読める／自分の行だけ直せる</span>
+create policy "社員は全員読める" on users
+  for select to authenticated using (true);
+
+create policy "自分の行だけ直せる" on users
+  for update to authenticated using (id = auth.uid());
+
+<span class="c">-- ③ タグ辞書と知見カード：読むのは全員／書くのはエージェントだけ</span>
+<span class="c">--    （insert のポリシーを作らない＝ブラウザからは書けない）</span>
+create policy "タグは全員読める" on tags
+  for select to authenticated using (true);
+
+create policy "知見カードは全員読める" on knowledge_cards
+  for select to authenticated using (true);
+
+<span class="c">-- ④ ★ ここが本番：公開タグは全員／非公開は本人だけ</span>
+create policy "公開は全員 非公開は本人だけ" on user_tags
+  for select to authenticated
+  using (<span class="hi">visibility = 'public' or user_id = auth.uid()</span>);
+
+create policy "公開設定は本人が変えられる" on user_tags
+  for update to authenticated using (user_id = auth.uid());
+
+<span class="c">-- ⑤ 打診：自分宛だけ見えて 自分だけ返事できる</span>
+create policy "自分宛の打診だけ見える" on invitations
+  for select to authenticated using (user_id = auth.uid());
+
+create policy "自分宛の打診に返事できる" on invitations
+  for update to authenticated using (user_id = auth.uid());
+
+<span class="c">-- ⑥ 企て・判断ログ・実行記録はポリシーを作らない</span>
+<span class="c">--    ＝ ブラウザからは一切見えない。エージェント（service_role）だけが触る</span></pre>
+  <div class="note">🔑 <div><code>auth.uid()</code> は「いまログインしている人のID」。Supabase が自動で埋めてくれるので、こちらで渡す必要はない</div></div>
+</section>
+
+<section>
+  <h2>📸 これは証拠にもなる</h2>
+  <div class="note">🎬 <div><strong>①の証拠が1本増える。</strong>ログイン中の人の anon key で、他人の非公開タグを <code>select</code> しても<strong>0件しか返ってこない画面</strong>。「画面で隠した」ではなく「DBが返さない」を見せられる</div></div>
+</section>
+
+<footer>
+  学びの輪 ／ AI HACK 2026 ／ 2026-09-20。関連 → <a href="data-model.html">data-model.html</a>
+</footer>
+
+</div>
+</body>
+</html>

@@ -12,6 +12,10 @@
 | [gap-check.html](gap-check.html) | **設計の穴チェック** — 16個の見落とし。提出でpublicになるトランスクリプトの扱いは赤 |
 | [agent-split.html](agent-split.html) | **2体のエージェント設計** — 記録係と幹事の役割分担・権限分離・危険20件と対策・9日間の「企て」シナリオ |
 | [scoring-map.html](scoring-map.html) | **採点基準5軸マップ** — 設計ぜんぶを50点の配点に組み直したもの。打ち手・撮る証拠・記事の目次案 |
+| [data-model.html](data-model.html) | **3体目のエージェントとテーブル設計** — 自己分析係の実装案・データの背骨・テーブル13枚・SupabaseのSQL |
+| [rls-nyumon.html](rls-nyumon.html) | **RLS入門** — なぜSupabaseでは必須か。学びの輪の各テーブルのポリシーとSQL |
+| [admin-view.html](admin-view.html) | **管理者ビュー** — 人材育成担当の画面。候補タグの拒否権・弾いた語の復活・知識地図の置き場 |
+| [chat-update.html](chat-update.html) | **チャット対応の設計変更** ★最新 — Aのトリガー一般化・meetings→sessions・messagesの昇格 |
 
 ## サブフォルダ
 
