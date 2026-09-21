@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">
+<title>まなびのわ 記事構成ボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@700;900&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --surface-2:#eef2f5; --ink:#17212b; --muted:#5b6876; --line:#d9dfe6;
+  --accent:#0b7a75; --accent-soft:#dcf0ee; --warn:#a85a00; --warn-soft:#fbeed9; --ok:#1f7a3d; --bad:#b3372b;
+  --p1:#1f6fb2; --p2:#8a4b7d; --p3:#2f8a4a; --p4:#b0492c; --p5:#9a6b10; --p6:#237786;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  --f-disp:"Zen Kaku Gothic New","Noto Sans JP","Hiragino Sans",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e141a; --surface:#161e26; --surface-2:#1d2731; --ink:#e8eef4; --muted:#9aa8b6; --line:#2b3745;
+    --accent:#4cc5bd; --accent-soft:#12403d; --warn:#f0b060; --warn-soft:#3a2b14; --ok:#6fd18b; --bad:#ff8a7a;
+    --p1:#6fb1ee; --p2:#d494c6; --p3:#71cf8b; --p4:#f0917a; --p5:#e2b45a; --p6:#66c3d4;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e141a; --surface:#161e26; --surface-2:#1d2731; --ink:#e8eef4; --muted:#9aa8b6; --line:#2b3745;
+  --accent:#4cc5bd; --accent-soft:#12403d; --warn:#f0b060; --warn-soft:#3a2b14; --ok:#6fd18b; --bad:#ff8a7a;
+  --p1:#6fb1ee; --p2:#d494c6; --p3:#71cf8b; --p4:#f0917a; --p5:#e2b45a; --p6:#66c3d4;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-disp);line-height:1.35;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,5vw,38px);font-weight:900;letter-spacing:.01em}
+h2{font-size:clamp(21px,3.4vw,27px);font-weight:900;margin-top:0}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+.mono{font-family:var(--f-mono);font-size:.92em}
+header.top{padding-block:32px 18px}
+header.top .sub{color:var(--muted);margin-top:8px;max-width:60ch}
+.stamp{display:inline-flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.stamp span{font-size:12px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 10px;color:var(--muted)}
+nav.jump{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:8px;display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
+nav.jump a{font-size:13px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+nav.jump a:hover,nav.jump a:focus-visible{border-color:var(--accent);outline:2px solid var(--accent-soft)}
+section{padding-block:36px 8px}
+section > .lead{color:var(--muted);margin-top:6px;max-width:68ch}
+.grid{display:grid;gap:14px;margin-top:18px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(310px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{margin-bottom:6px}
+.card .k{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.big{font-family:var(--f-disp);font-weight:900;font-size:30px;line-height:1.1;color:var(--accent)}
+.callout{border-radius:10px;padding:14px 18px;margin-top:18px;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line))}
+.callout.info{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.callout b{font-weight:700}
+.callout ul{margin:6px 0 0;padding-left:1.2em}
+.scroll{overflow-x:auto;margin-top:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+thead th{background:var(--surface-2);font-weight:700;font-size:12.5px;white-space:nowrap}
+td.nw{white-space:nowrap}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:4px;padding:0 7px;margin-right:4px;background:var(--surface-2);border:1px solid var(--line);white-space:nowrap}
+.ax{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+/* bars */
+.bars{display:grid;gap:8px;margin-top:14px}
+.bar{display:grid;grid-template-columns:minmax(120px,190px) 1fr 64px;align-items:center;gap:10px;font-size:13.5px}
+.bar .track{position:relative;height:14px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.bar .fill{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:3px}
+.bar .num{font-family:var(--f-mono);text-align:right;color:var(--muted)}
+.len .track::before{content:"";position:absolute;left:53.3%;width:13.4%;top:0;bottom:0;background:color-mix(in srgb,var(--warn) 45%,transparent);z-index:2}
+.len .fill{background:var(--muted);opacity:.75}
+.legend{font-size:12.5px;color:var(--muted);margin-top:8px}
+.sw{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:4px;border-radius:2px}
+/* flow */
+.flow{display:grid;gap:0;margin-top:18px}
+.row{display:grid;grid-template-columns:44px 1fr;gap:12px}
+.rail{display:flex;flex-direction:column;align-items:center}
+.rail .n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;flex:none}
+.rail .n.opt{background:var(--surface-2);color:var(--muted);border:1px dashed var(--muted)}
+.rail .ln{width:2px;flex:1;background:var(--line);margin-block:4px}
+.row:last-child .rail .ln{display:none}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:10px}
+.step h3{font-size:16px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.step .meta{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:6px;font-size:13px;color:var(--muted)}
+.step .meta b{color:var(--ink);font-weight:500}
+.step.star{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.st{font-size:12px;border-radius:999px;padding:0 9px;border:1px solid var(--line);white-space:nowrap}
+.st.ok{color:var(--ok)} .st.wip{color:var(--warn)} .st.todo{color:var(--bad)}
+/* personas */
+.pc{border-top:5px solid var(--pc);padding-top:14px}
+.pc h3{color:var(--pc);font-size:19px}
+.pc .one{font-weight:500;margin-bottom:8px}
+.spec{display:grid;grid-template-columns:5.2em 1fr;gap:3px 10px;font-size:13px;margin-block:8px}
+.spec dt{color:var(--muted)} .spec dd{margin:0}
+.title-ex{background:color-mix(in srgb,var(--pc) 9%,var(--surface));border-radius:8px;padding:8px 12px;font-family:var(--f-disp);font-weight:700;font-size:15px;line-height:1.5;margin-block:8px}
+.sample{border-left:3px solid var(--pc);padding:2px 0 2px 12px;margin-block:8px;font-size:13.5px;color:var(--ink)}
+.sample small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.pc .fit{font-size:12.5px;color:var(--muted);margin-top:6px}
+.p1{--pc:var(--p1)} .p2{--pc:var(--p2)} .p3{--pc:var(--p3)} .p4{--pc:var(--p4)} .p5{--pc:var(--p5)} .p6{--pc:var(--p6)}
+/* matrix */
+.matrix{min-width:980px}
+.matrix th.ph{color:var(--pc);cursor:pointer;background:color-mix(in srgb,var(--pc) 10%,var(--surface));border-bottom:3px solid var(--pc);white-space:normal;min-width:150px}
+.matrix th.ph:hover,.matrix th.ph:focus-visible{outline:2px solid var(--pc)}
+.matrix td.rl{position:sticky;left:0;background:var(--surface-2);font-weight:700;font-size:12.5px;min-width:110px;z-index:1}
+.matrix thead th.rl{position:sticky;left:0;z-index:2}
+.matrix td.hl{background:color-mix(in srgb,var(--pc) 13%,var(--surface));font-weight:500}
+.matrix td.ty{color:var(--muted);font-style:normal}
+/* score */
+.sc{font-family:var(--f-mono);font-weight:700;text-align:center}
+.g{color:var(--ok)} .m{color:var(--warn)} .b{color:var(--bad)}
+.pick{border:2px solid var(--accent);border-radius:12px;padding:18px 20px;margin-top:20px;background:var(--surface)}
+.pick h3{color:var(--accent);margin-bottom:8px}
+.mix{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.mix div{border-radius:8px;padding:10px 12px;background:color-mix(in srgb,var(--pc) 10%,var(--surface));border-top:4px solid var(--pc);font-size:13.5px}
+.mix b{display:block;color:var(--pc)}
+ol.dec{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+ol.dec li{display:grid;grid-template-columns:28px 1fr;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+ol.dec .box{width:20px;height:20px;border:2px solid var(--muted);border-radius:4px;margin-top:3px}
+ol.dec b{display:block}
+ol.dec span{color:var(--muted);font-size:13.5px}
+.tl{display:flex;gap:0;margin-top:14px;overflow-x:auto}
+.tl div{flex:1 0 128px;border-top:4px solid var(--line);padding:8px 8px 0 0;font-size:12.5px;color:var(--muted)}
+.tl div b{display:block;color:var(--ink);font-size:13px}
+.tl .hot{border-top-color:var(--accent)} .tl .end{border-top-color:var(--bad)}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+footer ul{margin:6px 0 0;padding-left:1.2em}
+@media (max-width:560px){
+  .bar{grid-template-columns:104px 1fr 54px;font-size:12.5px}
+  .row{grid-template-columns:36px 1fr;gap:8px}
+  .spec{grid-template-columns:4.6em 1fr}
+}
+@media (prefers-reduced-motion:no-preference){ .card,.step{transition:border-color .15s} }
+
+.lay{display:flex;height:36px;border-radius:8px;overflow:hidden;margin-top:14px;font-size:12px;font-weight:700}
+.lay div{display:grid;place-items:center;white-space:nowrap;overflow:hidden;padding-inline:4px}
+.lay .o{background:color-mix(in srgb,var(--p2) 22%,var(--surface));color:var(--p2)}
+.lay .i{background:var(--surface-2);color:var(--muted)}
+.lay .c{background:var(--accent-soft);color:var(--accent)}
+</style>
+<div class="wrap">
+<header class="top">
+  <h1>🗞️ まなびのわ 記事構成ボード</h1>
+  <p class="sub">第1回の記事の傾向 → 記事の構成 → 6つのトーン案。</p>
+</header>
+
+<nav class="jump" aria-label="ページ内移動">
+  <a href="#policy">🎯 方針</a><a href="#trend">🔍 傾向</a><a href="#outline">🗺️ 構成</a><a href="#tone">🎭 6つのトーン</a><a href="#matrix">📊 見出し比較</a><a href="#judge">⚖️ 判断</a>
+</nav>
+
+<section id="policy">
+  <h2>🎯 方針</h2>
+  <p class="lead">記事は3つの層で組みます。<b>骨格は審査軸の証拠</b>で 外側に想いと出発点を置きます。</p>
+  <div class="grid g3">
+    <div class="card"><div class="k">外側 / 冒頭</div><h3>💛 勉強したい人が集まる場所</h3><p>勉強コミュニティを運営する2人が「もっと話したい」から作った。ここは<b>人が集まる場所の提供</b>だから 要望に合わせて機能を足していける。</p></div>
+    <div class="card"><div class="k">骨格 / 全体の約6割</div><h3>🦴 5軸の証拠</h3><p>セキュリティ・コスパ・堅牢性・自律性・独創性を<b>止めた画面・レシート・壊して直す動画</b>で見せる。一次審査は記事とリポジトリだけで決まる。</p></div>
+    <div class="card"><div class="k">外側 / 終盤</div><h3>🌱 出発点は正直に</h3><p>「初めてだった」は<b>出発点</b>として書く。結果(①③)の弱さは書かず 穴の位置を正確に書く。姿勢は事実(何を作らなかったか・5日間の進め方)で語る。</p></div>
+  </div>
+</section>
+
+<section id="trend">
+  <h2>🔍 第1回8本の傾向</h2>
+  <p class="lead">公開されていた第1回の参加者記事8本を全文で分析しました(受賞チームには限定できていません)。字数は取得ツールの推定で±1割ほどです。</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>記事</th><th>字数</th><th>文体</th><th>冒頭の型</th><th>図表</th><th>締めの型</th><th>OrcaRouterの置き場</th></tr></thead>
+    <tbody>
+    <tr><td><b><a href="https://qiita.com/jksoft/items/65f7824679ddf171a93d" target="_blank" rel="noopener">SocraMetry</a></b><br><span class="tag">OrcaRouter賞※</span></td><td class="nw">約14,000</td><td>敬体・内省(タグ #ポエム)</td><td>観察シーンから入り「答えを取り上げる」へ反転</td><td>画像8・表4・図2</td><td>読者への問い2つ</td><td>技術節で詳述</td></tr>
+    <tr><td><b><a href="https://qiita.com/t-ry/items/ba3bf2973a3b52641746" target="_blank" rel="noopener">泣きやみなさいわが子よ</a></b></td><td class="nw">12,000〜15,000</td><td>敬体・宣言的</td><td>成果を直接提示→「育児を任せるものではない」と範囲限定</td><td>表4・コード2・ASCII図</td><td>技術より倫理が難しかった</td><td>「判断と安全制御の中心」と見出しに</td></tr>
+    <tr><td><b><a href="https://qiita.com/a2239154301/items/ec0dd58a85dbf4db759b" target="_blank" rel="noopener">CROWD WEATHER</a></b></td><td class="nw">12,000〜14,000</td><td>である調+口語</td><td>「エンジニアではありません」と自己紹介</td><td>画像5〜6・表3・図2</td><td>使命感+連絡先</td><td>コスト節とセキュリティ節に分散</td></tr>
+    <tr><td><b><a href="https://qiita.com/araidon/items/466dd1b6d5421e7ae5fe" target="_blank" rel="noopener">Routeoff</a></b></td><td class="nw">約9,000</td><td>段落中心のナラティブ</td><td>背景→大会→成果物</td><td>画像5・表2・図1</td><td>謝辞と感謝</td><td>実測を表で+末尾に謝辞</td></tr>
+    <tr><td><b><a href="https://qiita.com/tokyosini573/items/85ba4eec246a83c2aa33" target="_blank" rel="noopener">ツマヅキ</a></b></td><td class="nw">約7,500</td><td>常体・口語</td><td>「こんにちは teamKです」+数字対比タイトル</td><td>表8・画像4</td><td>「数字で見つけられるように」</td><td>「飾りではなく企画の成立条件」独立節</td></tr>
+    <tr><td><b><a href="https://qiita.com/RyogaTakao/items/8fb3b300dfdd95db4728" target="_blank" rel="noopener">Ergarch</a></b></td><td class="nw">約7,300</td><td>である/です混在</td><td>「〜ではありません」と誤解を先に訂正</td><td>表2・式3・コード4</td><td>成果→制約→展望→学び→感謝</td><td>独立節(全体の約1/6)</td></tr>
+    <tr><td><b><a href="https://qiita.com/iineineno03k/items/dd76886fce0fbbfae492" target="_blank" rel="noopener">KYAKUMAP</a></b></td><td class="nw">約6,500</td><td>敬体・説明体</td><td>審査基準8項目を冒頭で列挙</td><td>画像4+管理画面2・図1・コード2</td><td>設計思想を再度言い切る</td><td>システム構成の3小節</td></tr>
+    <tr><td><b><a href="https://qiita.com/tmyymmt/items/48429e733db7c0311325" target="_blank" rel="noopener">pakulist</a></b></td><td class="nw">約3,500</td><td>敬体・団体語調</td><td>「断定しない」と価値判断を先に</td><td>表3・図1</td><td>価値観で締める</td><td>中盤の試作1節</td></tr>
+    </tbody></table></div>
+  <p class="legend">※ SocraMetryのOrcaRouter賞はチームのHACKATHON.md記載です。公的ソースでは未確認です。</p>
+
+  <h3 style="margin-top:26px">📏 字数の分布 (灰=8本 / 橙帯=提案 8,000〜10,000字)</h3>
+  <div class="bars len" role="img" aria-label="第1回8本の字数の分布。中央値は約8,000字で提案は8,000〜10,000字">
+    <div class="bar"><span>SocraMetry</span><div class="track"><div class="fill" style="width:93.3%"></div></div><span class="num">14,000</span></div>
+    <div class="bar"><span>泣きやみなさい</span><div class="track"><div class="fill" style="width:90%"></div></div><span class="num">13,500</span></div>
+    <div class="bar"><span>CROWD WEATHER</span><div class="track"><div class="fill" style="width:86.7%"></div></div><span class="num">13,000</span></div>
+    <div class="bar"><span>Routeoff</span><div class="track"><div class="fill" style="width:60%"></div></div><span class="num">9,000</span></div>
+    <div class="bar"><span>ツマヅキ</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="num">7,500</span></div>
+    <div class="bar"><span>Ergarch</span><div class="track"><div class="fill" style="width:48.7%"></div></div><span class="num">7,300</span></div>
+    <div class="bar"><span>KYAKUMAP</span><div class="track"><div class="fill" style="width:43.3%"></div></div><span class="num">6,500</span></div>
+    <div class="bar"><span>pakulist</span><div class="track"><div class="fill" style="width:23.3%"></div></div><span class="num">3,500</span></div>
+  </div>
+  <p class="legend">横軸は0〜15,000字。範囲で読み取れた記事は中央付近の値で描いています。</p>
+
+  <h3 style="margin-top:26px">🧩 8本のうち何本が書いていたか(見出しから数えた概算)</h3>
+  <div class="bars" role="img" aria-label="各要素を書いていた記事数。AIにさせないこと8本 OrcaRouter見出し6本 限界と今後6本 コスト実測5本 失敗談5本 セキュリティ独立節3本 壊して復旧2本">
+    <div class="bar"><span>🚫 AIにさせないこと</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">8/8</span></div>
+    <div class="bar"><span>🐋 OrcaRouterが見出しに</span><div class="track"><div class="fill" style="width:75%"></div></div><span class="num">6/8</span></div>
+    <div class="bar"><span>🕳️ 限界と今後</span><div class="track"><div class="fill" style="width:75%"></div></div><span class="num">6/8</span></div>
+    <div class="bar"><span>💴 コストの数字</span><div class="track"><div class="fill" style="width:62.5%"></div></div><span class="num">5/8</span></div>
+    <div class="bar"><span>🪤 失敗談・学び</span><div class="track"><div class="fill" style="width:62.5%"></div></div><span class="num">5/8</span></div>
+    <div class="bar"><span>🛡️ セキュリティ独立節</span><div class="track"><div class="fill" style="width:37.5%"></div></div><span class="num">3/8</span></div>
+    <div class="bar"><span>🔨 壊して復旧</span><div class="track"><div class="fill" style="width:25%"></div></div><span class="num">2/8</span></div>
+  </div>
+
+  <div class="grid g3">
+    <div class="card"><h3>🚫 「AIにさせないこと」が背骨</h3><p>答えを出させない・計算させない・断定させない。<b>8本すべて</b>が設計原則として掲げていた。締めの一言に置く記事も多い。</p></div>
+    <div class="card"><h3>🔢 数字は比較相手つき</h3><p>「$39.98→$4.23」「45.96秒→2.48秒」のように<b>Before/After</b>で出す。<b>実測と試算を分けて</b>書く記事ほど信頼された。</p></div>
+    <div class="card"><h3>📋 表が主役でコードは脇役</h3><p>表は1〜8個。コードは0〜4ブロック。図は<b>Mermaid</b>が中心。画像ゼロの記事も3本あった。</p></div>
+    <div class="card"><h3>🙇 限界は自分から書く</h3><p>「主張すること/しないこと」「現時点の制約」など<b>穴の位置を先に言う</b>型が6本。誠実さが読み味になっていた。</p></div>
+    <div class="card"><h3>🐋 OrcaRouterは宣伝にしない</h3><p>「選んだ理由」と「実測」で語る。<b>飾りではなく成立条件</b>という言い方が刺さっていた。AI HACKへの言及は冒頭と末尾が多い。</p></div>
+    <div class="card" style="border-color:var(--accent)"><h3>🕳️ 今回の空白地帯</h3><p><b>壊して直す(③)は2/8</b>だけ。第1回の採点軸に無かったから。5日間で最も差がつく項目と言われたここを<b>厚く書けば差別化</b>になる。</p></div>
+  </div>
+
+  <div class="callout info"><b>🔁 採点軸が変わっています</b> 第1回は8項目(課題実在性・LLMコスト・セキュリティなど)。今回は<b>①セキュリティ ②コスパ ③堅牢性 ④自律性 ⑤独創性</b>の5軸。見出しは今回の5軸に揃えます。</div>
+</section>
+
+<section id="outline">
+  <h2>🗺️ 記事の構成</h2>
+  <p class="lead">全16章で<b>約9,600字</b>(目安)。一次審査は記事とリポジトリだけで決まるので 骨格は証拠を探しやすく置きます。</p>
+  <div class="lay" role="img" aria-label="字数の配分。想い9%・導入13%・骨格60%・出発点と締め18%"><div class="o" style="flex:9.4">想い</div><div class="i" style="flex:12.5">導入</div><div class="c" style="flex:60.4">骨格(5軸の証拠)</div><div class="o" style="flex:17.7">姿勢</div></div>
+  <p class="legend"><b>想い</b>=節0〜1 / <b>導入</b>=節2〜3 / <b>骨格</b>=節4〜12 / <b>姿勢</b>=節13〜15(出発点・穴・まとめ)。想いと姿勢を合わせて約3割です。</p>
+
+  <div class="callout"><b>👀 読者テスト: まなびのわを知らない人が節3までに答えられること</b>
+    <ul><li>誰の どんな困りごとを解くのか(人材育成担当が 誰が何を知っているか見えない)</li><li>AIは何をして 人は何をするのか(AIが勉強会の場を立てる/人は「やるよ」と言うだけ)</li><li>使うとどんな画面で何が起きるのか(画面3枚)</li></ul></div>
+
+  <div class="flow">
+    <div class="row"><div class="rail"><div class="n">0</div><div class="ln"></div></div><div class="step"><h3>冒頭 <span class="tag ax">⑤</span><span class="tag">約300字</span></h3><div class="meta"><span>置くもの</span><b>タイトル・3行要約・デモGIF・「AIにさせないこと」の宣言(誤解の先制訂正)</b><span>第1回の型</span><b>Ergarch「3行でわかる」・pakulist「断定しない」を先に</b><span>状態</span><b><span class="st todo">⏳ デモGIF待ち</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">1</div><div class="ln"></div></div><div class="step star"><h3>なぜ作ったか — 勉強したい人が集まる場所 <span class="tag ax">⑤</span><span class="tag">🆕 想い</span><span class="tag">約600字</span></h3><div class="meta"><span>置くもの</span><b>2人がそれぞれ運営する勉強コミュニティ・「勉強したい人ともっと話したい」・ここは人が集まる場所で要望に合わせて機能を足せる</b><span>第1回の型</span><b>CROWD WEATHER「AIハッカソンに出るきっかけ」・KYAKUMAP「インタビューから見つけた課題」</b><span>状態</span><b><span class="st wip">🟡 2人の言葉で書く</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">2</div><div class="ln"></div></div><div class="step"><h3>誰のどの30分が消えるのか <span class="tag ax">⑤</span><span class="tag">約500字</span></h3><div class="meta"><span>置くもの</span><b>場を1回立てる手間の内訳表(READMEにある)</b><span>状態</span><b><span class="st ok">✅ 素材あり</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">3</div><div class="ln"></div></div><div class="step star"><h3>「まなびのわ」を30秒で <span class="tag ax">⑤</span><span class="tag">🆕 知らない人向け</span><span class="tag">約700字</span></h3><div class="meta"><span>置くもの</span><b>一言定義+1サイクルの図(集まる→残る→知る→つながる)+画面3枚+用語ミニ辞典(知見カード・ラベル・幹事・企て)</b><span>第1回の型</span><b>CROWD WEATHER「30秒で何をするか」・Ergarch「3行でわかる」+利用フロー</b><span>状態</span><b><span class="st wip">🟡 図と画面は小室さんのモックから</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">4</div><div class="ln"></div></div><div class="step"><h3>3体のエージェントと「口を持つのはBだけ」 <span class="tag ax">④</span><span class="tag ax">①</span><span class="tag">約600字</span></h3><div class="meta"><span>置くもの</span><b>エージェント設計図(DESIGN §2)。機能でなく権限を分けた話</b><span>状態</span><b><span class="st ok">✅</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">5</div><div class="ln"></div></div><div class="step"><h3>Bは「立てない」を選べる <span class="tag ax">④</span><span class="tag">約600字</span></h3><div class="meta"><span>置くもの</span><b>quest_stepsの判断ログ(skip/waitの理由つき)。停止条件はコードで持つ</b><span>状態</span><b><span class="st ok">✅</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">6</div><div class="ln"></div></div><div class="step"><h3>名前で照合するのをやめた <span class="tag ax">①</span><span class="tag">★いちばん書きたい</span><span class="tag">約800字</span></h3><div class="meta"><span>置くもの</span><b>空白1個で社員が4人増えた→user_id付き保存→外部キー違反で止まる画面</b><span>状態</span><b><span class="st wip">🟡 スクショ待ち</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">7</div><div class="ln"></div></div><div class="step"><h3>伏せるものと止めるもの <span class="tag ax">①</span><span class="tag">約400字</span></h3><div class="meta"><span>置くもの</span><b>ガードレールのテスト2枚(マスク/ブロック)。課金$0で撮影</b><span>状態</span><b><span class="st ok">✅ 撮影済み</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">8</div><div class="ln"></div></div><div class="step"><h3>autoをやめて測って決めた <span class="tag ax">②</span><span class="tag">★数字の主役</span><span class="tag">約800字</span></h3><div class="meta"><span>置くもの</span><b>3本の取り込みで$0.0375→$0.00085(97.7%減)・autoは費用が8.5倍ぶれた</b><span>第1回の型</span><b>Before/After+実測と試算の分離</b><span>状態</span><b><span class="st ok">✅</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">9</div><div class="ln"></div></div><div class="step"><h3>安くしたら育ちかけの知識が捨てられていた <span class="tag ax">②</span><span class="tag ax">③</span><span class="tag ax">④</span><span class="tag">約600字</span></h3><div class="meta"><span>置くもの</span><b>捨てられていたタグの表→候補として拾う修正の前後</b><span>第1回の型</span><b>失敗談(5/8が書いていた)</b><span>状態</span><b><span class="st wip">🟡 修正後の実行待ち</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">10</div><div class="ln"></div></div><div class="step star"><h3>壊して直す <span class="tag ax">③</span><span class="tag">★空白地帯</span><span class="tag">約900字</span></h3><div class="meta"><span>置くもの</span><b>途中で殺して再実行・二重投入・誤変換・モデル落ち(動画)</b><span>第1回の型</span><b>専用節は2/8だけ → 厚く書けば差別化</b><span>状態</span><b><span class="st todo">⏳ 動画待ち</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">11</div><div class="ln"></div></div><div class="step"><h3>任せるところと任せないところ <span class="tag ax">④</span><span class="tag">🆕 表を追加</span><span class="tag">約500字</span></h3><div class="meta"><span>置くもの</span><b>人の介在点は4か所の図+AI/コード/人の役割分担表(Ergarch型)</b><span>状態</span><b><span class="st ok">✅</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">12</div><div class="ln"></div></div><div class="step"><h3>OrcaRouterをどう使ったか <span class="tag">独立章</span><span class="tag">約600字</span></h3><div class="meta"><span>置くもの</span><b>ルーター3本のカード画面・Named Router・無料モデル・請求との突き合わせ</b><span>状態</span><b><span class="st ok">✅ 撮影済み</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">13</div><div class="ln"></div></div><div class="step star"><h3>2人とも初めてだった作り方 <span class="tag">🆕 出発点の開示</span><span class="tag">約800字</span></h3><div class="meta"><span>置くもの</span><b>2人それぞれの「元々知らなかったこと→どう学んだか」の表・Claudeに聞いたこと・何を作らなかったか・5日間の進め方</b><span>書き方</span><b>出発点は正直に書く / 結果(①③)の弱さは書かない → 穴は節14で正確に</b><span>第1回の型</span><b>Codex/Claude Codeの使い方章(3〜4/8)・CROWD WEATHER「非エンジニア2人の共同開発で実際に起きたこと」</b><span>状態</span><b><span class="st wip">🟡 2人のClaudeに聞いてまとめる</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">14</div><div class="ln"></div></div><div class="step"><h3>穴の位置と これから育てたいこと <span class="tag">限界と今後</span><span class="tag">約600字</span></h3><div class="meta"><span>置くもの</span><b>範囲外の表(SSO・マルチテナント・カレンダー実連携など)+将来機能(知識地図・スキルシート・知見ビュー・勉強部屋)の置き場。穴がないふりをしない・場だから育てられる</b><span>第1回の型</span><b>限界・今後を書いた記事は6/8</b><span>状態</span><b><span class="st ok">✅ DESIGN §10</span></b></div></div></div>
+<div class="row"><div class="rail"><div class="n">15</div><div class="ln"></div></div><div class="step"><h3>まとめとリンク <span class="tag">約300字</span></h3><div class="meta"><span>置くもの</span><b>リポジトリ・デモ・#AIHACK #OrcaRouter・謝辞</b><span>第1回の型</span><b>OrcaRouterとAI HACKへの言及は冒頭と末尾</b></div></div></div>
+  </div>
+
+  <h3 style="margin-top:26px">🌱 出発点の書き方(節13)</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>✅ 書く(出発点)</th><th>❌ 書かない(結果の自白)</th></tr></thead>
+    <tbody>
+      <tr><td>「GitHubの使い方をClaudeに聞きながら始めた」</td><td>「セキュリティは自信がありません」</td></tr>
+      <tr><td>「AIエージェントを作るのは2人とも初めて」</td><td>「堅牢性までは手が回りませんでした」</td></tr>
+      <tr><td>「RLSを知らなかったので調べた」</td><td>①③は配点10点ずつ。自白は減点に直結する</td></tr>
+    </tbody></table></div>
+  <p class="legend">今回の5軸に「技術力」はありません。出発点は採点されず 証拠だけが採点されます。誠実さを点に変える場所は節14の「穴の位置」です。</p>
+</section>
+
+<section id="tone">
+  <h2>🎭 6つのトーン(人格)</h2>
+  <p class="lead">同じ骨格を違う人格で書いたときの見え方です。冒頭サンプルはトーンの見本で本文ではありません。数字は既存メモからの引用で 最終値は撮り直しで差し替えます。</p>
+
+  <div class="grid g2">
+    <article class="card pc p1">
+      <h3>🔬 ① 検証ログ型</h3>
+      <p class="one">数字を先に置く実測の人。感想より測定。</p>
+      <dl class="spec"><dt>文体</dt><dd>常体(だ・である)</dd><dt>人称</dt><dd>「私たち」+主語は装置</dd><dt>温度</dt><dd>低め・淡々</dd></dl>
+      <div class="title-ex">autoをやめて測って決めたら 勉強会の幹事AIの原価が44分の1になった</div>
+      <div class="sample">3本の会議の取り込み費用は $0.0375 だった。モデルを固定すると $0.00085 になった(97.7%減)。同じ入力での比較である。<small>トーン見本</small></div>
+      <p class="fit"><b>近い第1回:</b> ツマヅキ・CROWD WEATHER<br><b>向く:</b> ②③を強く見せたい / 事業性を見る審査員</p>
+    </article>
+
+    <article class="card pc p2">
+      <h3>📖 ② ふり返り型</h3>
+      <p class="one">観察から入り「反転」で驚かせる内省の人。</p>
+      <dl class="spec"><dt>文体</dt><dd>敬体(です・ます)</dd><dt>人称</dt><dd>「私」</dd><dt>温度</dt><dd>やや高め・問いかけ</dd></dl>
+      <div class="title-ex">社内勉強会の幹事をAIに渡したら いちばん難しかったのは「立てない」判断だった</div>
+      <div class="sample">「今度勉強会やりたいね」と言った人の多くは 日程が決まらないまま忘れてしまいます。幹事をAIに渡してみて最初に困ったのは 立てることではなく 立てないと決めることでした。<small>トーン見本</small></div>
+      <p class="fit"><b>近い第1回:</b> SocraMetry(OrcaRouter賞※)<br><b>向く:</b> ④⑤の独創性 / 「伝わる」を見る審査員</p>
+    </article>
+
+    <article class="card pc p3">
+      <h3>🌱 ③ 想い×初めて型</h3>
+      <p class="one">勉強コミュニティを運営する2人の想いと「初めて」を等身大で語る人。</p>
+      <dl class="spec"><dt>文体</dt><dd>敬体・口語寄り</dd><dt>人称</dt><dd>「私たち」「相方」</dd><dt>温度</dt><dd>高め・自己開示</dd></dl>
+      <div class="title-ex">勉強コミュニティを運営する2人が 初めてAIエージェントで「人が集まる場所」を作った5日間</div>
+      <div class="sample">こんにちは。それぞれ勉強コミュニティを運営している2人です。「勉強したい人ともっと話したい」から始まって AIエージェントを作るのは2人とも初めてでした。<small>トーン見本 / 事実に合わせて調整が必要</small></div>
+      <p class="fit"><b>近い第1回:</b> CROWD WEATHER(非エンジニア)・KYAKUMAP(#初心者)<br><b>向く:</b> ⑤の独創性 / 開発者体験を見る審査員</p>
+    </article>
+
+    <article class="card pc p4">
+      <h3>🛡️ ④ 設計レビュー型</h3>
+      <p class="one">責任分界と境界線を語るアーキテクトの人。</p>
+      <dl class="spec"><dt>文体</dt><dd>である/です混在</dd><dt>人称</dt><dd>主語は「Bは」「Aは」</dd><dt>温度</dt><dd>低め・確信的</dd></dl>
+      <div class="title-ex">口を持つのは1体だけ 勉強会の幹事AIを権限で分けた設計判断</div>
+      <div class="sample">これは「AIが勝手に人を集めるサービス」ではありません。人に話しかけられるのはBだけで AとCは外に何も言えない。機能ではなく権限を分けました。<small>トーン見本</small></div>
+      <p class="fit"><b>近い第1回:</b> Ergarch・KYAKUMAP・pakulist<br><b>向く:</b> ①③④を強く見せたい / 技術に詳しい審査員</p>
+    </article>
+
+    <article class="card pc p5">
+      <h3>🎬 ⑤ 密着ストーリー型</h3>
+      <p class="one">人材育成担当の1日を追う物語の人。</p>
+      <dl class="spec"><dt>文体</dt><dd>敬体・描写多め</dd><dt>人称</dt><dd>想定ペルソナ(架空と明記)</dd><dt>温度</dt><dd>高め・情景</dd></dl>
+      <div class="title-ex">勉強会が「立つ」までの30分を AIに渡した人材育成担当の1日</div>
+      <div class="sample">水曜の朝 人材育成担当の田中さん(想定ペルソナ)は また同じ画面を開きます。テーマが決まらない。詳しい人も分からない。<small>トーン見本 / 架空の人物は「想定」と明記する</small></div>
+      <p class="fit"><b>近い第1回:</b> なし(空白の型)<br><b>向く:</b> ⑤の痛みの具体性 / 社会実装を見る審査員</p>
+    </article>
+
+    <article class="card pc p6">
+      <h3>🗣️ ⑥ かけあい対話型</h3>
+      <p class="one">小室さんと岩田さんの会話で進む2人体制の人。</p>
+      <dl class="spec"><dt>文体</dt><dd>会話文+短い地の文</dd><dt>人称</dt><dd>「岩田」「小室」</dd><dt>温度</dt><dd>高め・軽い</dd></dl>
+      <div class="title-ex">「これ AIに任せていいの?」 2人の会話で読む勉強会の幹事AI</div>
+      <div class="sample">岩田「幹事ってそもそも何する人?」 小室「日程 テーマ 講師探し 告知 記録ですね」 岩田「それ全部AIに渡していいの?」<small>トーン見本 / セリフは見本</small></div>
+      <p class="fit"><b>近い第1回:</b> なし(空白の型)<br><b>向く:</b> 2人チームの個性を出したい / 読み物として</p>
+    </article>
+  </div>
+</section>
+
+<section id="matrix">
+  <h2>📊 同じ骨格で見出しを比べる</h2>
+  <p class="lead">横に並べると人格の違いが一目で分かります。<b>列の見出しをクリック</b>すると1人格だけ色が付いて読みやすくなります。</p>
+  <div class="scroll"><table class="matrix" id="mx">
+    <thead><tr><th class="rl">位置</th>
+      <th class="ph p1" data-c="1" tabindex="0">🔬 検証ログ</th><th class="ph p2" data-c="2" tabindex="0">📖 ふり返り</th><th class="ph p3" data-c="3" tabindex="0">🌱 想い×初めて</th><th class="ph p4" data-c="4" tabindex="0">🛡️ 設計レビュー</th><th class="ph p5" data-c="5" tabindex="0">🎬 密着ストーリー</th><th class="ph p6" data-c="6" tabindex="0">🗣️ かけあい</th></tr></thead>
+    <tbody>
+      <tr><td class="rl">タイトル</td>
+        <td class="p1" data-c="1">autoをやめて測って決めたら 勉強会の幹事AIの原価が44分の1になった</td>
+        <td class="p2" data-c="2">社内勉強会の幹事をAIに渡したら いちばん難しかったのは「立てない」判断だった</td>
+        <td class="p3" data-c="3">勉強コミュニティを運営する2人が 初めてAIエージェントで「人が集まる場所」を作った5日間</td>
+        <td class="p4" data-c="4">口を持つのは1体だけ 勉強会の幹事AIを権限で分けた設計判断</td>
+        <td class="p5" data-c="5">勉強会が「立つ」までの30分を AIに渡した人材育成担当の1日</td>
+        <td class="p6" data-c="6">「これ AIに任せていいの?」 2人の会話で読む勉強会の幹事AI</td></tr>
+      <tr><td class="rl">冒頭の型</td>
+        <td class="p1 ty" data-c="1">結論の数字を1行目に</td><td class="p2 ty" data-c="2">観察シーンから入る</td><td class="p3 ty" data-c="3">自己紹介で期待値を調整</td><td class="p4 ty" data-c="4">誤解を先に訂正</td><td class="p5 ty" data-c="5">想定ペルソナの朝</td><td class="p6 ty" data-c="6">会話ログの1往復</td></tr>
+      <tr><td class="rl">なぜ作ったか</td>
+        <td class="p1" data-c="1">勉強会を運営する2人が測りたかったこと</td><td class="p2" data-c="2">「もっと話したい」から始まった</td><td class="p3" data-c="3">私たちが勉強コミュニティを作った理由</td><td class="p4" data-c="4">場を提供する設計 機能は後から足せる</td><td class="p5" data-c="5">勉強したい人が集まる場所の1日</td><td class="p6" data-c="6">「そもそも なんで作ったの?」</td></tr>
+      <tr><td class="rl">痛み (⑤)</td>
+        <td class="p1" data-c="1">幹事1回ぶんの手間を数える</td><td class="p2" data-c="2">「勉強会やりたいね」で止まる理由</td><td class="p3" data-c="3">私たちが困っていたこと</td><td class="p4" data-c="4">解く問題は幹事の入り口の判断</td><td class="p5" data-c="5">朝9時 テーマが決まらない</td><td class="p6" data-c="6">「そもそも誰が困ってるの?」</td></tr>
+      <tr><td class="rl">30秒で説明</td>
+        <td class="p1" data-c="1">1会議からカードと部屋ができるまでを数字で追う</td><td class="p2" data-c="2">もくもく会のひとりごとが人を呼ぶまで</td><td class="p3" data-c="3">そもそも「まなびのわ」って何?</td><td class="p4" data-c="4">4つの輪と3体の役割</td><td class="p5" data-c="5">朝 通知が1つ届く</td><td class="p6" data-c="6">「で 結局 何のサービス?」</td></tr>
+      <tr><td class="rl">立てない判断 (④)</td>
+        <td class="p1" data-c="1">open/wait/skipの判断ログ全件</td><td class="p2" data-c="2">2択にするとAIは必ずどちらかに倒れる</td><td class="p3" data-c="3">AIに「やらない」を選ばせるのが難しかった</td><td class="p4" data-c="4">3値判断と停止条件はコードで持つ</td><td class="p5" data-c="5">昼 今日は声をかけないと決める</td><td class="p6" data-c="6">「いつでも立てちゃダメなの?」</td></tr>
+      <tr><td class="rl">名前照合 (①)</td>
+        <td class="p1" data-c="1">空白1個で社員が4人増えた 数えてみた</td><td class="p2" data-c="2">空白1個で社員が4人増えた夜</td><td class="p3" data-c="3">名前の照合でつまずいて初めて気づいたこと</td><td class="p4" data-c="4">名前ではなくuser_idを信じる</td><td class="p5" data-c="5">その発言は本当に本人のものか</td><td class="p6" data-c="6">「名前で照合すればよくない?」</td></tr>
+      <tr><td class="rl">コスト (②)</td>
+        <td class="p1" data-c="1">autoは同じ会議で費用が8.5倍ぶれた</td><td class="p2" data-c="2">安いモデルに替えたら請求が消えた</td><td class="p3" data-c="3">モデルの選び方も知らなかったので測ってみた</td><td class="p4" data-c="4">モデル選択をコードから追い出す</td><td class="p5" data-c="5">月末に請求書を見る</td><td class="p6" data-c="6">「高いモデルのほうが賢いんでしょ?」</td></tr>
+      <tr><td class="rl">壊して直す (③)</td>
+        <td class="p1" data-c="1">殺して再実行した ログ全部</td><td class="p2" data-c="2">途中で電源を抜いてみた</td><td class="p3" data-c="3">壊し方から教わった</td><td class="p4" data-c="4">障害と縮退の設計</td><td class="p5" data-c="5">夜 サーバーが落ちた</td><td class="p6" data-c="6">「途中で落ちたらどうなるの?」</td></tr>
+      <tr><td class="rl">人の介在点 (④)</td>
+        <td class="p1" data-c="1">人が触った回数を数える</td><td class="p2" data-c="2">「全部AIがやります」と言わないことにした</td><td class="p3" data-c="3">人に任せるところを4か所に絞った</td><td class="p4" data-c="4">人の門は4か所 任せる/任せないの境界</td><td class="p5" data-c="5">「やるよ」と言うのは人</td><td class="p6" data-c="6">「結局 人は何するの?」</td></tr>
+      <tr><td class="rl">出発点の開示</td>
+        <td class="p1" data-c="1">知らなかったことの一覧と調べた回数</td><td class="p2" data-c="2">何も知らなかった2人が最初につまずいたこと</td><td class="p3" data-c="3">2人とも初めてだった作り方</td><td class="p4" data-c="4">初めての技術をどう選んだか</td><td class="p5" data-c="5">初日の私たち</td><td class="p6" data-c="6">「実は最初 よく分からなかった」</td></tr>
+      <tr><td class="rl">限界と今後</td>
+        <td class="p1" data-c="1">まだ測れていないもの一覧</td><td class="p2" data-c="2">穴がないふりをしない</td><td class="p3" data-c="3">まだわかっていないこと</td><td class="p4" data-c="4">今回やらないことと理由</td><td class="p5" data-c="5">明日には解決しないこと</td><td class="p6" data-c="6">「じゃあ穴はどこ?」</td></tr>
+      <tr><td class="rl">締めの型</td>
+        <td class="p1 ty" data-c="1">次に測る3つの数字</td><td class="p2 ty" data-c="2">読者への問い2つ</td><td class="p3 ty" data-c="3">同じ立場の人へのひとこと</td><td class="p4 ty" data-c="4">設計原則を1行で言い切る</td><td class="p5 ty" data-c="5">翌朝の同じ場面で終わる</td><td class="p6 ty" data-c="6">2人のあとがき</td></tr>
+    </tbody></table></div>
+  <div class="callout info"><b>💡 タイトルには「何のサービスか」の名詞を入れる</b> 「まなびのわ」だけでは何か分かりません。「勉強会」「幹事」などの名詞と 副題「社内の会話から学びの場を自分で立てるAI」のような一言を添える案です。</div>
+</section>
+
+<section id="judge">
+  <h2>⚖️ どれで行くか 比較表</h2>
+  <p class="lead">◎=載せやすい ○=ふつう △=載せにくい。素材は今リポジトリにある証拠で見ています。</p>
+  <div class="scroll"><table>
+    <thead><tr><th>人格</th><th>① 安全</th><th>② コスパ</th><th>③ 堅牢</th><th>④ 自律</th><th>⑤ 独創</th><th>素材</th><th>第1回との被り</th><th>読まれやすさ</th><th>いちばんのリスク</th></tr></thead>
+    <tbody>
+      <tr><td class="nw"><b style="color:var(--p1)">🔬 検証ログ</b></td><td class="sc m">○</td><td class="sc g">◎</td><td class="sc g">◎</td><td class="sc m">○</td><td class="sc b">△</td><td class="sc g">◎</td><td>多い</td><td class="sc g">◎</td><td>数字だけだと読み物として単調</td></tr>
+      <tr><td class="nw"><b style="color:var(--p2)">📖 ふり返り</b></td><td class="sc g">◎</td><td class="sc m">○</td><td class="sc m">○</td><td class="sc g">◎</td><td class="sc g">◎</td><td class="sc g">◎</td><td>中(SocraMetry型)</td><td class="sc m">○</td><td>長文化して証拠が埋もれる</td></tr>
+      <tr><td class="nw"><b style="color:var(--p3)">🌱 想い×初めて</b></td><td class="sc b">△</td><td class="sc m">○</td><td class="sc m">○</td><td class="sc m">○</td><td class="sc g">◎</td><td class="sc m">○</td><td>中(CROWD/KYAKUMAP)</td><td class="sc g">◎</td><td>技術力が低く見える → 出発点だけ書き 結果は証拠で見せる</td></tr>
+      <tr><td class="nw"><b style="color:var(--p4)">🛡️ 設計レビュー</b></td><td class="sc g">◎</td><td class="sc m">○</td><td class="sc g">◎</td><td class="sc g">◎</td><td class="sc b">△</td><td class="sc g">◎</td><td>多い(Ergarch型)</td><td class="sc m">○</td><td>硬くて独創性が伝わりにくい</td></tr>
+      <tr><td class="nw"><b style="color:var(--p5)">🎬 密着ストーリー</b></td><td class="sc b">△</td><td class="sc b">△</td><td class="sc b">△</td><td class="sc m">○</td><td class="sc g">◎</td><td class="sc b">△</td><td>少ない</td><td class="sc m">○</td><td>証拠が後ろに回る・架空人物の扱い</td></tr>
+      <tr><td class="nw"><b style="color:var(--p6)">🗣️ かけあい</b></td><td class="sc m">○</td><td class="sc m">○</td><td class="sc m">○</td><td class="sc m">○</td><td class="sc m">○</td><td class="sc b">△</td><td>無い</td><td class="sc b">△</td><td>長くなり一次審査で斜め読みされる</td></tr>
+    </tbody></table></div>
+
+  <div class="pick">
+    <h3>👍 組み合わせ案</h3>
+    <div class="mix">
+      <div class="p1"><b>🔬 骨格(節4〜12)</b>数字と証拠を先に置く。②③を確実に取る</div>
+      <div class="p2"><b>📖 冒頭と締め(節0・15)</b>「立てない判断」の反転で独創性⑤を取る</div>
+      <div class="p3"><b>🌱 想いと出発点(節1・13)</b>2人の言葉で「人が集まる場所」と「初めてだった」を書く</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  var mx=document.getElementById('mx'); if(!mx) return;
+  var cur=null;
+  function apply(c){
+    mx.querySelectorAll('td[data-c]').forEach(function(td){ td.classList.toggle('hl', c!==null && td.getAttribute('data-c')===c); });
+  }
+  mx.querySelectorAll('th.ph').forEach(function(th){
+    function go(){ var c=th.getAttribute('data-c'); cur=(cur===c)?null:c; apply(cur); }
+    th.addEventListener('click',go);
+    th.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }});
+  });
+})();
+</script>
+
+</body></html>
