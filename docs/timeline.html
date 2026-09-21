@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  *{box-sizing:border-box}
+  html{color-scheme:light dark}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>まなびの輪 提出までの道のり</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#F7F5F0; --surface:#FFFFFF; --surface-2:#FBFAF6;
+    --ink:#1E1B16; --ink-soft:#6B6459; --ink-faint:#9C948A;
+    --line:#E7E2D8; --line-soft:#F0EDE5;
+    --teal:#3D6B5C; --teal-soft:#E4ECE8; --teal-ink:#2C5044;
+    --amber:#B8763E; --amber-soft:#F5E9DA; --amber-ink:#8C5628;
+    --slate:#4A6A8A; --slate-soft:#E4EAF0; --slate-ink:#35506B;
+    --plum:#7A5C8C; --plum-soft:#EBE4EF; --plum-ink:#5C4269;
+    --rose:#A8465A; --rose-soft:#F3E0E4; --rose-ink:#82323F;
+    --display:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    --body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#16140F; --surface:#1F1C16; --surface-2:#252118;
+    --ink:#F2EEE5; --ink-soft:#B3AB9C; --ink-faint:#877F72;
+    --line:#38322A; --line-soft:#2B2620;
+    --teal:#7FBCA5; --teal-soft:#20352E; --teal-ink:#A5D5C2;
+    --amber:#D99A63; --amber-soft:#3A2A1B; --amber-ink:#E8B583;
+    --slate:#8DAECE; --slate-soft:#1E2A36; --slate-ink:#AAC6E0;
+    --plum:#B79BC8; --plum-soft:#2C2333; --plum-ink:#CDB6DB;
+    --rose:#D98E9D; --rose-soft:#3A2228; --rose-ink:#E8AEB9;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#16140F; --surface:#1F1C16; --surface-2:#252118;
+    --ink:#F2EEE5; --ink-soft:#B3AB9C; --ink-faint:#877F72;
+    --line:#38322A; --line-soft:#2B2620;
+    --teal:#7FBCA5; --teal-soft:#20352E; --teal-ink:#A5D5C2;
+    --amber:#D99A63; --amber-soft:#3A2A1B; --amber-ink:#E8B583;
+    --slate:#8DAECE; --slate-soft:#1E2A36; --slate-ink:#AAC6E0;
+    --plum:#B79BC8; --plum-soft:#2C2333; --plum-ink:#CDB6DB;
+    --rose:#D98E9D; --rose-soft:#3A2228; --rose-ink:#E8AEB9;
+  }
+
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.7;margin:0;}
+  .wrap{max-width:880px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;}
+
+  .eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.14em;
+    color:var(--teal);margin:0 0 8px;}
+  h1{font-family:var(--display);font-weight:900;font-size:clamp(1.6rem,5vw,2.3rem);
+    line-height:1.3;margin:0 0 16px;text-wrap:balance;}
+
+  .clock{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 4px;}
+  .clock div{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:12px 16px;flex:1 1 160px;}
+  .clock .lab{font-size:.72rem;color:var(--ink-faint);font-family:var(--display);
+    font-weight:700;letter-spacing:.06em;}
+  .clock .val{font-family:var(--display);font-weight:900;font-size:1.3rem;
+    font-variant-numeric:tabular-nums;line-height:1.35;}
+  .clock .hot{color:var(--rose);}
+
+  h2{font-family:var(--display);font-weight:800;font-size:1.25rem;margin:52px 0 4px;
+    text-wrap:balance;}
+  .sub{color:var(--ink-soft);font-size:.9rem;margin:0 0 20px;}
+  h3{font-family:var(--display);font-weight:700;font-size:1.02rem;margin:32px 0 8px;}
+
+  /* タイムライン */
+  .tl{list-style:none;margin:0;padding:0 0 0 26px;border-left:2px solid var(--line);}
+  .tl > li{position:relative;padding:0 0 28px 16px;}
+  .tl > li::before{content:"";position:absolute;left:-33px;top:6px;width:12px;height:12px;
+    border-radius:50%;background:var(--line);border:2px solid var(--bg);}
+  .tl > li.done::before{background:var(--teal);}
+  .tl > li.now::before{background:var(--rose);box-shadow:0 0 0 4px var(--rose-soft);}
+  .tl > li.next::before{background:var(--surface);border:2px solid var(--amber);}
+  .day{font-family:var(--display);font-weight:800;font-size:1rem;display:flex;
+    flex-wrap:wrap;gap:8px;align-items:baseline;}
+  .day .date{font-variant-numeric:tabular-nums;}
+  .day .what{color:var(--ink-soft);font-weight:500;font-size:.88rem;}
+  .tl ul{margin:8px 0 0;padding-left:1.1em;}
+  .tl li li{margin:3px 0;font-size:.92rem;}
+
+  .who{display:inline-block;font-family:var(--display);font-weight:700;font-size:.7rem;
+    padding:1px 8px;border-radius:999px;margin-right:6px;white-space:nowrap;}
+  .who.na{background:var(--teal-soft);color:var(--teal-ink);}
+  .who.ko{background:var(--plum-soft);color:var(--plum-ink);}
+  .who.cc{background:var(--slate-soft);color:var(--slate-ink);}
+  .who.duo{background:var(--amber-soft);color:var(--amber-ink);}
+
+  .scroll{overflow-x:auto;margin:16px -20px;padding-inline:20px;}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:600px;}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-family:var(--display);font-weight:700;font-size:.78rem;color:var(--ink-soft);
+    border-bottom:1.5px solid var(--line);white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.t{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:var(--display);
+    font-weight:700;color:var(--ink-soft);}
+  code{font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;font-size:.85em;
+    background:var(--line-soft);padding:1px 5px;border-radius:5px;border:1px solid var(--line);}
+
+  .risk{background:var(--rose-soft);border-left:4px solid var(--rose);
+    border-radius:0 12px 12px 0;padding:18px 20px;margin:22px 0;}
+  .risk strong{color:var(--rose-ink);}
+  .risk p:first-child{margin-top:0;} .risk p:last-child{margin-bottom:0;}
+
+  .note{border:1px solid var(--line);background:var(--surface);border-radius:12px;
+    padding:16px 18px;margin:18px 0;}
+  .note p:first-child{margin-top:0;} .note p:last-child{margin-bottom:0;}
+
+  pre{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;overflow-x:auto;font-size:.82rem;line-height:1.65;margin:12px 0;
+    white-space:pre-wrap;}
+  pre code{background:none;border:none;padding:0;}
+
+  p{margin:10px 0;} ul{margin:8px 0;padding-left:1.25em;}
+  hr{border:none;border-top:1px solid var(--line);margin:52px 0 0;}
+  .foot{color:var(--ink-faint);font-size:.8rem;margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">AI HACK 2026 ／ まなびの輪</p>
+  <h1>提出までの道のり</h1>
+
+  <div class="clock">
+    <div><div class="lab">いま</div><div class="val">9/21 (月) 9:25</div></div>
+    <div><div class="lab">提出締切</div><div class="val hot">9/22 (火) 15:00</div></div>
+    <div><div class="lab">チーム目標</div><div class="val">9/22 14:00</div></div>
+    <div><div class="lab">残り</div><div class="val hot">約 28 時間</div></div>
+  </div>
+
+  <div class="risk">
+    <p><strong>🚨 最大のリスクは記事です。</strong> 一次審査は<strong>リポジトリと記事だけ</strong>で決まり、通過した上位8チームだけが 9/23 にプレゼンできます。プロダクトは今日ほぼ完成しますが、<strong>記事はまだ1文字も書いていません。</strong></p>
+    <p>今日の後半は<strong>記事に時間を割く</strong>前提で組んでいます。</p>
+  </div>
+
+  <h2>🗺️ マクロ ── 5日間で何が起きたか</h2>
+  <p class="sub"><span class="who na">岩田</span><span class="who ko">小室</span><span class="who cc">Claude Code</span><span class="who duo">2人</span></p>
+
+  <ol class="tl">
+    <li class="done">
+      <div class="day"><span class="date">9/19 (土)</span><span class="what">Day 1 キックオフ</span></div>
+      <ul>
+        <li>課題発表 → <strong>個人応募だった2人がその場でチームを組む</strong></li>
+        <li>テーマ「業務を自律化するAIエージェント」／<strong>OrcaRouter 使用必須</strong>を確認</li>
+      </ul>
+    </li>
+
+    <li class="done">
+      <div class="day"><span class="date">9/20 (日)</span><span class="what">設計を固め、土台を全部立てた日</span></div>
+      <ul>
+        <li><span class="who na">岩田</span>やりたいことの言語化 → 審査5軸への対応づけ → 穴の洗い出し</li>
+        <li><span class="who na">岩田</span><strong>「まなびのライブ」形式に確定</strong>（インスタライブ型・必ず始まりと終わりがある）</li>
+        <li><span class="who na">岩田</span>エージェントを<strong>3体に分割</strong>。口を持つのは場づくりだけ、という権限分離を決定</li>
+        <li><span class="who na">岩田</span><code>DESIGN.md</code> / <code>README.md</code> を書き切る。絶対ルール14個を明文化</li>
+        <li><span class="who na">岩田</span>Supabase 構築 — 13テーブル・RLS全適用・タグ辞書・権限（<code>0001</code>〜<code>0005</code>）</li>
+        <li><span class="who na">岩田</span>OrcaRouter — エージェント別に<strong>上限付きキーを3本</strong>発行</li>
+        <li><span class="who na">岩田</span><strong>タグ付けエージェントが実際に動いた</strong>。文字起こし → 知見カード → タグ</li>
+        <li><span class="who ko">小室</span>画面モック（ログイン・グループトーク・プロフィール・カレンダー・画面遷移）</li>
+        <li><span class="who ko">小室</span>管理者画面に着手</li>
+        <li><span class="who duo">2人</span>23:29 MTG — 明日の役割分担を決定</li>
+      </ul>
+    </li>
+
+    <li class="done">
+      <div class="day"><span class="date">9/21 未明</span><span class="what">寝ている間に3体そろった</span></div>
+      <ul>
+        <li><span class="who cc">Claude Code</span>証拠の自動化（<code>npm run evidence</code>）— スクショ作業が消えた</li>
+        <li><span class="who cc">Claude Code</span><strong>タグ承認サイクルを実演</strong>。昇格前後で門の判定が 0件 → 2件 に変わるのを証拠化</li>
+        <li><span class="who cc">Claude Code</span>デモ用の架空社員10人＋タグ21件。<strong>わざと厚みに山と谷</strong>を作ってある</li>
+        <li><span class="who cc">Claude Code</span><strong>場づくりエージェント完成</strong> — open/wait/skip の判断、停止条件をコードで保証、1周 $0.004</li>
+        <li><span class="who cc">Claude Code</span><strong>自己分析エージェント完成</strong>（画像は保存しない。UIは相方の担当なので作らず）</li>
+        <li><span class="who cc">Claude Code</span>デモ用トランスクリプト3本</li>
+      </ul>
+    </li>
+
+    <li class="now">
+      <div class="day"><span class="date">9/21 (月) 朝</span><span class="what">いまここ</span></div>
+      <ul>
+        <li><span class="who na">岩田</span>夜間の判断3件に回答。<strong>話者の表記ゆれで社員が増殖するバグを発見 → 直した</strong></li>
+        <li><span class="who na">岩田</span>人の介在点を <strong>3つ → 4つ</strong>に（未知の話者の名寄せ）。ルール15を追加</li>
+        <li><span class="who na">岩田</span>SSO の方針を <code>DESIGN.md §10</code> に明記。カレンダーは <code>getSchedule</code> に具体化</li>
+        <li><span class="who na">岩田</span>エージェント名を<strong>タグ付け / 場づくり / 自己分析</strong>に変更</li>
+      </ul>
+    </li>
+
+    <li class="next">
+      <div class="day"><span class="date">9/21 (月) 日中〜夜</span><span class="what">仕上げと記事</span></div>
+      <ul>
+        <li>DBの後始末 → OrcaRouter の作り込み → 昼MTG → デモを形にする → <strong>記事を書く</strong></li>
+      </ul>
+    </li>
+
+    <li class="next">
+      <div class="day"><span class="date">9/22 (火) 14:00</span><span class="what">提出</span></div>
+      <ul>
+        <li>① public リポジトリのURL ／ ② Qiita または Zenn の記事URL</li>
+        <li><strong>15:00 を1分でも超えたら審査対象外</strong></li>
+      </ul>
+    </li>
+
+    <li class="next">
+      <div class="day"><span class="date">9/23 (水)</span><span class="what">最終プレゼン（上位8チームのみ・オフライン必須）</span></div>
+      <ul>
+        <li>4分のプレゼン＋3分の質疑</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>🔬 ミクロ ── 今日の時間割</h2>
+  <p class="sub">提出を 9/22 14:00 に終わらせる前提で逆算。記事に4時間残してあります。</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th>時刻</th><th>誰</th><th>やること</th><th>終わったと言える状態</th></tr></thead>
+    <tbody>
+      <tr><td class="t">9:30<br>–10:00</td><td><span class="who na">岩田</span></td>
+        <td><strong>DBの後始末</strong><br><code>0007</code> 適用 → 重複4人と <code>live#3</code> を削除 → <code>01-power-automate.txt</code> を流し直し → <code>git push</code></td>
+        <td>社員が正しく10人。カードが正しい話者に紐づく</td></tr>
+
+      <tr><td class="t">10:00<br>–12:00</td><td><span class="who na">岩田</span></td>
+        <td><strong>OrcaRouter の作り込み</strong><br>Named Router を作る／ガードレール・ファイアウォールを設定／Request Logs のレシートを証拠化</td>
+        <td>「なぜこのモデルに流れたか」を画面で説明できる</td></tr>
+
+      <tr><td class="t">10:00<br>–12:00</td><td><span class="who ko">小室</span></td>
+        <td><strong>モックから不要な機能を削る</strong><br>情報量を減らして使える画面にする</td>
+        <td>デモで触って恥ずかしくない画面</td></tr>
+
+      <tr><td class="t">12:00<br>–13:00</td><td><span class="who duo">2人</span></td>
+        <td><strong>昼MTG</strong> — 画面を一緒に触る。足りない機能を詰める。<strong>記事の構成もここで決める</strong></td>
+        <td>記事の見出しが決まっている</td></tr>
+
+      <tr><td class="t">13:00<br>–14:00</td><td><span class="who na">岩田</span></td>
+        <td><strong>自己分析エージェントを実画面で検証</strong><br>VS Code / Supabase の自分の作業画面を2枚撮って流す</td>
+        <td>本物の画面からタグが出た証拠が1本</td></tr>
+
+      <tr><td class="t">13:00<br>–15:00</td><td><span class="who ko">小室</span></td>
+        <td><strong>ロゴ</strong>（GPTで生成 → リポジトリに格納）＋ <strong>Qiita 過去8本の傾向調査</strong></td>
+        <td>記事の型が分かっている</td></tr>
+
+      <tr><td class="t">14:00<br>–16:00</td><td><span class="who na">岩田</span></td>
+        <td><strong>デモのシナリオを決めて、データを合わせる</strong><br>「何分で何を見せるか」を先に決めてから足りないデータを足す</td>
+        <td>4分で通せる筋書きが1本</td></tr>
+
+      <tr><td class="t">16:00<br>–18:00</td><td><span class="who na">岩田</span></td>
+        <td><strong>壊して直す動画</strong><br>攻撃を止める／エラーから再開する ところを録る</td>
+        <td>③堅牢性の証拠が動画で1本</td></tr>
+
+      <tr><td class="t">18:00<br>–22:00</td><td><span class="who duo">2人</span></td>
+        <td>🔴 <strong>記事を書く</strong><br>下書きを一気に通す。数字と証拠は <code>docs/evidence/</code> から拾う</td>
+        <td>最後まで通った下書きがある</td></tr>
+
+      <tr><td class="t">22:00<br>–</td><td><span class="who cc">Claude Code</span></td>
+        <td>夜間タスクを投げる（残ったコード仕上げ・提出前チェック）</td>
+        <td>朝に <code>NIGHT-REPORT.md</code> がある</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>🌅 9/22（火）</h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>時刻</th><th>やること</th></tr></thead>
+    <tbody>
+      <tr><td class="t">9:00–12:00</td><td>記事の仕上げ。図とスクショを入れる</td></tr>
+      <tr><td class="t">12:00–13:00</td><td><strong>提出前チェック</strong> — リポジトリを public に、<code>.env</code> が入っていないか、実名・社名が残っていないか</td></tr>
+      <tr><td class="t">13:30</td><td><strong>記事のブラッシュアップはここで止める</strong></td></tr>
+      <tr><td class="t">14:00</td><td>📮 <strong>提出</strong>（Googleフォーム）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>⚖️ 削っていいもの・削れないもの</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>項目</th><th>判断</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>記事</td><td>🔴 絶対に削れない</td><td>提出物②。無いと審査対象外</td></tr>
+      <tr><td>リポジトリを public に</td><td>🔴 絶対に削れない</td><td>提出物①</td></tr>
+      <tr><td>壊して直す動画</td><td>🟡 記事が危なければ短縮</td><td>③に効くが、記事本体より優先度は下</td></tr>
+      <tr><td>サービスページ（LP）</td><td>⚪️ 今回は作らない</td><td>提出物に入らない。9/23 に残れたら作る</td></tr>
+      <tr><td>SSO の実装</td><td>⚪️ 範囲外で確定</td><td>情シス承認が要る。設計書に書いてあれば伝わる</td></tr>
+      <tr><td>カレンダー実連携</td><td>⚪️ 範囲外で確定</td><td>デモはダミー。API選定の理由は書いてある</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <hr>
+  <p class="foot">作成 2026-09-21 ／ 時間は日本時間</p>
+</div>
+</body>
+</html>
