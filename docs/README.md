@@ -20,6 +20,7 @@
 | [security-check.html](security-check.html) | **★提出前セキュリティ点検** — 設計バグ4つと直し方・全20項目・提出前チェックリスト |
 | [threat-model.html](threat-model.html) | **★危険と防御 総まとめ**（小室さん連携用）— 踏むと終わる10個・エージェント別の壊れ方・全危険43件 |
 | [build-plan.md](build-plan.md) | **★実装の進め方と提出前チェック** — 今夜のゴール・撮る証拠・8項目チェック・記事の目次 |
+| [kiji-neta.md](kiji-neta.md) | **★記事ネタ帳**（小室連携用）— 岩田側のセッションでしか見えていない設計の理由・トライ＆エラー・知らなかったこと・数字。**各セッションが末尾に追記していく** |
 | [timeline.html](timeline.html) | **★提出までの道のり**（小室連携用）— 9/19からの経過と、9/22 14:00 提出までの時間割。担当・所要時間つき |
 | [repo-docs.html](repo-docs.html) | README / DESIGN / ARCHITECTURE / CLAUDE / AGENTS の違い。今回どれを作るか |
 | [agent-jissou.html](agent-jissou.html) | **★コードでエージェントを作るとは** — Copilot Studioとの対比・ループの中身25行・3体の置き場所 |
