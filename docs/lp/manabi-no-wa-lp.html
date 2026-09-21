@@ -197,13 +197,13 @@ button{font:inherit;color:inherit}
 
 /* ---------- お悩み ---------- */
 .pains{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
-.pain{grid-column:span 2;padding:24px;display:flex;flex-direction:column;gap:10px}
+.pain{grid-column:span 2;padding:24px;display:flex;flex-direction:column;gap:10px;position:relative}
 .pain:nth-child(4),.pain:nth-child(5){grid-column:span 3}
 .pain .ic{font-size:28px;line-height:1}
 .pain h3{font-size:18px}
 .pain p{font-size:14px;color:var(--mute)}
 .pain.own{border-color:var(--accent)}
-.pain .flag{align-self:flex-start;font-size:11.5px;font-weight:700;color:var(--accent);border:1px solid currentColor;border-radius:999px;padding:1px 10px}
+.pain .flag{position:absolute;top:22px;right:22px;max-width:calc(100% - 110px);text-align:center;font-size:11.5px;font-weight:700;color:var(--accent);border:1px solid currentColor;border-radius:999px;padding:1px 10px}
 @media (max-width:820px){.pains{grid-template-columns:1fr}.pain,.pain:nth-child(4),.pain:nth-child(5){grid-column:auto}}
 
 /* ---------- 4つの輪 ---------- */
@@ -320,7 +320,7 @@ button{font:inherit;color:inherit}
 /* ---------- 安心 ---------- */
 .safe{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .sf{padding:24px;display:flex;flex-direction:column;gap:10px}
-.sf .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:var(--surface2);border:1px solid var(--line)}
+
 .sf h3{font-size:17px}
 .sf p{font-size:14px;color:var(--mute)}
 .privacy{margin-top:18px;padding:22px 26px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
@@ -409,13 +409,34 @@ button{font:inherit;color:inherit}
 [data-look="a"] .card{border-color:rgba(216,190,124,.22)}
 [data-look="b"] .bt.dark,[data-look="b"] .h-visual{background-color:var(--ai);background-image:var(--shippo-band)}
 [data-look="a"] .bt.dark{background:rgba(224,184,74,.08);border-color:rgba(224,184,74,.35)}
-/* 丸印（和） */
-.hanko{position:absolute;right:0;top:-6px;width:74px;height:74px;border-radius:50%;border:3px solid var(--shu);color:var(--shu);display:grid;place-items:center;
-  font-family:var(--mincho);font-weight:800;font-size:38px;line-height:1;transform:rotate(-10deg);opacity:.9;background:transparent}
-.hanko::after{content:"";position:absolute;inset:4px;border-radius:50%;border:1px solid currentColor;opacity:.6}
-[data-look="a"] .hanko{color:var(--shu);border-color:var(--shu);background:rgba(168,59,46,.12)}
-[data-look="c"] .hanko{color:var(--paper);border-color:var(--paper)}
-@media (max-width:900px){.hanko{width:60px;height:60px;font-size:30px;top:0}}
+/* 丸印（和）: 「輪」の右上に 字の裏へ少しもぐらせる */
+.h1{position:relative;isolation:isolate}
+.wa-mark{position:relative;display:inline-block}
+.hanko{position:absolute;z-index:-1;left:46%;top:-34%;font-family:var(--mincho);font-weight:800;font-size:.4em;line-height:1;
+  width:2.1em;height:2.1em;border-radius:50%;border:2px solid var(--hanko);color:var(--hanko);background:var(--hanko-bg);
+  display:grid;place-items:center;transform:rotate(-12deg);pointer-events:none;letter-spacing:0}
+.hanko::after{content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid currentColor;opacity:.5}
+:root{--hanko:rgba(168,59,46,.62);--hanko-bg:rgba(168,59,46,.10)}
+[data-look="b"]{--hanko:rgba(168,59,46,.45);--hanko-bg:rgba(168,59,46,.06)}
+[data-look="c"]{--hanko:rgba(255,253,246,.42);--hanko-bg:transparent}
+/* 自作アイコン */
+.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none;overflow:visible}
+.i-s{width:15px;height:15px;stroke-width:1.9;vertical-align:-3px}
+.i-m{width:22px;height:22px;vertical-align:-5px;margin-right:6px}
+.ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);color:var(--ink);background:var(--surface2);flex:none}
+.ic .i{width:26px;height:26px}
+[data-look="a"] .ic{border-color:rgba(224,184,74,.45);background:rgba(224,184,74,.06)}
+[data-look="c"] .ic{border:2px solid #1C2B3D;border-radius:50%;background:var(--paper)}
+.bt.dark .ic{color:var(--kinari);border-color:rgba(224,184,74,.5);background:rgba(224,184,74,.08)}
+[data-look="b"] .bt.dark .ic{--accent:#E0B84A}
+.sf .ic{width:52px;height:52px;border-radius:50%}
+.privacy b{display:flex;align-items:center;gap:6px}
+.chip .i-s{margin-right:1px}
+.tab{display:inline-flex;align-items:center;gap:7px}
+.toast .i-s{width:18px;height:18px;color:var(--accent)}
+[data-look="a"] .toast .i-s{--accent:#A83B2E;color:#A83B2E}
+.chip.hot .i-s{--accent:currentColor}
+.tab[aria-selected="true"] .i-s{--accent:currentColor}
 /* 縦書きのひとこと */
 .tate{position:absolute;left:-8px;top:8%;writing-mode:vertical-rl;font-family:var(--mincho);font-weight:600;font-size:15px;letter-spacing:.42em;color:var(--hero-mute);z-index:2;white-space:nowrap}
 [data-look="b"] .tate{color:var(--ai-text);left:16px;top:24px}
@@ -452,6 +473,7 @@ button{font:inherit;color:inherit}
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3 20 20"/><circle cx="10.5" cy="10.5" r="2.3" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-stack" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9.5 4.5V3.5h5v1M8.5 10h7M8.5 13.5h7M8.5 17h3.5"/><circle cx="16.5" cy="17" r="2" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-silo" viewBox="0 0 24 24"><rect x="3.5" y="5" width="4.5" height="15" rx="1.5"/><rect x="9.75" y="5" width="4.5" height="15" rx="1.5"/><rect x="16" y="5" width="4.5" height="15" rx="1.5"/><path d="M8 12.5h1.75M14.25 12.5H16" style="stroke:var(--accent)"/></symbol><symbol id="i-away" viewBox="0 0 24 24"><path d="M3.5 11.5 10 6l6.5 5.5V20h-13Z"/><path d="M8 20v-4.5h4V20"/><path d="M14.5 14.5h6.5M18.5 12l2.5 2.5-2.5 2.5" style="stroke:var(--accent)"/></symbol><symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/><circle cx="19.5" cy="4.5" r="1.8" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-spark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7l1.4 3.6L17 12l-3.6 1.4L12 17l-1.4-3.6L7 12l3.6-1.4Z" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-card" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M7 10.5h6.5M7 14h10"/><circle cx="16.5" cy="9.5" r="1.7" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-map" viewBox="0 0 24 24"><circle cx="5.5" cy="6.5" r="2"/><circle cx="18" cy="5.5" r="2"/><circle cx="7" cy="18" r="2"/><circle cx="18.5" cy="17.5" r="1.6"/><path d="M7 8l3.3 2.8M16.4 6.8l-2.7 3.2M8.3 16.4l2.3-2.6M14.3 13.8l2.9 2.6"/><circle cx="12" cy="12" r="2.6" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-growth" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M5 16.5l4.5-4.5 3 3L19 8.5"/><path d="M15 8.5h4v4" style="stroke:var(--accent)"/></symbol><symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8.5V6a2 2 0 0 1 2-2h2.5M15.5 4H18a2 2 0 0 1 2 2v2.5M20 15.5V18a2 2 0 0 1-2 2h-2.5M8.5 20H6a2 2 0 0 1-2-2v-2.5"/><circle cx="12" cy="12" r="3.2" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-dash" viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="7" rx="1.5"/><rect x="13.5" y="4" width="7" height="4.5" rx="1.5"/><rect x="13.5" y="11.5" width="7" height="8.5" rx="1.5"/><rect x="3.5" y="14" width="7" height="6" rx="1.5" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-torii" viewBox="0 0 24 24"><path d="M3 5.2c3.5 1 14.5 1 18 0" style="stroke:var(--accent)"/><path d="M5 9.5h14M7.5 6.5V20.5M16.5 6.5V20.5M12 6.3v3.2"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><circle cx="12" cy="15.5" r="1.8" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-voice" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4.2A2 2 0 0 1 4 14Z"/><circle cx="12" cy="10" r="1.9" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-gauge" viewBox="0 0 24 24"><path d="M3.5 17a8.5 8.5 0 1 1 17 0"/><path d="M12 17l3.5-5"/><path d="M18.2 17h2.3" style="stroke:var(--accent)"/><circle cx="12" cy="17" r="1.8" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><rect x="13" y="13" width="3.8" height="3.8" rx=".9" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-tag" viewBox="0 0 24 24"><path d="M4 12.2V5.5A1.5 1.5 0 0 1 5.5 4h6.7l7.8 7.8-8.2 8.2Z"/><circle cx="8.5" cy="8.5" r="1.8" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12" style="stroke:var(--accent)"/></symbol><symbol id="i-blocks" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><path d="M16.5 13.5v6M13.5 16.5h6" style="stroke:var(--accent)"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.8 5.2a4.2 4.2 0 0 0-5.3 5.3L4 16l4 4 5.5-5.5a4.2 4.2 0 0 0 5.3-5.3L16.3 11.7l-2.6-.6-.6-2.6Z"/><circle cx="6.8" cy="17.2" r="1.3" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 5h11l-2.5 3.5L17 12H6Z" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20v-8M8 20h8"/><path d="M12 12c0-4 3-6.5 7-6.5 0 4-3 6.5-7 6.5Z"/><path d="M12 14c0-3-2.2-5-5.5-5 0 3 2.2 5 5.5 5Z" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-soroban" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 10h17M7.5 5v14M12 5v14M16.5 5v14"/><circle cx="7.5" cy="7.5" r="1.5" style="fill:var(--accent);stroke:none"/><circle cx="12" cy="13" r="1.5" style="fill:var(--accent);stroke:none"/><circle cx="16.5" cy="15.8" r="1.5" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/><circle cx="18.5" cy="5" r="1.7" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-teacher" viewBox="0 0 24 24"><rect x="10" y="4" width="10.5" height="7.5" rx="1.2"/><circle cx="6.5" cy="9.5" r="2.6"/><path d="M2.5 20.5a4.5 4.5 0 0 1 8.5-2.2"/><path d="M13 7.8h5" style="stroke:var(--accent)"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6Z"/><path d="M9 12l2 2 4-4" style="stroke:var(--accent)"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7 0 1 1 3.3 5.8L4 19l1.1-3.3A6.8 6.8 0 0 1 4.5 12Z"/><circle cx="12" cy="12" r="1.5" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 21 19.5H3Z"/><path d="M12 10v4" style="stroke:var(--accent)"/><circle cx="12" cy="16.7" r="1.1" style="fill:var(--accent);stroke:none"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.5 3.5 5.3 3.5 8.5s-1 6-3.5 8.5c-2.5-2.5-3.5-5.3-3.5-8.5s1-6 3.5-8.5Z"/></symbol></defs></svg>
 <div class="progress" id="progress" aria-hidden="true"></div>
 
 <header class="hdr">
@@ -472,9 +494,8 @@ button{font:inherit;color:inherit}
   <div class="container">
     <div class="hero-grid">
       <div class="h-title">
-        <span class="hanko" aria-hidden="true">和</span>
         <span class="eyebrow">社内の学びが回り続けるプラットフォーム</span>
-        <h1 class="h1" id="h1"><span class="l">ためるだけじゃない</span><span class="l l2"><em>人が集まる</em>学びの輪</span></h1>
+        <h1 class="h1" id="h1"><span class="l">ためるだけじゃない</span><span class="l l2"><em>人が集まる</em>学びの<span class="wa-mark">輪<span class="hanko" aria-hidden="true">和</span></span></span></h1>
         <p class="h-sub">スキルを登録して終わるツールではありません。社員の会話からAIが「知りたい」と「知っている」を見つけて 次の学びの場を自分で立ち上げます。</p>
         <div class="h-ctas">
           <a class="btn btn-p" href="#cta">デモを見る <span class="arrow">→</span></a>
@@ -486,7 +507,7 @@ button{font:inherit;color:inherit}
         <div class="core"><img src="data:image/webp;base64,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" alt=""></div>
       </div>
       <div class="h-chat card" aria-label="AIが学びの場を立てたときのメッセージ例">
-        <div class="toast" id="toast">🎪 <span>まなびのライブが<b>立ちました</b></span></div>
+        <div class="toast" id="toast"><svg class="i i-s" aria-hidden="true"><use href="#i-spark"/></svg> <span>まなびのライブが<b>立ちました</b></span></div>
         <div class="chat-top"><span class="live-dot"></span>まなびのライブ ・ Power Automate のエラー処理</div>
         <div class="chat-msg">
           <div class="ai-av"><img src="data:image/webp;base64,UklGRtIjAABXRUJQVlA4WAoAAAAQAAAA7wAAzgAAQUxQSBgNAAABsIbt//qm1TfSpG44rKmtLe4b5eLgTulwd3eHs6EbbnMf7u7udoa7bqXTrlQgdW+afF9Q/vn+LDv2IiImAP7/o97TEmx5JyYmJqZzTKNgi6WsXv83RedfO3bUFxt+fBCfk5trx1Idubm5yQ8eHl4/b2SzKO+/E5VbTdt4PakE2RYkXPx+QtMKrp8urPdXN9ORX+v1r/pGGF0339YrbuQg//kPvu5a0RUL7LLpDxT35aHhQYoy1eo/e8vm2aPqmTnz7LjxLxQ9/fDgSuoJW/SwCEsteTSnEkc1Fz1DOaasa25USsDKNNScMFnPh3vPY/ko0VsTy6oj+iE6fSSAgwrTHqJsE1aFKaJbNhKeLMMq7ONklHHad7VU0CEXSY+bmYR+bEVZ56ypLr2gBCSezMDycRrKPOvTYMltR+qUIKqAmS9Q9i+m+cqsWQkZzqEx9PsZVXi/k8T2If0dM0X0KVSkfUukrKpkMMgOdy5gRR6qM3W0Tk49kKG9mVMdH6JaD0ZKaQkLnOqE/+c2VG3yYBkdYPJPbc0fooo3lJPPIRYlLbWY5uSjmh++K4quao/ZkwlnfLrxFQt7Qw3hx1HZmUOF8B1zMRcFTCr3pk5/oMpXefIX8wDFjPMrzTCjCEXMirt16NsvRgweMXrkiNHDBg2ctebbi3eTckXA/RV4+9CGgh6BUstsRt7z4o8tHdg0yAsI9WXD24399PxfJZzh41C+lqOwW0oJu4pcZ13/tGeUN7D2bzBi/aMinvDROzzNRXEXvNYgATn+bfPAcB3waq496fBLfjCjAz//KBBoBgAMSkVuf/mqrR/wXnnAPisvmN6SF7dzKHBrgElFyGn6ji5+IGbQuCslfKC1JSfNHSJ1g1XI6dPZ4SCwsenadC4wrQMfq1HgwneXI59XB3uD6OEfJfKAWR15MF8TKXUdcnkuxggyrDw/gQNMrcqB6SeRHMjjjfcMIMsqH1rZ4eMIDh6LxGP8CHeQadR6GzM878nM/ERmWYvLg2zb3mKG25l5y+xkHZCw9/wcVjifFeyQVvIYI8i58Q1WxV1YDZHV8WogbZ+vHGwwuRqjcolSyv3ABDIfbGWDF93ZwDwZxbUAyTe4zwaXMgq8I59jFUH6FfewKW7DBt5NkYz9YxMo0Gs1E4wrxwain0qlYAQo8iMm+B0jKL+2QB5JzUGVuvklLGytGQE0+OZJgRwSo0Gh02wM8KE3KwCPqo2HjRw2eMjQocOHDRkyZNCA/v0HDOw6rISzm1Gg1JkscC476g4Ovq6WB8UuZpEdJcgQ5PpqeVDuAga4T5A5XD2rDOp128fA1lKMH3hKagAq9r5Bh9fcRDAc4SjpHVCz5Xc67C6C7i4/hbGg6raFdHfMAgQk8jMG1D2LDvsJEJTDzbc6hRmO090y8fcPOy/XfEDl4Ylk2J2/EciptTqovT/dVSMXpjqjv9y/d9/hH8bWN6/gZTgoXr+fzN6Ug/Cl94vxjbZHLzjZq1MdRKZR4W5mYV+ko4DJoaD+98myw9joJqSikKPBBfR7TIXzmXhvRjEvm1wB6E0W58HA8iOKWdgEXELjeSrsROd7EwXdBi5iBwfVNjL9FhQ0r46rYDxPlVKWaiyKugZcxnZ2IuxNFGoVpaCW62C8RbWXaD2KuhNcyCFUr8qR1MxzKjObE3sbV8L/TyLsQbIKtf+6uE1YZOctBTzcMcsjYNy+EwvCxYLlVFspvOO0fVsWSo2+x8FkkGaTR4iIqe+JVauQ6A9vgmZ2TSvhzVWeM0sPlsawLCw1s4VQcI7I3phgDmq95a0ButhZHdBJwv0LfLO1oVDDiXA+wWZNg0Cr211Wo0COIRdQ67MgkapkEJ3TOWW6rcUapAk+YZQTIYe2f6L26z4CwRGilECnzE+1/OKpbRGja0YpzCxEZ/d4CDSKyNHUuWda4p1YzuhjkKD/JiT8XqCIPBqc6ZTXr1peVNC2mdFACdS5i6TzxDFeI9rjlOGEFkdXTeWS2BTXEa9XGhIPFgYWET02OgNrtOAlNy1LkO0TT9FMix1InRsrTDuirCCnJmnCqRp65zP6FASvfBQZWmuLUiGNBls71aBYk22+TyneU/OQbX49wZr8jEx/jRREf5VoqlPm+5oQn3wYE9H2/dvIejuIPTIbGd/0FwO+IlrjFMx3AhELkX1ubaG8vkH2J93F6E10SedU0CuneFwBIoedQx6/1gtRo5DmDy+nYDl/VwNEavkr8vmREIGpNNkhzlWM4+1BGAg8MRc5tQ0XQX+LBhs5Bx2L+XoYBOJ6r0d+i9oIAJuIBhPALK7OR4G4UVeR55RoAZYTTaaAOfxkzfMGcWOSke/f3+JvINFaEphVQPRzohPp62qDuLq5xcj77QrcdXTQbKOB9o8oXi7wqzz6+AtbKSUpZ99/GwQO2IECHjLzVrWY5raeBgIXJTmT+HkUvF6lwfj+3XqNbFAJhK73AIXcrOfMkkXz2EAEUHnsWesb7ElHhpcHmQ5IR0HncmaKo3lmIgOAKq2Grdqybs7ARhVBqqbVKO54zp7TZFtYSNpyCgXO7cSV/gZNXohqmv2CQmfU5Qn20uRaFDMpBwWPi+BpD01RNaV4f4fi3/UTDTuoJPIiyvC4l2hdFdIxAeX4tWhdlKGbXYiyXOkald2OEh3Jy16lNXyAMi18j5N9KhtgRbmmNORjj7rcVjlQtn+Fc7GbqKsCqpxACd8sz4H+R6K28msej1I+YWRnek5TGCm9Kfko6fVGZm4/0+RaJOezGeW9gFmFlzR5IXKLvI4St09mFVVMkxUktRbJKHVbZ0ZtHDRPTTILTkXJZ7Rk0w9pHxtk9jFK/48wJguJ/qWXmPmJ/PBJFRZbiTaBxL1+VQCe9qLT3yH6VmawXQW4ma68lWi81JoUqgCXkDW2E/WUGox1qAAnUo1D4npyg8VKKOhJtI3oVXnJwccqwMyGJO4/ET02yc50UAWYUI2iro3oIEjf97gK8FYZgmlIvEh+4HddBXjW3bnTVN0VAGFxKsA1BmcsmUQFUSqAyN9UgCucGYPEcWYlQNNsFdjHa9Odo9oFiuyUowC0ddYUlU81SRUwwKEAtDbXsgCJSxoqA2apAFMi3uQTT/WLpzpgngrwYZU39EXqjSBJvZuJA/1GFeAJj1LcrpL1k4ExesGxa/duXv66qx8jMG1XAe4yvtbOTpVtEc9t8HU7vjF+jh8b8LmmAlwMAIazSH0BhI86g9oftWQDlW+rAMcDdHWQTRYuOgmdzR/HBkITVJDfxXwXqfPCRWuSjM47JrKB6FQFYNoGJD+jEywoASnzW7CBdoUKYDkKxNbvQtr4smxgWLHC0isL1qqECFczggkK2wSCr0fq3HqM4BNl2ZsK5v8HGV5wY6Rbp6r7JsHq2elwOCPwOq2oKSB4P2SYGs4I/K8rKbGcaHNY4CEDI4j4VUVzQPThTHA0K6jzUj3WSsLVdzB5VZUVxOYq50sQvnwKE7zozgp62xWTHiqe/ggbXMwMPlDMYpBgD0bFHZnBIqUklZeB9102mBTKTL9VJbNBiq2L2eAtX1bgcUAdz3zlAJsY4TYdK/C7oYz+IMmgJEb4ATMIeqKI03pZwFBWOJ0Z1HyphNw6IE3jAVa2nsygeZoKFoFELUmMMKsTM+hZIr+HPjKBPg5GmNOJGYyzy66oGUhVt5YVZvdnBktltwQk6/+AFeJsZobv5Pajh2ygYQYz/MbMCNyOySy9Jsh3uIMZHg1mBIFXJDYEZPw1O3zehhFUiZPWVyBl83l2WDDPxAZqJ0jqioecoFI8O8TzddlA4ywpPQ8GWddL5AAzZnoygZ6FErI2BXl3KuYA8WY7JjBVPvb+IPMBBTxgydZ6LGCxbGxjQe6juEDM+z6KAayXzHSQ/RI+ENO/rU/nc1QqawzSg2WcIBYcfc+LCALvSWS3CRS4ghdEfLqorp4Ewp7LYxwocTk/iIVXP6jvQQBNMqURqwYYXcgPIhY/+b5flLsz0C5bFg0VAYOKeXo9/6ddc7rWDfTSAP0L5GCtqAqITeSs1JKkp8e3zFs2qWOHdrExLQ/LId5DGdDgsQDOOuRwDhRa6ZRokvxGJeD2mSswUykAg63qi1UM1LmhuqLaqgHfbxxqy6ioHICu8Up7alQQVF5jU9gpnYoA2t1X1wZQtO+cV6paoCqAqptsSippqC6AVidU9DGovctl1aQtMikODF3OOlSR8Xjv3K4WcAF1rY8WyM6edOXrsS3eMoDrWOfzv6RVEH9kcb8GAeB6lh16rkg6aXc3z4p52wNc17of3rbJwpZw4YvRjSvoweU1NFxwq1C0vOfHV/Sp5Quus6HGmD1/iPLq7u7ZnSI8wQX3azJ9T1w+T7b83698M6pRBQO48h4RsXP33k22s7IlXls3qWWdCF/4m2gIrNNp1Jcbrz/4PTc3T4MjNy/3lweX1388qk0tP/h7qvcNtoQ0jXm9c+eYaEtosJce/q8hVlA4IJQWAADQaACdASrwAM8APj0ai0QiIaES+c5UIAPEsbd+PmGAWZBfgD9AGeAfgBbvy6fYvx63Avtv4l/jp2ce9/bz8lew1PT6cewH4b+wfu7/c+3t5gH8G/hf+H/q/+E/7H+H70H8g9AH85/vf7j++Z6MPQA/mX+Q/+/YAegB+3vqpf679pPgX/a//2f7r4Bv5N/bP+71gHoAepf1Q/j343/q94+/2P+y/rH+43bxd/vW792uhf0F/nfJB9nvw/9x/cb+5fuV8d/7DwZ+Pn9D9iPyBfh/8d/vf5qf3zhYtV/Y71AvUr5t/lv77+9H999LLUv6svcA/j39D/yv5u/4T1SfFF+z/4X/F+4B/Fv6T/j/7H+8f+y+N//F/0f5O+0T83/vv+5/yH7yf5T7A/4t/K/8f/Yv8Z/5f8D////p91Xrr/cD2Cf1B++s+A4L7IFtS8r2dx3uD7cHwbGg6X3inehkli9BsJorJ91VwSBR+DnhGX+NxK/AVCGKegqbWfqmASNXrTOmLR3Kw1KXnu7YW/4mXD62bsiqEqyuBl5hq8VE8B04YThgq3Dq+QNWf/4Tr4Ky8RattuxN9Ockbo9pKSbqwb95H//Bur4b+LOqjavoG6lbAsG6FF6DqLV2jZ03Ap7MyNxSEtzB8dkHyXiOFHyYKz2k8pdnStko46dGketM/0dVwPYLRqfgYq9lyUhlsEDEm27L8D+vOoPomtjDQTSclupePXoHDQgW+YAT2ZX72BymBC4GwsTAEbFQ3uhdgitKwy1S/K2aNvZh8M5T95XFvOn/uF2S4P3qAOgs3Ze6ghcN3OvOLp3IeBEiZOd3F7Z7L5XBBGrO0rwLoXmJCM+8uCjTgrm+/b859Gc4oWasyCl+xB/+YDhVg/hAh1l0S8oIlydgJ6PY+hKX+3ZO5iCtdu7eWCziIHkWi7+nbDtJI48Uutu/4HjtRYKK6IPgSjHwETUg3d8IaT0jYDARjWbJgua5Y+PlWamaHA6/aZAdRhnSG03XxXCnkwXuFb52h+yiF4L5T/xGf+N2Blcs9U1KEqDbibe6gGY/DYbx98timr6L40uwtKYMU+vIYWPSwhRnAxZ+hVlHK7Nj/tHO+AN6wRjvRjhPvUnjo1bf2dE1JpIAAP7uyE0PwN22nhZxOqfxV03RjPpPfASxr/G45/T7+nzq3pz//M8ax4MtYo0xLMQnP0eiPks7Iol3sb+Id/QryspV3VeL91xuoEmualW9GHI1VLgChETydpIaL9nCM4UaKdND10ZMjG53bbRnwD5bYXIs7ixqgt6QTJ0nHxFwzwMoaPDeSCMxTFgZADdJiQnpFiloGm6fBrewyHbcpYKJJjMxw4xkzrVut/dsuWTmFB3w47l+A/kn/I1AtSSzvgsdB9soXCeKQW6dVItnG01hj5TMV+cY+mzUi4F7Hm/etrEx9dB+yPNNFkeEVJ4EGG8lfhTICPeLeHxxcKBzSeia/JKwuyTxYn23tGYkTPpJzgkLyv4O+apLjXKgT5ziTwpHp/qJ3o2itzME6Jp+zgMg7d/9PwCClBODy7veEn/vQIx9Esk5i42+N5W+jKcv30s2qInWGCyBsn1wmfsOrP4/PDNOgRI0kbzF3w7o+HiZOenBBWBl2cgaR/J4j9W2RtZTLkvOhJGGhH69XroE7vaAGDtfRCvB/RWNcVE1HS1mB+H0p9v3NUCCgEztmoKnefJBRHkWc6zKBQoJwdU4M+xhLxmZMeISl/gtzBIS3Tp1wgPxPE4V9azlteNYaubuvSBHrDBeDTax66cltXqEGqfcjzxPvyXKh6GHYbXAyAvkwniPeDLPBF42cjQLqNqDCzYxU3AO+6YmU8B/YRpSAu6eTZk2/M7lP/4Pr9U9zL8LxXa8npHNRWETR5xTE3Cz7CipyuQnnQO+V98gaxm56W9sl0+dxY1DKSEm8VtDkZRIDC9ffb4xQow47obRn2PMhSwiyarLXeZvCF/Jgwl/NQmJxPdEQFS7qCU4yyk6RmNE8mt1A1G242SJ/t0e4eZOkM+vIezhJWvt6Bz4JFRR3X2s/lRN/eCmQve6TFNjyIjJwXFa8oXA12qwMAE7iVU/hfH5eVP0sF6M1Ts/wOLQgCVdCadX5XSAhY9EvxZONfaD2UTk7497fLf7mQRUAN2pPnHDgi24KwEFLFmvlpddHfEWYtLq3QWE5jB1kkXa5X3oxzQ4uM+tbGkL2L0NJmV3cg1GisCSLI2OemeYd0ZVZREtNyC1TdD/gOIuvvt/57Un/a98BaA2rMH7N7kJ8ZWicPUiHIIsan4DV/GdS/JYPcMAxDo9JfUm8eizOb65fy+j7rB2vWymngKhpPSjKsGfCD+5D370wX2/v+RZMyVuJcEX+Umf7hcb/g6C5B4wCJFzVa/bIdD9kx/GJHqwJfdqNpcF8KGshqR5qVgm87OfE+PaDJdHJFiArhwF5RoXaUOYGZfYmszZJ1n8qfOnW3TgD3LSsxZCHA1ubUSGwptNn3JvVrSxzrTUbERPKm/TlTaE/zdXbyM/PSBk/c6A45OP9XgPiazRL3ZVWbmLkukFY6V2ApRE96OFt3ihN1B+0NiWvFT/yg1zxscsopX39Z06QQaaR1aads940yVUOhf4GosU3uDaKt1zeITageFYUpAzPviewFowUweBJJhhucf75s9N8IlnQwJYqoB58TONqNa9fSGBJRf2UuN/NtF5mVMbQwoSq/wC7C/sBo7d0go/eGNcahB29h9sJlbUxAOjkq/c46R/HCD7WkzKMFAAwW1rjnILtF+Rz90VXE9/4o9X8IlXDkOGRRezzrknc/Ke/5jyzoxtJkXsf8mxIZ0X+pNvyIG5HyZqWEcSnibGXNtOGC4Iil2+B6+5Yz0QnqiEhogGIXfjXySr9Y35CFJyMv1Gsf3NBA4LzPk2bXBcd7qGLqjTA/55UubjgbQIFODdksZNRl2FQ0YaV7fdlAUN5X/9uj//tmbb2vwHdkmwgte/pRDd7juMh7dSaXppVLUH1UAN9vldZbzSw7S37R8laRVqrxNdw1j++uHixieC0LR1Y+MM81ADQWe3XuJVkSNgwGGoJOz23MQZLAoFD3DlTmhBY7V9zJ/Qj1x1Loa4rKGSMijYkzyQa/uJRSJ10YwTP/ogfV94RrLnNoUs54PVyL2QI9w4SHL9iVfFl+uOO+ZGGWOv7hNnhW/UYFflVAPhRv6IKxTlRmRLTcpIlWsRDPotilqq10WFiHnghQdbE3EJz4pDKEeoxlPLdv9Px2hHzYrXCeFGZef4ZjjJGQAQ6toJy7MfFSE9oaLFAj7HV1zz+pq9Z35JnJjcdQYxX9xyefjbzvkdk2QYEmXiNax/98+ePXnyqzsPAkoRBbILq57pIxqw2i0GYCrRZFROQCBDrAN+HVbBhrjNfLQY8ixbik8S91dzJsqH+kZdyqMNy7PvEYd9cJqf8SwdU/EpHFu+Z+dA4JVRb2XmWfBBLwyCVJUZoJHvD5rQ09RF1QlnWDE2jSbAGQPS4izSX18W8/cKgVZkPFg0SfSrOyFdcFFAoUtVzamGZ705Nd/bl1tge8l4vreVRMsunjoCnLlxtOx/7XN7o+/tSe3s7MmWPDI6pZqE982gr0PKqPwlQ2FIBzJ6HHLLK6Jg83UYBdFa85N5jN8Bn2CPA4egSrg74O3wz8prkIzokXPx1RTJKpZpEQF4qcCNuzpkEFHlOXHRBPg9OCljxbrz59N+BMCo7v9X7k8kuV1yGEFJXrnDKPPTEdXQKcTmXJlHwof7EtbPctiWcYC6w8X8kP5RdWTGpJwZUhHwBaNW8iKMrEy1E5sYy7hDLtboQiB+sOo7L8i1gJ2BF1HhM9ZkC0B0azhM8v1/NV+vqU1aUJlwZEJffE2Mn7fUq93DbLW/62jjc8LQlDv+BM0zvwpX/qjP/6nQfwZ/hdRwjv73/E4OyfZNR3/MEXwo3io61w2G3XeFCAeqtwiFfXdVGIjlEMZ8eeoYERJbkOzqP6nAqLRMjuxRc9HhehGWEwUBgvtGyxu4Q4NZrK8OSWY/W28otokx/uN2UBhKrYn52vAv+7/JaWpK9DemQye6LA/5/QxE4fBeqbKRiCB40nUmeR0w49cVoyqfSKZ+T2TvAa+IGLQguEd6lKyJiSZ0+bW17z4w9+kQeVwkrLEQPFjGIvy839noBXFXo8ffnaQXEJsL2174p7yoKQh6alR0PJVdb99sq0XaCc0ti6l0jGxW3xArWKtTBlBdjHzvsrbIFVV7HGILFzoA2CnxZw6j0xRH/zZnXluYbEdh0lJqlOP4E8ABzmgT+HdkwzcKySAVZ/aYur0Pe62/2lCNS48UI7bN05uGtGOgMR5P1E5poNk/J435f0g71ION+w4U9EW9ExVlcgqFVRCPlF6OwBUYKFi7CAPxbHr65gwCfqfajBH+9fsvHrj54CqlaQk1at6AZ9lHei8LUIBMXywbo0kH/FcQGLQTJHPGE6P6wTknbFLFp7oocAzlqVP8GyVtWfBSB3YMCBfIOsYR1Ohbg+gIioOW3Zf4AVgRAatAYBPmIk3bDBH2LunlQXI+dhfSKSR/xykLzV+LicImeMPsxxaW7HFvrGAAK0dL3j/5PiZvKp2dmDywUNWY7tnmcSHu8L33CI5SnBvDiY1ucd7t5lPkUbLF6Irt+km75Deix0jwZzMfC2jJGB/yazleoudWyUPWv32hxQzUMhcvgJ9z2YjpuImVp0cgAxgauvuen1Mc70zCLRMiP29/i+WuRgFu0LAyCGxN8JX1PFf9N6ToQJynwtxko7oZXg+RI+4SyoIf5s9qsAop3/fzOCB0dHzEko4UA9q3x/d9BqxOeHtqmM51SW7KVZCqyU9gaYUuSvz4zW/k4nhelCHDQhg042fn1/54DlYTQumSsBCz5OTVr3rZW/u2Q0EzJmCZ7992vmYSZXealyOSIeoTPAfqzPWcpBX9ngT3VgzEoWmdKuMboheyOwjL2sD9dPdh+/N8fyE8uMZEkvCVs1NGpwJoz0tSYFvgelu90Mr8UHng/yloFz0m2IPoPmDUbjumSL3gDyDZBj/erJAGtR7LjMVLPPoR5c1VHLQOnv403/+70tKdDkhW+7/Rhuj1Qo6LcE/7Hhae2F18/gbtLlzyiS+RfrEuDavNKXGHdrYT7wa5EL/RaRGRTmROl4XPSO1DJXm5ZsgumbmG7Xb3QfVXXZAL3OFb25Fi5fI093QHuTlemhgAB3vfVySWhzfSYgp9+g2SYrHCYtb57OVWoeYQma52Kk6rz1Aw+loA2WmNgjOJQHrcmrDHm84dp+I2uDin+wLlgKBYEXi9vbnzXCtFAgCDGi0heseqy/dZODvopEFeyOAsxerBr8UFEzU60584YnwewCzdwz72f73bXR17zSK7QeRJNoCxJvWbRbKA+lxlDnfeFKm7nWGauUA6IE8F/YWK+f/3h6G55/CZLSvyDgGEiPvOLGWBZISYrvBQHnG0Bwb+zCgvCx+mzQn5chQkw6J7TmtGQa2ArUuNxSrrIZ16QJiREu25oWWcSV2C1lzdQ1IPyAL1HWqh+jMBFagcl1PnD1etzEB+gn0PJoM0muz1dMos9Wpmd/LLjH27VXaTvmo8iLzJbOURuBjNDc6LydgZxwsf0kAdukl7zjnu+Nnr6gEC5ZIulLrFY0gWS7El3zdJgFqgWlmr1VDsuoKZfW4zfMoI0R+9q2U5Xulg9R5Y7h5bsWs8y75lQCUzwHkOkixQ/JG6brdv9ee9nm+3EkmtGkufTSVaBpJzL0tdtoCPyrlelEeDj+bSgmAOvx5sevG7O0VujvHRa4h/+CXqolF3jhOoYbA8gNhZaaCdCy5EllSjOmJsO9I4UkuNw/h2EACb06gYHt739ewpcXBiHS2KdteHJrUClEequLTUyHMgkUWjobY+oefXsHucggwjnD6vdNTnCPPRe54RT7NJM9jUn/g6yxkeqn6m3RgcnkPazkk3KHSikgVug4nin+acd46i8cYeN0injaVHixIgtm1Myhs91AUpYuxO8jD7pgrI3A9LHjpdgckA/2tlV948xxKYjsNXiPP4ukz03sBi2W/1l8LV2ZuAeiU34BocUY0mD6LBdaA/4j9CiCyJTckJ3ANtaIle/EUxnjDeKaHt2bbOM+009XbCOOBl5RM2k4Fcxqi9yRSW4nke8dp1SR1Y9ho4JhSXng3I/S22GRDvnpyYWIlt9fWGKQzj48LmuB2/wu2defxvURQnFbN3yF8w+1PTtmgROTFFCkbEkrB5ImfdANPylyjr6V6CkSfVY3Y3bLs+xlI140BOm/S1yJkIK874bV487ONttq2e6iusgsgq6dnEZgMlgdAfw2f4aiYwxe4TWHpcb3cghGpFJcHdlJqL2/xPsmvcPQmsk5bqfoCMp5Bnm6BLri9zNgBmBw3nmpyZs1LlQrrBu4FEr3vXxqGpNzOzO72mM1ORE8Uk/Qd4TeG7mlefdAiRAhNs1y1kUVnUX/5PAEkMAXHh3K1qzZFSqa/rkbieh7EczWIyKHxpNr8p2HqDNEAfSTQekPlyWtEbmgp3WtOV6dbOW5zX2Y7BEtQhB9qt5QKyojK83qhi1hpef2yyoYNtW26GVOQSsQX37Ut/8FxFfihPxyEuLb5YYAZ6iifAtOH/+rTOw8LEkK3fgtoizewyegmXgCJ9pR8rBO4dmnlt9DYKyPQefrT8BLloI7nbgTU3HUYNowDBR4NVyn4vWLzZAbt5fjlF/3nPVqZBwUg3++2rFCufcNl1N9rNNi26RAguRNEC9CymLB+uLF/HXfmpQ56vogX44kbHTArKOsXWz03Z7TD5LTg5egrbgLSvP6PLFiYv2VYxwUa014ymDJkw9jTypqh7xJuUmAuCDoggHjUbjLFjkeRsd6IHO5chpOmi19jtADBTFjs6GTvWHjFVj1At7YZakuSQj9mDb9CCu8/XZZ9liOrgTNl4wNf8NLgMpzEdc5xdYZFroEvrSM7zpsmJRzO5rZgGagDTBNEbNgwP6AaGERaQ6w8L0kOvC67Z2Yr5/2Gq/0QVGd/nsJdLApmZt2ifGuixLc9TNFHEAgPaGhI7DYYixQZkDsD2dIrOiGSQxAU8aIKk80kpHIOq1VdqdY3/Dhu2ZqwmE1SCU6mrhIUOPLPgk656HLeV7rsXpvAWU1tAqgjr1aX/Yh//YNk16mQjXjtx+D4fV7VvRRAfyCADoyKxcskLgAGwsDf6Cn9lEDwEr3uSKr/uqS2fEBrVdLxAdvt3/YWvWrSt51t3rcAdvBrFZkft6lOpmVHGN9KL2QLHITPmwdoKfp8+4e0H/OpluVqELtk7WlWVwOM6qVDgj02ajyisNcWAZ6SjViG97qB5FOEziuYpq0ez4m30gM8vR+AKi/1vrjBBEZ/ePsddCvxr47NXnFaLQ///71nLiEod2cmiWJ7ih5Uxiu8IXuCjBQVMlIfTvs3q+qb9wQC/b1rGw7kOPJzIL31SSl+CDAuY3CY/jbJXqWqzEsd8YXOZ9T2yw32TYO08ndfU3UYpPGfdpISlogQW8yPsCh5lwzh9X7EgDBZMfZKv5mNq8vKYlUR9tFDHBleCK/LRYbTaBnTVz3p+XX80jcQmJWkK/enL91/W5ijr4AJLbOcM/+sZfid2lSIOw/7R68bYpQ4KfZY0Mk+b/Gkbyl7yKJ1Qu9T75fEDdM2SWb8FTOniZ9Vy4xIa3G9q0KexeaAAAA==" alt=""></div>
@@ -495,7 +516,7 @@ button{font:inherit;color:inherit}
             <p class="chat-body" id="typer"></p>
           </div>
         </div>
-        <div class="chat-actions"><span class="chip hot">🎤 話し手 1人</span><span class="chip">💬 聞く人 6人</span><span class="chip">📅 10/2 17:30</span></div>
+        <div class="chat-actions"><span class="chip hot"><svg class="i i-s" aria-hidden="true"><use href="#i-mic"/></svg>話し手 1人</span><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-chat"/></svg>聞く人 6人</span><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-cal"/></svg>10/2 17:30</span></div>
       </div>
       <div class="h-stat" aria-hidden="true"><span class="t">今月AIが立てたライブ（画面例）</span><span class="n" data-count="12">12</span><span class="t">うち 断られて探し直した 3件</span></div>
       <div class="h-tags" aria-hidden="true"><span class="t">いま社内で集まっている興味</span><span class="chip hot">Power Automate</span><span class="chip">Excel関数</span><span class="chip">要件定義</span><span class="chip">生成AI</span><span class="chip">SQL</span><span class="chip">英語の会議</span><span class="chip">資料づくり</span></div>
@@ -513,11 +534,11 @@ button{font:inherit;color:inherit}
       <h2>その知見 隣の席で眠っていませんか</h2>
     </div>
     <div class="pains">
-      <div class="card pain rv"><span class="ic">👀</span><h3>社員が何を学びたいのか見えない</h3><p>アンケートを取っても本音は出てこない。次の勉強会のテーマが決められない。</p></div>
-      <div class="card pain rv"><span class="ic">🔍</span><h3>詳しい人がどこにいるか分からない</h3><p>講師を頼みたくても 誰が何を知っているのかを知る手段がない。</p></div>
-      <div class="card pain rv"><span class="ic">📋</span><h3>準備が担当者ひとりに集中する</h3><p>テーマ決めから日程調整 告知 記録まで。回数を増やしたくても手が回らない。</p></div>
-      <div class="card pain rv"><span class="ic">🧱</span><h3>部署の外に 知り合いがいない</h3><p>縦のつながりは強いのに 横のつながりがない。同じ悩みを別の部署が二重に調べている。</p></div>
-      <div class="card pain own rv"><span class="flag">客先常駐が多い会社で特に</span><span class="ic">✈️</span><h3>社外で学んだ知識が 会社に戻ってこない</h3><p>社員がそれぞれの現場で身につけた知見が その現場の中だけで使われて終わってしまう。</p></div>
+      <div class="card pain rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-eye"/></svg></span><h3>社員が何を学びたいのか見えない</h3><p>アンケートを取っても本音は出てこない。次の勉強会のテーマが決められない。</p></div>
+      <div class="card pain rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></span><h3>詳しい人がどこにいるか分からない</h3><p>講師を頼みたくても 誰が何を知っているのかを知る手段がない。</p></div>
+      <div class="card pain rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-stack"/></svg></span><h3>準備が担当者ひとりに集中する</h3><p>テーマ決めから日程調整 告知 記録まで。回数を増やしたくても手が回らない。</p></div>
+      <div class="card pain rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-silo"/></svg></span><h3>部署の外に 知り合いがいない</h3><p>縦のつながりは強いのに 横のつながりがない。同じ悩みを別の部署が二重に調べている。</p></div>
+      <div class="card pain own rv"><span class="flag">社外で働く社員が多い会社の声</span><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-away"/></svg></span><h3>社外で学んだ知識が 会社に戻ってこない</h3><p>社員がそれぞれの現場で身につけた知見が その現場の中だけで使われて終わってしまう。</p></div>
     </div>
   </div>
 </section>
@@ -566,7 +587,7 @@ button{font:inherit;color:inherit}
             <div class="ba-row"><span class="task">日程を決める</span><span class="res"><span class="who h">担当者</span><small>手作業で</small></span></div>
             <div class="ba-row"><span class="task">告知文を書く</span><span class="res"><span class="who h">担当者</span><small>手作業で</small></span></div>
             <div class="ba-row"><span class="task">記録を残す</span><span class="res"><span class="who h">担当者</span><small>手作業で</small></span></div>
-            <div class="ba-foot">😮‍💨 1回開くたびに ぜんぶ手作業</div>
+            <div class="ba-foot">1回開くたびに ぜんぶ手作業</div>
           </div>
           <div class="ba-layer ba-after" aria-hidden="true">
             <div class="ba-hd"><span>やること</span><b class="accent">まなびのわ</b></div>
@@ -576,7 +597,7 @@ button{font:inherit;color:inherit}
             <div class="ba-row"><span class="task">日程を決める</span><span class="res"><span class="who ai">AI</span><small>予定の空きだけを見て調整</small></span></div>
             <div class="ba-row"><span class="task">告知文を書く</span><span class="res"><span class="who ai">AI</span><small>なぜ立ったかを最初の一言で</small></span></div>
             <div class="ba-row"><span class="task">記録を残す</span><span class="res"><span class="who ai">AI</span><small>知見カードに要約して残す</small></span></div>
-            <div class="ba-foot">🙌 担当者は 見守るだけ</div>
+            <div class="ba-foot">担当者は 見守るだけ</div>
           </div>
           <div class="ba-handle" aria-hidden="true"></div>
           <input type="range" min="0" max="100" value="42" id="baRange" aria-label="これまでとまなびのわを比べる">
@@ -595,9 +616,9 @@ button{font:inherit;color:inherit}
       <h2>立場ごとに やることは3つだけ</h2>
     </div>
     <div class="tabs" role="tablist" aria-label="立場を選ぶ">
-      <button class="tab" role="tab" aria-selected="true" data-tab="member" id="tab-member">🙋 参加する社員</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="owner" id="tab-owner">🧑‍🏫 育成担当</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tab-admin">🛡️ 管理者</button>
+      <button class="tab" role="tab" aria-selected="true" data-tab="member" id="tab-member"><svg class="i i-s" aria-hidden="true"><use href="#i-person"/></svg>参加する社員</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="owner" id="tab-owner"><svg class="i i-s" aria-hidden="true"><use href="#i-teacher"/></svg>育成担当</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="admin" id="tab-admin"><svg class="i i-s" aria-hidden="true"><use href="#i-shield"/></svg>管理者</button>
     </div>
     <div class="flow" id="flow" role="tabpanel" aria-live="polite"></div>
   </div>
@@ -612,7 +633,7 @@ button{font:inherit;color:inherit}
     </div>
     <div class="bento">
       <div class="card bt w2 dark rv">
-        <span class="ic">🎙️</span><h3>まなびのライブ</h3>
+        <span class="ic"><svg class="i" aria-hidden="true"><use href="#i-mic"/></svg></span><h3>まなびのライブ</h3>
         <p>ライブ配信のように 話す人と聞く人が集まる場。<b style="color:#F7F5F0">聞くだけの参加も正式な席</b>なので 喋らないと気まずい がありません。</p>
         <div class="viz"><div class="seats">
           <div class="seat sp"><span class="av" style="background:#A83B2E">星</span>話し手</div>
@@ -624,20 +645,20 @@ button{font:inherit;color:inherit}
         </div></div>
       </div>
       <div class="card bt w2 rv">
-        <span class="ic">🎪</span><h3>AIが場を立てる</h3>
+        <span class="ic"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg></span><h3>AIが場を立てる</h3>
         <p>興味が重なるとAIが話し手に打診し 日程を決めて予約するまでを進めます。進み具合は「ライブのタネ」でいつでも確認できます。</p>
-        <div class="viz"><div class="tagcloud"><span class="chip">🌱 育ち待ち</span><span class="chip">💬 話し手に相談中</span><span class="chip">📅 日程を決め中</span><span class="chip hot">🎪 予約済み</span></div></div>
+        <div class="viz"><div class="tagcloud"><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-sprout"/></svg>育ち待ち</span><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-chat"/></svg>話し手に相談中</span><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-cal"/></svg>日程を決め中</span><span class="chip hot"><svg class="i i-s" aria-hidden="true"><use href="#i-spark"/></svg>予約済み</span></div></div>
       </div>
-      <div class="card bt rv"><span class="ic">🃏</span><h3>知見カード</h3><p>ライブの会話をAIが要約。話した内容がそのまま社内の資産になります。</p></div>
+      <div class="card bt rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-card"/></svg></span><h3>知見カード</h3><p>ライブの会話をAIが要約。話した内容がそのまま社内の資産になります。</p></div>
       <div class="card bt w2 rv">
-        <span class="ic">🗺️</span><h3>社内の知識地図</h3><p>どの分野に詳しい人が何人いるかが 近い分野ほど近くに並びます。</p>
+        <span class="ic"><svg class="i" aria-hidden="true"><use href="#i-map"/></svg></span><h3>社内の知識地図</h3><p>どの分野に詳しい人が何人いるかが 近い分野ほど近くに並びます。</p>
         <div class="viz"><div class="map" aria-hidden="true">
           <span class="chip hot" style="left:22%;top:34%">Power Automate</span><span class="chip" style="left:46%;top:24%">Copilot</span><span class="chip" style="left:30%;top:70%">Excel関数</span><span class="chip" style="left:72%;top:40%">要件定義</span><span class="chip" style="left:62%;top:76%">資料づくり</span><span class="chip" style="left:88%;top:70%">英語の会議</span>
         </div></div>
       </div>
-      <div class="card bt rv"><span class="ic">📈</span><h3>勝手に育つスキルシート</h3><p>話すほどに育つプロフィール。公開するかどうかは本人が選びます。</p></div>
-      <div class="card bt w2 rv"><span class="ic">🔍</span><h3>自己分析</h3><p>作業中の画面を数枚見せるだけで 自分では気づいていない得意をAIが見つけます。結果は本人にだけ届き 画像は保存しません。</p></div>
-      <div class="card bt w2 rv"><span class="ic">📊</span><h3>管理ダッシュボード</h3><p>社内で集まっている興味 立ったライブ タグの辞書までひと目で。育成施策の手がかりになります。</p></div>
+      <div class="card bt rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-growth"/></svg></span><h3>勝手に育つスキルシート</h3><p>話すほどに育つプロフィール。公開するかどうかは本人が選びます。</p></div>
+      <div class="card bt w2 rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-scan"/></svg></span><h3>自己分析</h3><p>作業中の画面を数枚見せるだけで 自分では気づいていない得意をAIが見つけます。結果は本人にだけ届き 画像は保存しません。</p></div>
+      <div class="card bt w2 rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-dash"/></svg></span><h3>管理ダッシュボード</h3><p>社内で集まっている興味 立ったライブ タグの辞書までひと目で。育成施策の手がかりになります。</p></div>
     </div>
   </div>
 </section>
@@ -658,7 +679,7 @@ button{font:inherit;color:inherit}
     <p class="note">※ 費用は開発環境での実測値（1ドル150円で換算）。</p>
 
     <div class="card sim rv">
-      <h3>🧮 いま幹事の仕事に どれだけ時間を使っていますか</h3>
+      <h3><svg class="i i-m" aria-hidden="true"><use href="#i-soroban"/></svg>いま幹事の仕事に どれだけ時間を使っていますか</h3>
       <div><label for="simN">ひと月に開く勉強会</label><div class="ctl"><input type="range" id="simN" min="1" max="20" value="4"><output id="simNo" for="simN">4回</output></div></div>
       <div><label for="simH">1回あたりの準備時間</label><div class="ctl"><input type="range" id="simH" min="1" max="10" value="3"><output id="simHo" for="simH">3時間</output></div></div>
       <div class="res" aria-live="polite"><p>1年間で幹事の仕事にかかる時間</p><div class="v" id="simRes">144時間</div><p id="simDays">およそ 18営業日ぶん</p></div>
@@ -675,16 +696,16 @@ button{font:inherit;color:inherit}
       <p>AIに任せる範囲が広いぶん 守りは最初から設計に組み込んでいます。</p>
     </div>
     <div class="safe">
-      <div class="card sf rv"><span class="ic">🚪</span><h3>人が判断するのは4か所だけ</h3><p>話し手を引き受けるか。新しい言葉を正式なタグにするか。迷ったときの相談を受けるか。大事なところは人が決めます。</p></div>
-      <div class="card sf rv"><span class="ic">🔐</span><h3>見ていい人しか見られない</h3><p>データベースの段階で鍵をかけています。ライブの元の発言を読めるのは その場に誘われた人だけです。</p></div>
-      <div class="card sf rv"><span class="ic">🗣️</span><h3>声をかけられるAIは1体だけ</h3><p>社員に通知を送れるのは場づくりのAIだけ。ほかのAIが乗っ取られても 外には何も出ていきません。</p></div>
-      <div class="card sf rv"><span class="ic">⛔</span><h3>決めた上限を超えない</h3><p>打診は3人まで 14日で打ち切り 費用にも上限。止める判断はAIではなく仕組みが保証します。</p></div>
+      <div class="card sf rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-torii"/></svg></span><h3>人が判断するのは4か所だけ</h3><p>話し手を引き受けるか。新しい言葉を正式なタグにするか。迷ったときの相談を受けるか。大事なところは人が決めます。</p></div>
+      <div class="card sf rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></span><h3>見ていい人しか見られない</h3><p>データベースの段階で鍵をかけています。ライブの元の発言を読めるのは その場に誘われた人だけです。</p></div>
+      <div class="card sf rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg></span><h3>声をかけられるAIは1体だけ</h3><p>社員に通知を送れるのは場づくりのAIだけ。ほかのAIが乗っ取られても 外には何も出ていきません。</p></div>
+      <div class="card sf rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-gauge"/></svg></span><h3>決めた上限を超えない</h3><p>打診は3人まで 14日で打ち切り 費用にも上限。止める判断はAIではなく仕組みが保証します。</p></div>
     </div>
     <div class="card privacy rv">
-      <div><b>📅 カレンダー</b><span>空いているかどうかだけを見る。予定の中身は読まない</span></div>
-      <div><b>🃏 知見カード</b><span>発言をそのまま載せず 要約して残す</span></div>
-      <div><b>🏷️ タグの公開</b><span>公開するかどうかは 本人が1つずつ選べる</span></div>
-      <div><b>🚫 社外の固有名詞</b><span>顧客名や案件名は タグにならないよう止める</span></div>
+      <div><b><svg class="i i-s" aria-hidden="true"><use href="#i-cal"/></svg>カレンダー</b><span>空いているかどうかだけを見る。予定の中身は読まない</span></div>
+      <div><b><svg class="i i-s" aria-hidden="true"><use href="#i-card"/></svg>知見カード</b><span>発言をそのまま載せず 要約して残す</span></div>
+      <div><b><svg class="i i-s" aria-hidden="true"><use href="#i-tag"/></svg>タグの公開</b><span>公開するかどうかは 本人が1つずつ選べる</span></div>
+      <div><b><svg class="i i-s" aria-hidden="true"><use href="#i-ban"/></svg>社外の固有名詞</b><span>顧客名や案件名は タグにならないよう止める</span></div>
     </div>
   </div>
 </section>
@@ -703,10 +724,10 @@ button{font:inherit;color:inherit}
       <div class="sp3"><span class="no">3</span><h3>場が勝手に立ち始める</h3><p>興味が重なったところから AIが次のライブを立てていきます。</p></div>
     </div>
     <div class="plans">
-      <div class="card plan rv"><div class="pt"><span class="chip">🅰️ 標準プラン</span></div><h3>契約したその日から</h3><p style="color:var(--mute);font-size:14.5px">国内のクラウドで私たちが運用します。まずは小さく始めたい会社に。</p><ul><li>中小〜中堅企業向け</li><li>サーバーの用意は不要</li><li>すぐに有志で試せる</li></ul></div>
-      <div class="card plan feat rv"><div class="pt"><span class="chip hot">🅱️ 専用環境プラン</span></div><h3>自社の環境の中で</h3><p style="color:var(--mute);font-size:14.5px">御社のテナント内に構築します。データを外に出せない会社に。</p><ul><li>金融・官公庁・大企業向け</li><li>数週間から構築</li><li>社内の規程に合わせて設定</li></ul></div>
+      <div class="card plan rv"><div class="pt"><span class="chip">標準プラン</span></div><h3>契約したその日から</h3><p style="color:var(--mute);font-size:14.5px">国内のクラウドで私たちが運用します。まずは小さく始めたい会社に。</p><ul><li>中小〜中堅企業向け</li><li>サーバーの用意は不要</li><li>すぐに有志で試せる</li></ul></div>
+      <div class="card plan feat rv"><div class="pt"><span class="chip hot">専用環境プラン</span></div><h3>自社の環境の中で</h3><p style="color:var(--mute);font-size:14.5px">御社のテナント内に構築します。データを外に出せない会社に。</p><ul><li>金融・官公庁・大企業向け</li><li>数週間から構築</li><li>社内の規程に合わせて設定</li></ul></div>
     </div>
-    <div class="card custom rv"><span class="ic">🧩</span><div><h3>御社に合わせた追加開発にも対応します</h3><p>人事評価や研修の仕組みとの連携など ご希望に応じて機能を足していけます。まなびのわは 機能を載せていける「場」です。</p></div></div>
+    <div class="card custom rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-blocks"/></svg></span><div><h3>御社に合わせた追加開発にも対応します</h3><p>人事評価や研修の仕組みとの連携など ご希望に応じて機能を足していけます。まなびのわは 機能を載せていける「場」です。</p></div></div>
   </div>
 </section>
 
@@ -718,10 +739,10 @@ button{font:inherit;color:inherit}
       <h2>勉強会が「あるけど続かない」会社へ</h2>
     </div>
     <div class="fits">
-      <div class="card fit rv"><span class="ic">🛠️</span><h3>DXや内製化を進めたい</h3><p>ツールの使い方の知見を 部署をこえて広げたい。</p></div>
-      <div class="card fit rv"><span class="ic">✈️</span><h3>客先常駐の社員が多い</h3><p>現場ごとに散らばった知見を 会社に持ち帰りたい。</p></div>
-      <div class="card fit rv"><span class="ic">🏁</span><h3>社内の学び文化を育てたい</h3><p>LT会や社内ハッカソンを 一過性で終わらせたくない。</p></div>
-      <div class="card fit rv"><span class="ic">🌱</span><h3>新人と先輩をつなげたい</h3><p>聞きたいのに聞けない を 聞くだけの席から減らしたい。</p></div>
+      <div class="card fit rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></span><h3>DXや内製化を進めたい</h3><p>ツールの使い方の知見を 部署をこえて広げたい。</p></div>
+      <div class="card fit rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-away"/></svg></span><h3>客先常駐の社員が多い</h3><p>現場ごとに散らばった知見を 会社に持ち帰りたい。</p></div>
+      <div class="card fit rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-flag"/></svg></span><h3>社内の学び文化を育てたい</h3><p>LT会や社内ハッカソンを 一過性で終わらせたくない。</p></div>
+      <div class="card fit rv"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-sprout"/></svg></span><h3>新人と先輩をつなげたい</h3><p>聞きたいのに聞けない を 聞くだけの席から減らしたい。</p></div>
     </div>
   </div>
 </section>
@@ -788,6 +809,7 @@ button{font:inherit;color:inherit}
     root.dataset.look=l;
     btns.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.set===l)));
     try{localStorage.setItem('manabi-look',l)}catch(e){}
+    if(window.__eqBA)requestAnimationFrame(window.__eqBA);
   }
   let saved=null;try{saved=localStorage.getItem('manabi-look')}catch(e){}
   setLook(qs.get('look')||saved||'a');
@@ -796,8 +818,8 @@ button{font:inherit;color:inherit}
   /* ---- トースト ---- */
   const gt=document.getElementById('gtoast');let gtT;
   function say(msg){gt.innerHTML=msg;gt.classList.add('show');gt.style.transform='translate(-50%,0)';clearTimeout(gtT);gtT=setTimeout(()=>{gt.classList.remove('show');gt.style.transform='translate(-50%,8px)'},2600)}
-  document.getElementById('ctaDemo').addEventListener('click',()=>say('👋 ブースで<b>実際の画面</b>をお見せします'));
-  document.getElementById('ctaContact').addEventListener('click',()=>say('💬 ブースのメンバーに<b>お声がけ</b>ください'));
+  document.getElementById('ctaDemo').addEventListener('click',()=>say('ブースで<b>実際の画面</b>をお見せします'));
+  document.getElementById('ctaContact').addEventListener('click',()=>say('ブースのメンバーに<b>お声がけ</b>ください'));
 
   /* ---- 読了バー ---- */
   const pg=document.getElementById('progress');
@@ -849,7 +871,7 @@ button{font:inherit;color:inherit}
   svg.innerHTML=html;
   const segs=[...svg.querySelectorAll('.seg')],st4=[...document.querySelectorAll('.st4')],ringLogo=document.getElementById('ringLogo');
   let cur=0,rot=0,auto;
-  function setRing(i,user){cur=i;segs.forEach((s,k)=>s.classList.toggle('on',k===i));st4.forEach((b,k)=>{b.classList.toggle('on',k===i);b.setAttribute('aria-selected',String(k===i))});rot=i*90;ringLogo.style.transform='rotate('+rot+'deg)';if(user)restart()}
+  function setRing(i,user){rot+=((i-cur+4)%4)*90;cur=i;segs.forEach((s,k)=>s.classList.toggle('on',k===i));st4.forEach((b,k)=>{b.classList.toggle('on',k===i);b.setAttribute('aria-selected',String(k===i))});ringLogo.style.transform='rotate('+rot+'deg)';if(user)restart()}
   function restart(){clearInterval(auto);if(!reduce)auto=setInterval(()=>setRing((cur+1)%4),3200)}
   st4.forEach(b=>b.addEventListener('click',()=>setRing(+b.dataset.i,true)));
   segs.forEach(s=>s.addEventListener('click',()=>setRing(+s.dataset.i,true)));
@@ -858,23 +880,30 @@ button{font:inherit;color:inherit}
   /* ---- ビフォーアフター ---- */
   const ba=document.getElementById('ba'),br=document.getElementById('baRange');
   br.addEventListener('input',()=>ba.style.setProperty('--cut',br.value+'%'));
+  function eqBA(){
+    const L=[...ba.querySelectorAll('.ba-before > *')],R=[...ba.querySelectorAll('.ba-after > *')];
+    L.concat(R).forEach(e=>e.style.minHeight='');
+    L.forEach((e,k)=>{const r=R[k];if(!r)return;const h=Math.max(e.getBoundingClientRect().height,r.getBoundingClientRect().height);e.style.minHeight=r.style.minHeight=h+'px'});
+  }
+  eqBA();addEventListener('resize',eqBA);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqBA);
+  window.__eqBA=eqBA;
 
   /* ---- 使い方タブ ---- */
   const flows={
     member:[
-      ['ライブに参加する','興味のあるライブに入るだけ。話しても 聞くだけでもOK。','<div class="row"><span class="chip hot">🎤 話す</span><span class="chip">💬 聞くだけ</span></div>'],
-      ['タグが育っていく','話した内容からAIがタグを提案。公開するかは自分で選びます。','<div class="row"><span class="chip">Power Automate 🌐公開</span><span class="chip">英語の会議 🔒非公開</span></div>'],
+      ['ライブに参加する','興味のあるライブに入るだけ。話しても 聞くだけでもOK。','<div class="row"><span class="chip hot"><svg class="i i-s" aria-hidden="true"><use href="#i-mic"/></svg>話す</span><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-chat"/></svg>聞くだけ</span></div>'],
+      ['タグが育っていく','話した内容からAIがタグを提案。公開するかは自分で選びます。','<div class="row"><span class="chip">Power Automate <svg class="i i-s" aria-hidden="true"><use href="#i-globe"/></svg>公開</span><span class="chip">英語の会議 <svg class="i i-s" aria-hidden="true"><use href="#i-lock"/></svg>非公開</span></div>'],
       ['声がかかる','詳しい分野で人が集まると「話し手になりませんか」と届きます。','<div class="row"><span class="chip hot">はい</span><span class="chip">今回は見送る</span></div>']
     ],
     owner:[
-      ['もくもく会を1回開く','最初の場だけ用意します。あとは参加者が話すだけ。','<div class="row"><span class="chip">📅 毎週木曜 17:30</span></div>'],
+      ['もくもく会を1回開く','最初の場だけ用意します。あとは参加者が話すだけ。','<div class="row"><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-cal"/></svg>毎週木曜 17:30</span></div>'],
       ['社内の興味を眺める','いま何に興味が集まっているかがダッシュボードで分かります。','<div class="row" style="gap:10px"><span style="width:84px">生成AI</span><span class="bar"><i style="width:82%"></i></span></div><div class="row" style="gap:10px"><span style="width:84px">要件定義</span><span class="bar"><i style="width:56%"></i></span></div>'],
-      ['「やるよ」と言う','AIが立てたライブを見守るだけ。準備はAIが進めます。','<div class="row"><span class="chip hot">🎪 予約済み 3件</span></div>']
+      ['「やるよ」と言う','AIが立てたライブを見守るだけ。準備はAIが進めます。','<div class="row"><span class="chip hot"><svg class="i i-s" aria-hidden="true"><use href="#i-spark"/></svg>予約済み 3件</span></div>']
     ],
     admin:[
       ['タグの辞書を整える','AIが見つけた新しい言葉を 正式なタグにするか決めます。','<div class="row"><span class="chip">Power Apps</span><span class="chip hot">承認</span><span class="chip">見送り</span></div>'],
-      ['禁止する言葉を登録','顧客名や案件名を登録して タグにならないようにします。','<div class="row"><span class="chip">🚫 ○○商事</span><span class="chip">🚫 案件A</span></div>'],
-      ['迷ったときの相談を受ける','AIが判断に迷ったときだけ 通知が届きます。','<div class="row"><span class="chip">🚨 確認待ち 1件</span></div>']
+      ['禁止する言葉を登録','顧客名や案件名を登録して タグにならないようにします。','<div class="row"><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-ban"/></svg>○○商事</span><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-ban"/></svg>案件A</span></div>'],
+      ['迷ったときの相談を受ける','AIが判断に迷ったときだけ 通知が届きます。','<div class="row"><span class="chip"><svg class="i i-s" aria-hidden="true"><use href="#i-alert"/></svg>確認待ち 1件</span></div>']
     ]
   };
   const flow=document.getElementById('flow'),tabs=[...document.querySelectorAll('.tab')];
