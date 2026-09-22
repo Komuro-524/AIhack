@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>学びの輪 — AI HACK 2026</title>
+<title>まなびのわ — AI HACK 2026</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
@@ -13,6 +13,7 @@
   --cream:#F7F5F0;
   --accent:#DC3C17;
   --accent-soft:#f0805a;
+  --gold:#D9AA3F;
   --line:rgba(247,245,240,.16);
   --f-disp:"Zen Maru Gothic","Noto Sans JP",sans-serif;
   --f-body:"Noto Sans JP","Zen Maru Gothic",sans-serif;
@@ -30,6 +31,7 @@ html,body{
 .deck{
   position:relative;
   width:100vw; height:100vh;
+  cursor:pointer;
 }
 .slide{
   position:absolute; inset:0;
@@ -61,7 +63,7 @@ html,body{
   font-family:var(--f-disp);
   font-size:clamp(13px,1.3vw,16px);
   letter-spacing:.04em;
-  color:var(--accent-soft);
+  color:var(--accent);
   font-weight:700;
   margin:0 0 14px;
 }
@@ -75,6 +77,7 @@ h1{
 }
 h1 em{ color:var(--accent); font-style:normal; }
 .lede{
+  font-family:var(--f-disp);
   font-size:clamp(16px,1.8vw,26px);
   line-height:1.8;
   color:var(--cream);
@@ -92,18 +95,32 @@ h1 em{ color:var(--accent); font-style:normal; }
 
 /* ---- slide 1: hook ---- */
 #s1 .lines{ display:flex; flex-direction:column; gap:10px; }
+#s1{ cursor:pointer; }
 #s1 .lines span{
   font-family:var(--f-disp);
-  font-weight:700;
-  font-size:clamp(22px,3.4vw,46px);
-  line-height:1.5;
-  opacity:0; transform:translateX(-16px);
-  transition:opacity .6s ease, transform .6s ease;
+  font-weight:900;
+  font-size:clamp(28px,5.2vw,92px);
+  line-height:1.35;
+  white-space:nowrap;
+  opacity:0;
+  transform:translateY(-55vh);
 }
-.slide.active#s1 .lines span{ opacity:1; transform:none; }
-.slide.active#s1 .lines span:nth-child(1){ transition-delay:.15s; }
-.slide.active#s1 .lines span:nth-child(2){ transition-delay:.55s; }
-.slide.active#s1 .lines span:nth-child(3){ transition-delay:1.0s; color:var(--accent); }
+/* ゆっくり上から落ちてきて、どしーんと着地する */
+#s1.dropped .lines span{ animation:heavy-drop 1.15s cubic-bezier(.7,.02,.85,.3) both; }
+@keyframes heavy-drop{
+  0%{ opacity:0; transform:translateY(-55vh) scaleY(1.06); }
+  12%{ opacity:1; }
+  72%{ transform:translateY(0) scaleY(1.06); animation-timing-function:cubic-bezier(.2,.9,.3,1); }
+  82%{ transform:translateY(0) scale(1.03,.9); }
+  92%{ transform:translateY(-8px) scale(.99,1.02); }
+  100%{ opacity:1; transform:none; }
+}
+#s1.dropped .lines{ animation:thud .5s .78s ease-out both; }
+@keyframes thud{
+  0%,100%{ transform:none; }
+  25%{ transform:translateY(5px); }
+  55%{ transform:translateY(-2px); }
+}
 
 /* ---- slide 2: logo reveal ---- */
 #s2{ align-items:center; text-align:center; }
@@ -123,13 +140,14 @@ h1 em{ color:var(--accent); font-style:normal; }
 .logo-wrap img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 12px 30px rgba(0,0,0,.35)); }
 #s2 h1{ max-width:none; }
 #s2 .tagline{
+  font-family:var(--f-disp);
   font-size:clamp(15px,1.6vw,22px);
-  color:var(--cream); opacity:.85;
+  color:var(--gold); font-weight:700;
   max-width:44ch; margin:14px auto 0;
 }
 
 /* ---- slide 3: flow diagram ---- */
-#s3{ justify-content:flex-start; padding-top:clamp(34px,6vw,70px); cursor:pointer; }
+#s3{ justify-content:flex-start; padding-top:clamp(34px,6vw,70px); }
 .diagram-title{
   font-family:var(--f-disp);
   font-weight:700;
@@ -139,7 +157,7 @@ h1 em{ color:var(--accent); font-style:normal; }
   color:var(--cream);
   max-width:none;
 }
-.flow-svg{ width:100%; max-width:1180px; margin:6px auto 0; display:block; }
+.flow-svg{ width:100%; max-width:1320px; margin:6px auto 0; display:block; }
 .flow-node, .flow-arrow{
   opacity:0; transform:translateY(14px);
   transition:opacity .45s ease, transform .45s ease;
@@ -177,31 +195,46 @@ h1 em{ color:var(--accent); font-style:normal; }
 }
 #s5 .closing-text{ flex:1 1 420px; min-width:280px; }
 #s5 h1{ max-width:16ch; }
-.blocks{
-  position:relative;
-  flex:0 0 auto;
-  height:clamp(200px,26vw,320px);
-  width:clamp(170px,18vw,220px);
-  display:flex; flex-direction:column-reverse; align-items:center; gap:10px;
+.stack{
+  position:relative; flex:0 0 auto;
+  width:clamp(320px,36vw,580px); height:clamp(250px,26vw,360px);
 }
-.block{
-  width:88%; height:clamp(30px,3.6vw,46px);
-  border-radius:10px;
-  background:var(--accent);
-  opacity:0; transform:translateY(-60px);
-  box-shadow:0 8px 18px rgba(0,0,0,.25);
-  transition:opacity .5s ease, transform .6s cubic-bezier(.2,.8,.2,1);
+.blk{
+  position:absolute; left:var(--x); width:var(--w);
+  bottom:calc(var(--base-h) + 10px + var(--row) * (var(--blk-h) + 10px));
+  height:var(--blk-h);
+  display:flex; align-items:center; justify-content:center;
+  padding:0 10px; border-radius:14px;
+  background:var(--cream); color:var(--navy);
+  font-family:var(--f-disp); font-weight:700;
+  font-size:clamp(11px,1.1vw,17px); line-height:1.3; text-align:center; white-space:nowrap;
+  box-shadow:0 10px 20px -12px rgba(0,0,0,.6);
+  opacity:0; transform:translateY(-140px);
 }
-.block:nth-child(2){ width:76%; background:var(--accent-soft); }
-.block:nth-child(3){ width:64%; background:var(--cream); }
-.block:nth-child(4){ width:52%; background:var(--accent); }
-.block:nth-child(5){ width:38%; background:var(--accent-soft); }
-.slide.active .block{ opacity:1; transform:translateY(0); }
-.slide.active .block:nth-child(1){ transition-delay:.15s; }
-.slide.active .block:nth-child(2){ transition-delay:.4s; }
-.slide.active .block:nth-child(3){ transition-delay:.65s; }
-.slide.active .block:nth-child(4){ transition-delay:.9s; }
-.slide.active .block:nth-child(5){ transition-delay:1.15s; }
+.blk.red{ background:var(--accent); color:#fff; }
+.stack{ --base-h:clamp(52px,5vw,72px); --blk-h:clamp(44px,4.4vw,62px); }
+.stack-base{
+  position:absolute; left:0; right:0; bottom:0; height:var(--base-h);
+  border-radius:16px; background:var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--f-disp); font-weight:900; letter-spacing:.06em;
+  font-size:clamp(18px,1.9vw,28px); color:var(--navy);
+  box-shadow:0 18px 30px -18px rgba(0,0,0,.7);
+}
+/* 白い積み木が1つずつ落ちてきて、土台の上に乗る */
+.slide.active .blk{ animation:blk-land .55s cubic-bezier(.3,.7,.4,1) both; }
+.slide.active .blk:nth-child(1){ animation-delay:.3s; }
+.slide.active .blk:nth-child(2){ animation-delay:.6s; }
+.slide.active .blk:nth-child(3){ animation-delay:.9s; }
+.slide.active .blk:nth-child(4){ animation-delay:1.2s; }
+.slide.active .blk:nth-child(5){ animation-delay:1.5s; }
+.slide.active .blk:nth-child(6){ animation-delay:1.8s; }
+@keyframes blk-land{
+  0%{ opacity:0; transform:translateY(-140px); }
+  30%{ opacity:1; }
+  80%{ transform:translateY(3px) scaleY(.96); }
+  100%{ opacity:1; transform:none; }
+}
 
 /* ---- nav ---- */
 .nav{
@@ -223,7 +256,7 @@ h1 em{ color:var(--accent); font-style:normal; }
   display:grid; place-items:center; z-index:5;
   transition:background .2s ease, border-color .2s ease;
 }
-.arrow:hover{ background:rgba(247,245,240,.14); border-color:var(--accent-soft); }
+.arrow:hover{ background:rgba(247,245,240,.14); border-color:var(--gold); color:var(--gold); }
 .arrow.prev{ left:18px; } .arrow.next{ right:18px; }
 .counter{
   position:fixed; top:20px; right:24px;
@@ -244,7 +277,7 @@ h1 em{ color:var(--accent); font-style:normal; }
   <section class="slide active" id="s1">
     <p class="eyebrow">AI HACK 2026 — チームF</p>
     <div class="lines">
-      <span>“学びの場”、なかなか見つからなくないですか？</span>
+      <span>“学びの場”、<br>なかなか見つからなくないですか？</span>
     </div>
   </section>
 
@@ -259,7 +292,7 @@ h1 em{ color:var(--accent); font-style:normal; }
   <section class="slide" id="s3">
     <p class="eyebrow">仕組み</p>
     <p class="diagram-title">3体のAIエージェントが、こうやって連携しています</p>
-    <svg class="flow-svg" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+    <svg class="flow-svg" viewBox="0 0 1800 900" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrowhead" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path class="flow-arrow-marker" d="M0,0L10,5L0,10z"></path>
@@ -268,90 +301,90 @@ h1 em{ color:var(--accent); font-style:normal; }
 
       <!-- arrows: each group appears together with the card it points to -->
       <g class="flow-arrow" data-step="1">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M300,405 L372,405"></path>
-        <text class="flow-arrow-label" x="336" y="388">終わると</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M280,405 L412,405"></path>
+        <text class="flow-arrow-label" x="346" y="388">終わると</text>
       </g>
 
       <g class="flow-arrow" data-step="2">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M630,405 L752,405"></path>
-        <text class="flow-arrow-label" x="691" y="388">カードとタグ</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M670,405 L792,405"></path>
+        <text class="flow-arrow-label" x="731" y="388">カードとタグ</text>
       </g>
 
       <g class="flow-arrow" data-step="3">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M505,330 L505,190 L747,190"></path>
-        <text class="flow-arrow-label" x="565" y="175">格上げ提案</text>
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M855,255 L855,322"></path>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M545,330 L545,190 L787,190"></path>
+        <text class="flow-arrow-label" x="610" y="175">格上げ提案</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M895,255 L895,322"></path>
       </g>
 
       <g class="flow-arrow" data-step="4">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M855,580 L855,488"></path>
-        <text class="flow-arrow-label" x="925" y="545">本人にだけ</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M895,580 L895,488"></path>
+        <text class="flow-arrow-label" x="965" y="545">本人にだけ</text>
       </g>
 
       <g class="flow-arrow" data-step="5">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M950,405 L1042,405"></path>
-        <text class="flow-arrow-label" x="996" y="388">溜まると</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M990,405 L1122,405"></path>
+        <text class="flow-arrow-label" x="1056" y="388">溜まると</text>
       </g>
 
       <g class="flow-arrow" data-step="6">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M1310,385 L1382,385"></path>
-        <text class="flow-arrow-label" x="1346" y="368">打診</text>
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M1382,425 L1310,425"></path>
-        <text class="flow-arrow-label" x="1346" y="450">はい</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M1390,380 L1522,380"></path>
+        <text class="flow-arrow-label" x="1456" y="363">打診</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M1530,430 L1398,430"></path>
+        <text class="flow-arrow-label" x="1464" y="462">はい</text>
       </g>
 
       <g class="flow-arrow" data-step="7">
-        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M1180,480 L1180,780 L165,780 L165,488"></path>
-        <text class="flow-arrow-label" x="672" y="805">予約</text>
+        <path class="flow-arrow-path" marker-end="url(#arrowhead)" d="M1260,480 L1260,780 L150,780 L150,488"></path>
+        <text class="flow-arrow-label" x="705" y="810">予約</text>
       </g>
 
       <!-- nodes -->
       <g class="flow-node" data-step="0">
-        <rect class="flow-box" x="40" y="330" width="260" height="150" rx="18"></rect>
-        <text class="flow-icon" x="170" y="390">🎤</text>
-        <text class="flow-label" x="170" y="440">まなびのライブ</text>
+        <rect class="flow-box" x="20" y="330" width="260" height="150" rx="18"></rect>
+        <text class="flow-icon" x="150" y="390">🎤</text>
+        <text class="flow-label" x="150" y="440">まなびのライブ</text>
       </g>
 
       <g class="flow-node" data-step="1">
-        <rect class="flow-box" x="380" y="330" width="250" height="150" rx="18"></rect>
-        <text class="flow-icon" x="505" y="390">🎤</text>
-        <text class="flow-label" x="505" y="440">A タグ付け</text>
-        <text class="flow-caption" x="505" y="465">通知できない</text>
+        <rect class="flow-box" x="420" y="330" width="250" height="150" rx="18"></rect>
+        <text class="flow-icon" x="545" y="390">🎤</text>
+        <text class="flow-label" x="545" y="440">A タグ付け</text>
+        <text class="flow-caption" x="545" y="465">通知できない</text>
       </g>
 
       <g class="flow-node" data-step="2">
-        <rect class="flow-box" x="760" y="330" width="190" height="150" rx="18"></rect>
-        <text class="flow-icon" x="855" y="390">🏷️</text>
-        <text class="flow-label" x="855" y="440">タグ</text>
+        <rect class="flow-box" x="800" y="330" width="190" height="150" rx="18"></rect>
+        <text class="flow-icon" x="895" y="390">🏷️</text>
+        <text class="flow-label" x="895" y="440">タグ</text>
       </g>
 
       <g class="flow-node" data-step="3">
-        <polygon class="flow-hex flow-stroke" points="755,190 805,125 905,125 955,190 905,255 805,255"></polygon>
-        <text class="flow-icon" x="855" y="170" style="font-size:28px">👤</text>
-        <text class="flow-label" x="855" y="220" style="font-size:20px">管理者が承認</text>
+        <polygon class="flow-hex flow-stroke" points="795,190 845,125 945,125 995,190 945,255 845,255"></polygon>
+        <text class="flow-icon" x="895" y="170" style="font-size:28px">👤</text>
+        <text class="flow-label" x="895" y="220" style="font-size:20px">管理者が承認</text>
       </g>
 
       <g class="flow-node" data-step="4">
-        <rect class="flow-box" x="740" y="580" width="230" height="150" rx="18"></rect>
-        <text class="flow-icon" x="855" y="640">🔍</text>
-        <text class="flow-label" x="855" y="690">C 自己分析</text>
-        <text class="flow-caption" x="855" y="715">通知できない</text>
+        <rect class="flow-box" x="780" y="580" width="230" height="150" rx="18"></rect>
+        <text class="flow-icon" x="895" y="640">🔍</text>
+        <text class="flow-label" x="895" y="690">C 自己分析</text>
+        <text class="flow-caption" x="895" y="715">通知できない</text>
       </g>
 
       <g class="flow-node" data-step="5">
-        <rect class="flow-box-accent" x="1050" y="330" width="260" height="150" rx="18"></rect>
-        <text class="flow-icon" x="1180" y="390">⛺</text>
-        <text class="flow-label" x="1180" y="440">B 場づくり</text>
-        <text class="flow-caption" x="1180" y="465">通知できる</text>
+        <rect class="flow-box-accent" x="1130" y="330" width="260" height="150" rx="18"></rect>
+        <text class="flow-icon" x="1260" y="390">⛺</text>
+        <text class="flow-label" x="1260" y="440">B 場づくり</text>
+        <text class="flow-caption" x="1260" y="465">通知できる</text>
       </g>
 
       <g class="flow-node" data-step="6">
-        <polygon class="flow-hex flow-stroke" points="1390,390 1440,325 1540,325 1590,390 1540,455 1440,455"></polygon>
-        <text class="flow-icon" x="1490" y="380" style="font-size:28px">👤</text>
-        <text class="flow-label" x="1490" y="425" style="font-size:20px">本人の同意</text>
+        <polygon class="flow-hex flow-stroke" points="1530,405 1580,340 1680,340 1730,405 1680,470 1580,470"></polygon>
+        <text class="flow-icon" x="1630" y="395" style="font-size:28px">👤</text>
+        <text class="flow-label" x="1630" y="440" style="font-size:20px">本人の同意</text>
       </g>
     </svg>
-    <p class="click-hint" id="s3hint">クリックして次へ →</p>
+    <p class="click-hint" id="s3hint">クリック / → キーで次へ</p>
   </section>
 
   <!-- Slide 4: demo cue card -->
@@ -366,14 +399,15 @@ h1 em{ color:var(--accent); font-style:normal; }
       <div class="closing-text">
         <p class="eyebrow">おわりに</p>
         <h1>完成品ではなく、<em>人が集まる場</em></h1>
-        <p class="lede" style="margin-top:18px;color:var(--accent-soft);font-weight:700">機能を拡張し，さらなる学びへ</p>
+        <p class="lede" style="margin-top:18px;color:var(--gold);font-weight:700">機能を拡張し、さらなる学びへ</p>
       </div>
-      <div class="blocks">
-        <div class="block"></div>
-        <div class="block"></div>
-        <div class="block"></div>
-        <div class="block"></div>
-        <div class="block"></div>
+      <div class="stack" aria-label="まなびのわの上に積み上がっていく機能の例">
+        <div class="blk" style="--x:3%;--w:46%;--row:0">用語をその場で解説</div>
+        <div class="blk" style="--x:51%;--w:46%;--row:0">教えた人に感謝が届く</div>
+        <div class="blk" style="--x:9%;--w:40%;--row:1">失敗談も学びに</div>
+        <div class="blk" style="--x:51%;--w:40%;--row:1">社内研修とつながる</div>
+        <div class="blk red" style="--x:30%;--w:40%;--row:2">自社だけの機能も</div>
+        <div class="stack-base">まなびのわ</div>
       </div>
     </div>
   </section>
@@ -405,13 +439,23 @@ function render(){
   counter.textContent = (i+1) + ' / ' + slides.length;
   s3Step = 0;
   renderS3();
+  if(i !== 0) s1El.classList.remove('dropped');
 }
 function go(n){
   i = Math.max(0, Math.min(slides.length - 1, n));
   render();
 }
-document.querySelector('.arrow.prev').addEventListener('click', () => go(i-1));
-document.querySelector('.arrow.next').addEventListener('click', () => go(i+1));
+// 次へ: 出していない部品があればそれを出す。無ければ次のスライドへ（クリックもキーも同じ）
+function advance(){
+  if(i === 0 && !s1El.classList.contains('dropped')){ s1El.classList.add('dropped'); return; }
+  if(slides[i] === s3El && s3Step < s3MaxStep){ s3Step++; renderS3(); return; }
+  go(i + 1);
+}
+document.querySelector('.arrow.prev').addEventListener('click', e => { e.stopPropagation(); go(i-1); });
+document.querySelector('.arrow.next').addEventListener('click', e => { e.stopPropagation(); advance(); });
+
+// ---- slide 1: click to drop the question ----
+const s1El = document.getElementById('s1');
 
 // ---- slide 3: click-to-reveal flow diagram ----
 const s3El = document.getElementById('s3');
@@ -424,13 +468,11 @@ function renderS3(){
   s3Items.forEach(el => el.classList.toggle('show', +el.dataset.step <= s3Step));
   if(s3Hint){ s3Hint.classList.toggle('done', s3Step >= s3MaxStep); }
 }
-s3El.addEventListener('click', () => {
-  if(!s3El.classList.contains('active')) return;
-  if(s3Step < s3MaxStep){ s3Step++; renderS3(); }
-});
+// 画面のどこをクリックしても「次へ」（ドットとナビのボタンは除く）
+document.querySelector('.deck').addEventListener('click', advance);
 
 window.addEventListener('keydown', (e) => {
-  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){ go(i+1); e.preventDefault(); }
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){ advance(); e.preventDefault(); }
   if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ go(i-1); e.preventDefault(); }
   if(e.key === 'Home'){ go(0); }
   if(e.key === 'End'){ go(slides.length-1); }
@@ -442,7 +484,7 @@ window.addEventListener('touchend', e => {
   if(touchX === null) return;
   const dx = e.changedTouches[0].clientX - touchX;
   if(dx > 50) go(i-1);
-  if(dx < -50) go(i+1);
+  if(dx < -50) advance();
   touchX = null;
 });
 
