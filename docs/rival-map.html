@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>まなびのわ 現在地マップ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+*{box-sizing:border-box}
+
+:root{--bg:#f4f6f8;--card:#ffffff;--ink:#1c2533;--sub:#5c6778;--line:#dde2e9;--acc:#0e7c6b;--acc2:#d9f0ea;--bar:#b8c2cf;--warn:#b86a00;--warnbg:#fff3df;--top:#2f5fa7;
+--f:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;--m:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171e;--card:#1b222c;--ink:#e6ebf2;--sub:#98a3b3;--line:#2c3542;--acc:#3cc2a8;--acc2:#15372f;--bar:#475365;--warn:#f0a53c;--warnbg:#33260f;--top:#7aa5ea}}
+:root[data-theme="dark"]{--bg:#12171e;--card:#1b222c;--ink:#e6ebf2;--sub:#98a3b3;--line:#2c3542;--acc:#3cc2a8;--acc2:#15372f;--bar:#475365;--warn:#f0a53c;--warnbg:#33260f;--top:#7aa5ea}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.7;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:980px;margin:0 auto;display:grid;gap:28px}
+h1{font-size:clamp(24px,4vw,34px);font-weight:900;margin:0;text-wrap:balance;letter-spacing:.01em}
+h2{font-size:19px;font-weight:700;margin:0 0 12px;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--sub);font-weight:500}
+.hero{display:grid;gap:14px}
+.verdict{background:var(--acc2);border-radius:14px;padding:18px 20px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.rank{font-family:var(--m);font-size:46px;font-weight:600;color:var(--acc);line-height:1}
+.rank small{font-size:16px;color:var(--sub)}
+.verdict p{margin:0;font-size:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi b{font-family:var(--m);font-size:22px;display:block}
+.kpi span{font-size:12.5px;color:var(--sub)}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.chart{display:grid;gap:3px}
+.row{display:grid;grid-template-columns:minmax(118px,210px) 1fr 38px;gap:10px;align-items:center;font-size:13px}
+.row .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t{height:14px;background:var(--line);border-radius:3px;position:relative;overflow:hidden}
+.row .t i{position:absolute;inset:0 auto 0 0;background:var(--bar);border-radius:3px}
+.row.top8 .t i{background:var(--top)}
+.row.us{font-weight:700}.row.us .t i{background:var(--acc)}
+.row.us .n{color:var(--acc)}
+.row .v{font-family:var(--m);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+.cut{border-top:2px dashed var(--warn);margin:6px 0;position:relative}
+.cut span{position:absolute;right:0;top:-11px;background:var(--card);color:var(--warn);font-size:12px;padding-inline:6px;font-weight:700}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--sub);margin-bottom:12px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center}
+th{font-size:12px;color:var(--sub);font-weight:500;letter-spacing:.04em}
+td:first-child,th:first-child{text-align:left}
+td.num{font-family:var(--m);font-variant-numeric:tabular-nums}
+tr.us td{background:var(--acc2);font-weight:700}
+.hi{color:var(--acc);font-weight:700}.lo{color:var(--warn);font-weight:700}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+ul{margin:0;padding-left:1.1em}li{margin:4px 0}
+.note{background:var(--warnbg);border-radius:10px;padding:14px 16px;font-size:13.5px}
+.note b{color:var(--warn)}
+.src{font-size:12.5px;color:var(--sub);columns:2 260px;column-gap:24px}
+.src a{color:var(--sub)}
+a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header class="hero">
+<div class="eyebrow">AI HACK 2026 第2回 ・ 9/22 公開記事 調査</div>
+<h1>🧭 まなびのわはいまどこにいるか</h1>
+<div class="verdict">
+<div class="rank">3<small>〜4位/33</small></div>
+<p>🎯 <b>記事から読める範囲では上位グループ（トップ5圏内）</b>。最終プレゼン枠の上位8チームのラインは超えている見込み。首位争いはヒナミチとトイノワ。</p>
+</div>
+<div class="kpis">
+<div class="kpi"><b>33</b><span>📚 今日前後に公開された<br>第2回の提出記事（確認できた数）</span></div>
+<div class="kpi"><b>39/50</b><span>🌿 まなびのわの推定スコア<br>（記事本文からの推定）</span></div>
+<div class="kpi"><b>≈36</b><span>✂️ 上位8位のボーダー推定</span></div>
+<div class="kpi"><b>97.7%</b><span>💰 コスト削減の実測値<br>比較した中で最大級</span></div>
+</div>
+</header>
+
+<section>
+<h2>🗺️ 全チームの推定スコア</h2>
+<div class="legend"><span><i style="background:var(--acc)"></i>まなびのわ</span><span><i style="background:var(--top)"></i>推定トップ8</span><span><i style="background:var(--bar)"></i>その他</span></div>
+<div class="chart" id="chart"></div>
+</section>
+
+<section>
+<h2>⚔️ 上位チームと5軸で比べる</h2>
+<div class="tbl"><table>
+<thead><tr><th>チーム</th><th>🛡️ セキュリティ</th><th>💰 コスパ</th><th>🧱 堅牢性</th><th>🤖 自律性</th><th>💡 独創性</th><th>合計</th></tr></thead>
+<tbody id="axis"></tbody>
+</table></div>
+<p style="font-size:12.5px;color:var(--sub);margin:10px 0 0">色：<span class="hi">緑</span>＝上位の中でも強い軸　<span class="lo">橙</span>＝相対的に弱い軸</p>
+</section>
+
+<div class="two">
+<section>
+<h2>💪 勝てているところ</h2>
+<ul>
+<li>💰 <b>コスト実測が最強クラス</b>：auto→Named Routerで97.7%減・最上位モデル比193分の1・月1ドル試算。数字の具体性で他を上回る</li>
+<li>🛡️ <b>攻撃を実際に試している</b>：注入・なりすまし・権限昇格を検証済み。実際に攻撃を試した記事は33中7チーム前後</li>
+<li>🤖 <b>AIが自分で場を立てる</b>：open/wait/skip判断。「提案だけ・承認は人」型が多い中で自律度が高い</li>
+<li>📝 <b>記事の完成度</b>：約2万字・画像13点・5軸見出し。未完成の記事も多い中で明確に上</li>
+</ul>
+</section>
+<section>
+<h2>⚠️ 負けているところ</h2>
+<ul>
+<li>🧱 <b>テスト件数の見せ方</b>：自動テスト15件。EdiRoom 1,786件・トイノワ334件・kumu 111件・ヒナミチ124件に比べると見劣り</li>
+<li>💡 <b>「業務の自律化」との距離</b>：勉強会運営は業務の周辺と見られるリスク。防災・QA・経理のような「業務そのもの」系とテーマ適合で比べられる</li>
+<li>🎯 <b>競合の似た題材</b>：同じ「幹事AI」系にマルナゲ（輪読会）・ENCOPA（宴会）がいる。差別化は「知識→人を呼ぶ」の一点で語り切る必要あり</li>
+</ul>
+</section>
+</div>
+
+<section>
+<h2>🎤 プレゼンに向けた一手</h2>
+<ul>
+<li>🥇 冒頭30秒で <b>「97.7%減」「月1ドル」</b> を出す。審査で一番刺さる数字を持っているのはうちだけ</li>
+<li>🧱 質疑対策：<b>テスト件数の少なさ</b>は「壊して直る」検証（途中クラッシュ・重複防止）の中身で答える準備を</li>
+<li>🔁 「ナレッジ管理」ではなく <b>「幹事業務の自律化」</b> と言い切り、テーマ適合を先に取りにいく</li>
+</ul>
+</section>
+
+<div class="note">
+<b>📌 この順位の読み方</b><br>
+・スコアは各記事の<b>本文だけ</b>をもとに採点基準5軸で付けた推定値。審査員の点ではない<br>
+・一次審査は<b>リポジトリ</b>も見られるが今回は未確認<br>
+・QiitaとZennのタグから集めた記事のみ。実際の応募数は33より多い可能性が高い<br>
+・8月の第1回の記事は除外した
+</div>
+
+<section>
+<h2>🔗 参照した記事</h2>
+<div class="src" id="src"></div>
+</section>
+</div>
+
+<script>
+const D=[
+["ヒナミチ（防災AI）",41,"https://qiita.com/akiba-eda/items/b3febae692337c4e08da",[8,8,8,9,8]],
+["トイノワ（学習エージェント）",40,"https://qiita.com/Ryutoo_k/items/80d7decb618838d6c78d",[8,8,8,7,9]],
+["まなびのわ",39,"https://qiita.com/ianyo210/items/0d1f0f308cb9d457f2d5",[8,9,7,8,7],1],
+["kumu（シフト作成）",39,"https://zenn.dev/muroshima/articles/eb671df7b834f7",[9,8,9,6,7]],
+["EdiRoom（3D内装）",37,"https://zenn.dev/ahanda/articles/f67bd64c54cc52",[6,8,9,7,7]],
+["NetWalker（NW障害）",37,"https://qiita.com/Shibata-1273352/items/14a08bef83be01ac7ec9",[7,9,7,7,7]],
+["マルナゲ（輪読会幹事）",37,"https://zenn.dev/kasa320/articles/65874bb0899866",[6,8,8,8,7]],
+["じいや（Slack代理返信）",36,"https://qiita.com/thekiai/items/850bfc649ea1f2deabbe",[7,9,6,7,7]],
+["MiruQA（自律QA）",35,"https://zenn.dev/lime298251/articles/67897b8b864380"],
+["Agent Studio（エージェント生成）",35,"https://zenn.dev/zerotry_iwata/articles/agent-studio-factoring-builder"],
+["ごはん執事",34,"https://qiita.com/kiao/items/521c7f196b6902c39e2d"],
+["進行管理エージェント",33,"https://zenn.dev/leadus_nova/articles/c83d2577a48079"],
+["ふたりログ",33,"https://zenn.dev/bammboo/articles/futari-log-deterministic-planning"],
+["TORIA（社内IT初診）",33,"https://qiita.com/HoongRyaN/items/d9f4b86c14774e6492ed"],
+["ENCOPA（宴会幹事）",32,"https://qiita.com/keyakima/items/9a281111a27b1fd5f75c"],
+["Reusy（リユース）",31,"https://qiita.com/d_3_/items/2a2932cbdba70d0d1878"],
+["この会議いくら？",30,"https://zenn.dev/blueberry_team/articles/c8b1530f295f72"],
+["PAWLAND",30,"https://qiita.com/t-ry/items/34217cd8503053ffbc01"],
+["Weaver（仕様書調停）",29,"https://zenn.dev/aoi0108/articles/bb4c53453c68f3"],
+["ケンサー（手荷物検査）",29,"https://qiita.com/takumi26e/items/e5f1fd007f9c0cf8ec5f"],
+["孫ニュースペーパ",28,"https://qiita.com/t-ry/items/5fde876e1a0c8c08cf40"],
+["BizTrip-Copilot",28,"https://qiita.com/Chinngai_Li/items/532726e71debe6732600"],
+["Relay（制作管理）",27,"https://zenn.dev/raspberry/articles/2d0b035b3026da"],
+["Optio（タスク検知）",27,"https://qiita.com/shuway00/items/d291961b9141a51f173b"],
+["ヒロメル（SNS施策）",26,"https://qiita.com/aki-09/items/4eed3599e5cb5fdec901"],
+["自律型AI編集部",25,"https://zenn.dev/pulsar_k/articles/b7ae2cb7c5f2e8"],
+["遺族の手続きAI",25,"https://qiita.com/Mimish/items/38a5595e9b7fb1674c07"],
+["Global Factory Guardian",25,"https://zenn.dev/finemassan/articles/6accd85af72f0a"],
+["AIシフト管理",25,"https://qiita.com/ryu2002090533/items/4271b69dc53467514e59"],
+["話札",23,"https://qiita.com/taku07200/items/cabf2fd606fe5ad8e78b"],
+["Shirube（SNS戦略）",21,"https://qiita.com/vincentlow02/items/df936cae282bff78c71e"],
+["よりそいAI相談室",19,"https://qiita.com/Takumi-9505/items/97191f0b5e201f6483d4"],
+["イマセキ",11,"https://zenn.dev/kibaku/articles/d4d45b89a74468"]];
+const c=document.getElementById('chart');
+D.forEach((d,i)=>{
+ if(i===8){const x=document.createElement('div');x.className='cut';x.innerHTML='<span>✂️ 上位8ライン</span>';c.appendChild(x)}
+ const r=document.createElement('div');r.className='row'+(i<8?' top8':'')+(d[4]?' us':'');
+ r.innerHTML=`<span class="n" title="${d[0]}">${d[0]}</span><span class="t"><i style="width:${d[1]/50*100}%"></i></span><span class="v">${d[1]}</span>`;c.appendChild(r)});
+const a=document.getElementById('axis');
+D.filter(d=>d[3]).forEach(d=>{const tr=document.createElement('tr');if(d[4])tr.className='us';
+ tr.innerHTML=`<td>${d[0]}</td>`+d[3].map(v=>`<td class="num ${v>=9?'hi':v<=6?'lo':''}">${v}</td>`).join('')+`<td class="num">${d[1]}</td>`;a.appendChild(tr)});
+document.getElementById('src').innerHTML=D.map(d=>`<div><a href="${d[2]}" target="_blank" rel="noopener">${d[0]}</a></div>`).join('');
+</script>
+
+</body>
+</html>
