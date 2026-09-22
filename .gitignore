@@ -29,3 +29,12 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# 録画（重いので GitHub に上げない。動画は各自の手元か共有ドライブで受け渡す）
+docs/recordings/
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.avi
+*.m4v
