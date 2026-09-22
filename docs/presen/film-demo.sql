@@ -14,6 +14,7 @@
 --       ・Git は「興味3人＋詳しい人2人」の育ち待ち → 「いま1周動かす」を押すと AIが開くと判断しやすい
 --       ・SharePoint は「興味1人」の育ち待ち → AIが「まだ待つ」と判断しやすい（判断が分かれる絵が撮れる）
 --    E. 配信中のライブ（Teams会議の小技）に 早坂 悠人さんを話し手として追加 → 2人で話す絵が撮れる
+--    F. 撮り直しで中止にしたライブを日程カレンダーに出さない（ダブルブッキングに見えるのを防ぐ）
 --
 --  使い方: Supabase の SQL Editor に貼って Run。何回流してもよい（撮り直しのたびに流せる）
 --  ★ 本物の運用データには触らない（ライブは source_ref が 'film-…'、タネは下の7タグだけ）
@@ -191,14 +192,17 @@ insert into _film_seed values
   ('Python',         'opened',     '郡司 蓮',   'film-next-python'),
   ('顧客ヒアリング', 'opened',     '白石 結衣', 'film-next-hearing');
 
--- 予約済みのライブ（つぼみの2つ）。日時は撮影日から見て 2日後15時・5日後18時（日本時間）
+-- 予約済みのライブ（つぼみの2つ）。日時は撮影日から見て 2日後18時・5日後18時（日本時間）
+--   ★ 15時は避ける: 打診を「引き受ける」と、明日以降の15時の最初の空きにライブが入る（0022）。
+--     15時に撮影用のライブがあると、引き受けたライブと同じ時間に重なって見える
+--   ★ 日付は日本時間で数える（深夜0〜9時に流しても1日ずれない）
 insert into lives (title, status, scheduled_start, scheduled_end, source_ref, topic_tag_id)
 select v.title, 'scheduled',
-       date_trunc('day', now()) + v.at - interval '9 hours',
-       date_trunc('day', now()) + v.at + interval '1 hour' - interval '9 hours',
+       ((now() at time zone 'Asia/Tokyo')::date + v.at) at time zone 'Asia/Tokyo',
+       ((now() at time zone 'Asia/Tokyo')::date + v.at + interval '1 hour') at time zone 'Asia/Tokyo',
        v.ref, t.id
 from (values
-  ('film-next-python',  'まなびのライブ — Pythonで毎日の作業を減らす（その2）', interval '2 days 15 hours', 'Python'),
+  ('film-next-python',  'まなびのライブ — Pythonで毎日の作業を減らす（その2）', interval '2 days 18 hours', 'Python'),
   ('film-next-hearing', 'まなびのライブ — 顧客ヒアリングの聞き方',             interval '5 days 18 hours', '顧客ヒアリング')
 ) v(ref, title, at, topic)
 join tags t on t.name = v.topic
@@ -320,9 +324,9 @@ update quests q
 -- 予約済みライブの日時を撮影日に合わせて取り直す
 update lives l
    set status = 'scheduled', started_at = null, ended_at = null, ingest_status = 'pending',
-       scheduled_start = date_trunc('day', now()) + v.at - interval '9 hours',
-       scheduled_end   = date_trunc('day', now()) + v.at + interval '1 hour' - interval '9 hours'
-  from (values ('film-next-python', interval '2 days 15 hours'), ('film-next-hearing', interval '5 days 18 hours')) v(ref, at)
+       scheduled_start = ((now() at time zone 'Asia/Tokyo')::date + v.at) at time zone 'Asia/Tokyo',
+       scheduled_end   = ((now() at time zone 'Asia/Tokyo')::date + v.at + interval '1 hour') at time zone 'Asia/Tokyo'
+  from (values ('film-next-python', interval '2 days 18 hours'), ('film-next-hearing', interval '5 days 18 hours')) v(ref, at)
  where l.source_ref = v.ref;
 
 -- ---------------------------------------------------------------------
@@ -333,6 +337,18 @@ select l.id, u.id, 'speaker', l.started_at
 from lives l join users u on u.display_name = '早坂 悠人'
 where l.source_ref = 'ui-demo-onair' and l.status = 'live'
 on conflict (live_id, user_id) do update set role = 'speaker';
+
+-- ---------------------------------------------------------------------
+-- F. 中止にしたデモ用のライブを 日程カレンダーから消す
+--    カレンダーは中止のライブも表示するため、撮り直しで中止にしたライブが
+--    新しく予約したライブと同じ時間に並び「ダブルブッキング」に見える。
+--    目印（-old-）が付いた中止のライブだけ、日時を空にして表示されないようにする（行は消さない）
+-- ---------------------------------------------------------------------
+update lives
+   set scheduled_start = null, scheduled_end = null, started_at = null
+ where status = 'cancelled'
+   and source_ref like '%-old-%'
+   and (scheduled_start is not null or started_at is not null);
 
 commit;
 

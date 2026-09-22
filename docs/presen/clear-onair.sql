@@ -14,6 +14,7 @@ begin;
 -- いまの配信中のライブを中止にして目印を外す（タグ付けエージェントが拾わないよう取り込み済み扱いに）
 update lives
    set status = 'cancelled', ingest_status = 'done', ended_at = coalesce(ended_at, now()),
+       started_at = null, scheduled_start = null, scheduled_end = null,   -- 日程カレンダーに出さない
        source_ref = 'ui-demo-onair-old-' || id
  where source_ref = 'ui-demo-onair';
 
