@@ -2,7 +2,7 @@
 
 ## 索引
 
-> 📌 **9/21 夜**：ここの HTML は検討の過程のスナップショット。各ページの先頭に注記を入れた。**いまの正は `manabi-no-wa` の `DESIGN.md`（設計）・`README.md`（全体像）・`docs/VOICE-DESIGN.md`（声）**、到達点は `HACKATHON.md` §6.7。
+> 📌 **9/22 更新**：ここの HTML は検討の過程のスナップショット。各ページの先頭に注記を入れた。**いまの正は `manabi-no-wa` の `DESIGN.md`（設計）・`README.md`（全体像）・`docs/VOICE-DESIGN.md`（声）**、到達点は `HACKATHON.md` §6.7。
 > 呼び名: 学びの輪 → まなびのわ／企て → ライブのタネ／ラベル → タグ／部屋 → まなびのライブ
 
 | ファイル | 中身 |
@@ -29,6 +29,12 @@
 | [video-script.html](video-script.html) | **壊して直す動画の台本**（③堅牢性の証拠。撮影済み → `recordings/`） |
 | [manabi-no-wa-kiji-board.html](manabi-no-wa-kiji-board.html) | 記事構成ボード |
 | [agent-jissou.html](agent-jissou.html) | **★コードでエージェントを作るとは** — Copilot Studioとの対比・ループの中身25行・3体の置き場所 |
+| [manabi-no-wa-article-v2.md](manabi-no-wa-article-v2.md) | **★Qiita記事の本文（最新）**。旧版は [manabi-no-wa-article.md](manabi-no-wa-article.md) |
+| [gpt-image-prompts.md](gpt-image-prompts.md) | 別のモデルに画像やSVGを作らせたときのプロンプト集 |
+| [lp/](lp/) | **サービス紹介ページ（LP）とチラシ**。七宝模様の出どころ |
+| [hataban/](hataban/) | ライブのタネの「畑番」アニメーションSVGの案 |
+| [img/](img/) | 記事用の画像。`brand/` にロゴ（透過版）とアプリアイコン |
+| [article-shots/](article-shots/) | 記事用スクショの撮影手順と、撮影前に流すSQL |
 
 > 📘 **実装向けの正は `manabi-no-wa/DESIGN.md`。** このフォルダは考える過程の置き場。
 > 迷ったら `manabi-no-wa/DESIGN.md` → `threat-model.html`（危険と防御の洗い出し）の順に見る。
@@ -42,7 +48,8 @@
 | `evidence/` | **提出物の証拠**。Qiita記事に貼る素材をここに集める（文字の証拠は `manabi-no-wa/docs/evidence/`） |
 | `recordings/` | 撮影した動画（壊して直す 等） |
 | `mirror-shots/` | 自己分析の検証に使った画面の静止画 |
-| `mock-natsuki/` | 岩田の画面モック（9/21） |
+| `mock-natsuki/` | 岩田の画面モック（9/21）。**画面の正のモックは `manabi-no-wa/repos/mock/mock_new/`** |
+| `transcripts/` の番号 | `Meeting Transcription7.txt` が 9/21 夜の画面確認（追加要望の元） |
 
 ### evidence/ に集めるもの（採点直結）
 
