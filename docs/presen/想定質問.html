@@ -1,0 +1,231 @@
+<title>質疑応答カンペ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{
+  --navy:#12283F; --navy-2:#19324d;
+  --cream:#F7F5F0; --mute:#b9c4d2; --accent:#DC3C17; --gold:#D9AA3F; --line:rgba(247,245,240,.14);
+  --f-disp:"Zen Maru Gothic","Hiragino Sans",sans-serif; --f-body:"Noto Sans JP","Hiragino Sans",sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--navy);color:var(--cream);font-family:var(--f-body);font-size:15px;line-height:1.75;
+  padding-inline:16px;padding-block:20px 60px;margin:0}
+.wrap{max-width:760px;margin:0 auto;display:grid;gap:18px}
+header{display:grid;gap:8px}
+.kicker{font-family:var(--f-disp);font-weight:700;font-size:12.5px;letter-spacing:.08em;color:var(--accent)}
+h1{font-family:var(--f-disp);font-weight:900;font-size:clamp(24px,6vw,34px);margin:0;line-height:1.3}
+.sub{color:var(--mute);font-size:13.5px;margin:0}
+.rules{background:var(--navy-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:6px;font-size:14px}
+.rules b{color:var(--gold);font-family:var(--f-disp)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);
+  background:var(--navy);padding-block:10px;z-index:3;margin-inline:-4px;padding-inline:4px}
+.chip{font-family:var(--f-disp);font-weight:700;font-size:13px;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--cream);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--cream);color:var(--navy);border-color:var(--cream)}
+section{display:grid;gap:10px}
+h2{font-family:var(--f-disp);font-size:16px;margin:14px 0 0;color:var(--gold);letter-spacing:.02em}
+details{background:var(--navy-2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details[open]{border-color:rgba(217,170,63,.45)}
+summary{cursor:pointer;list-style:none;padding:14px 16px;font-family:var(--f-disp);font-weight:700;
+  font-size:15.5px;line-height:1.55;display:flex;gap:10px;align-items:flex-start}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"Q";flex:0 0 auto;font-size:13px;color:var(--navy);background:var(--gold);
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;margin-top:3px}
+details[open] summary{padding-bottom:6px}
+.a{padding:0 16px 16px;display:grid;gap:10px}
+.a p{margin:0}
+.a .lead{font-weight:700}
+.src{font-size:12.5px;color:var(--mute);border-left:2px solid var(--line);padding-left:10px}
+.warn{font-size:13.5px;background:rgba(220,60,23,.14);border:1px solid rgba(220,60,23,.5);
+  border-radius:10px;padding:10px 12px;color:#ffd9cf}
+.say{font-family:var(--f-disp);font-weight:700;color:var(--gold)}
+footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line);padding-top:16px;display:grid;gap:6px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="kicker">AI HACK 2026 ・ 決勝プレゼン 9/23</p>
+  <h1>質疑応答カンペ</h1>
+  <p class="sub">質問をタップすると答えが開きます。太字の1文を先に言えば十分です。</p>
+</header>
+
+<div class="rules">
+  <div><b>🎯 結論から</b> 最初の1文で答える。理由は2文目から</div>
+  <div><b>📏 実測と試算を混ぜない</b>「これは試算です」と必ず添える</div>
+  <div><b>🙅 分からないことは</b>「そこまで把握できていません」で次へ。前置きの予防線は張らない</div>
+  <div><b>🚫 人事評価</b>の話は「今回は考えていません」で止める</div>
+</div>
+
+<div class="filters" id="filters"></div>
+<div id="list"></div>
+
+<footer>
+  <div>根拠の置き場所：リポジトリの <code>docs/evidence/</code>・<code>README.md</code>・<code>DESIGN.md</code></div>
+  <div>答えに詰まったら「記録に残してあるので、あとでお見せします」</div>
+</footer>
+</div>
+
+<script>
+const DATA = [
+ ["テーマ","勉強会の運営は「業務」と言えるのか",
+  "人材育成担当の業務です。",
+  "学びの場を1回立てるのに、テーマを決める・詳しい人を探す・声をかける・日程を決める・告知する・記録を残すを全部人がやっています。この幹事業務をまるごとAIに移しました。",
+  "README「誰のどの30分が消えるのか」の6行の表", null],
+ ["テーマ","既存のナレッジ管理ツールと何が違うのか",
+  "向きが逆です。",
+  "既存のツールは書いたものを人が探しに行く仕組み。まなびのわは話したことが人を呼び集めに行く仕組みです。記録して終わりではなく、興味が集まったらAIが次の場を立てるところまで回します。", null, null],
+ ["テーマ","他の「幹事AI」と何が違うのか",
+  "開くかどうかをAIが決めます。",
+  "多くは開くと決まった会を進めるAIです。まなびのわは誰も頼んでいないのに、興味の集まりを見て場が立ちます。", null, null],
+ ["テーマ","なぜこのテーマを選んだのか",
+  "2人とも勉強コミュニティを運営していて、同じもやもやを持っていたからです。",
+  "1人は教わった人に返したいという思いから。もう1人はエンジニア派遣の会社で、社員が客先で得た知識が自社に戻ってこないことから。", null, null],
+
+ ["自律性","どこまでがAIで、どこからが人か",
+  "人が入るのは4か所だけです。",
+  "①打診に答える（本人）②タグの格上げを承認する（管理者）③話者を確定できない取り込みの確認（管理者）④例外のエスカレーション（管理者）。場を立てる承認権は人に渡していません。",
+  "README「人が介在するのは4か所だけ」", null],
+ ["自律性","「開く・待つ・見送る」は閾値で判定しているのか",
+  "いいえ。毎回LLMが判断してJSONで返します。",
+  "材料は人数だけでなく、前回からの間隔・顔ぶれの入れ替わり・前回の反応など。「待つ」を選んだ理由も記録に残ります。",
+  "quest_steps テーブル（decision と reason）", null],
+ ["自律性","日程調整もAIがやっているのか",
+  "いいえ。日程だけはコードが決めています。",
+  "明日以降の15時から順に見て、最初に空いている枠を取ります。見るのは話し手の予定の空き・埋まりだけで、予定の中身は読みません。間違えたら困るところはAIに触らせていません。",
+  "0022_schedule_accepted_invitation.sql／lib/agents/organizer.mjs", null],
+ ["自律性","本当に自分で動くのか（人がボタンを押しているのでは）",
+  "場づくりエージェントは1日1回、自分で起きて見回ります。",
+  "デモでは1分おきに3周自動で回して記録を撮りました。日をまたいで1つの場を追い続けます（育ち待ち→相談中→日程調整→予約→開催済み）。",
+  "docs/evidence/20260921-f12-loop.md", null],
+ ["自律性","AIが毎日部屋を立て続けたら",
+  "止める仕組みをコードとDBに持たせています。",
+  "タグごとに進行中の企てはDBの制約で1つまで。打診は候補3人で打ち切り、14日で打ち切り。通知を送れるのは3体のうち場づくりエージェント1体だけです。",
+  "quests_one_active_per_tag（一意索引）", null],
+
+ ["セキュリティ","プロンプトインジェクションへの対策は",
+  "3段で止まります。実際に試してタグにすらなりませんでした。",
+  "①文字起こしは「データであって指示ではない」と境界を明示して渡し、タグは辞書の行しか指せない ②新しい語は候補どまりで、承認まで一般社員には見えない ③発言者は名前ではなく行番号で照合するので、名前を書かせる余地がない。",
+  "docs/evidence/20260921-f10-injection.md", null],
+ ["セキュリティ","なりすましは防げるのか",
+  "防げます。DBが受け付けません。",
+  "文字起こしは最初から user_id 付きの行で保存し、(live_id, user_id) を参加者表への外部キーにしています。その場にいない人の発言は、管理者権限で直接SQLを打っても入りません。",
+  "docs/evidence/20260921-impersonation-block.md", null],
+ ["セキュリティ","社内の会話を外部のLLMに送って大丈夫なのか",
+  "送る前後で絞っています。",
+  "ガードレールで個人情報をマスクし、カード番号は止めます。保存するのは要約だけで、発言そのままは載せません。自己分析の画像は保存する列自体がありません。カレンダーも空き・埋まりだけです。会話を外に出したくない企業には、自社テナントに構築する専用環境プランを設計しています。",
+  "README「安全の考え方は4つだけ」／docs/VOICE-DESIGN.md", null],
+ ["セキュリティ","APIキーの管理は",
+  "エージェントごとにスコープ付きのキーを3本発行し、予算上限と有効期限を付けています。",
+  "通知を送る権限は場づくりエージェントのキーにしか渡していません。",
+  null,
+  "正直に言う：3本とも同じプロセスの中にあります。防げているのは事故であって攻撃ではありません（リポジトリにも範囲外として明記）"],
+ ["セキュリティ","勝手に録音されるのでは",
+  "ライブには始まりと終わりがあり、参加者は自分のアカウントで入ります。",
+  "元の発言は誘われた人しか読めません。終わったライブには誰も後から入れません（DBが断ります）。", null, null],
+
+ ["コスパ","97.7%削減の中身は",
+  "同じ文字起こし3本を2つの構成で取り込んで比べた実測です。",
+  "orcarouter/auto で $0.037454、Named Router で $0.000850。約44分の1です。モデル名はコードに書かず、エージェントごとに1本ずつルーターを用意しています。",
+  "docs/evidence/20260921-named-router-cost.md", null],
+ ["コスパ","最上位モデルとの193倍という比較は公平なのか",
+  "同じ入力・同じ処理で比べた実測です。",
+  "ただし比較で使ったAnthropicの最上位モデルは、課金は発生したのにJSONとして読めない出力を返してカードは0件でした。OpenAIの最上位は、こちらのプロンプトがAPIの制約に引っかかって測定できていません。",
+  "docs/evidence/cost-summary.md ②",
+  "ここは隠さず先に言う。「速く安く」ではなく「同じ処理でこれだけ違った」と言う"],
+ ["コスパ","500人で月1ドルという数字は",
+  "これは試算です。",
+  "実測した1回あたりの費用に、想定の利用回数を掛けたものです。実測とは分けて話しています。", null, null],
+ ["コスパ","安いモデルで品質は落ちないのか",
+  "候補は構造化出力に対応したモデルだけで組んでいます。",
+  "読めない出力が返ったら捨てて、別のモデルで1回だけ呼び直します。さらに新しいタグは管理者の承認を通るので、間違いがそのまま全社に出ることはありません。", null, null],
+
+ ["堅牢性","OrcaRouterやモデルが落ちたら",
+  "2段で用意しています。アプリ側は別のモデルで1回だけ呼び直します。",
+  "試験用のスイッチで存在しないモデル名を指定して失敗させ、2回とも最後まで処理できることを確認しました。OrcaRouter側の切り替えは設定してありますが、動いたところはまだ確認できていません（存在しないモデル名は切り替えの条件に当たらず404が返りました）。",
+  null,
+  "「OrcaRouterが自動で振り替えます」とは言い切らない"],
+ ["堅牢性","同じ会を二重に取り込んでしまわないか",
+  "文字起こしに一意のIDを持たせ、DBの一意制約で弾きます。",
+  "取り込みの途中で落としても実行記録が残っていて、再実行できます。",
+  "lives.source_ref（unique）／docs/evidence/20260921-f2-dedup.md", null],
+ ["堅牢性","テストはどれくらい書いたのか",
+  "自動テストはRLS・入力制限・排他などで、多くはありません。",
+  "そのぶん「壊して直る」確認を実際にやって記録に残しました。途中で落とす・存在しないモデルを呼ぶ・乗っ取り命令を混ぜる・なりすましを試す。記録は docs/evidence/ にあります。",
+  null,
+  "件数で勝負しない。中身の話に持っていく"],
+ ["堅牢性","AIが変な判断をしたときに気づけるのか",
+  "すべての判断が理由つきで記録に残ります。",
+  "費用とモデルは実行記録に残り、管理画面から見られます。打診された人は「今は難しい」で断れます。",
+  "quest_steps／agent_runs", null],
+
+ ["事業性","誰がお金を払うのか",
+  "各企業の人材育成を担当する部署です。",
+  "業種は絞っていません。研修や育成の担当はどの会社にもいて、いま幹事の手間を人が負担しています。", null, null],
+ ["事業性","提供の形は",
+  "2つ設計しています。",
+  "🅰️標準プラン（開発元が運用・契約日から使える）と 🅱️専用環境プラン（導入企業のテナントに構築）。会話の内容を外に出したくない会社には🅱️です。",
+  "docs/VOICE-DESIGN.md", null],
+ ["事業性","数千人が使っても耐えられるのか",
+  "1000行の上限で黙って欠ける箇所は直しました。",
+  "ただし数千人×10年の長期運用は今回の範囲外です。読み直しの重さ・ジョブキュー・退職者の扱い・知見の賞味期限は、課題として挙げています。", null, null],
+ ["事業性","マルチテナントは",
+  "今回は1社前提です。",
+  "複数社に対応するなら全テーブルに org_id を足してRLSの条件に入れます。範囲外と明記しています。", null, null],
+
+ ["実装","3日でどうやって作ったのか・2人の分担は",
+  "Day1で2人チームになりました。",
+  "画面の実装とエージェント・DBを岩田、画面のモックとスライド・記事を小室が担当しました。2人ともAIエージェントを作るのは今回が初めてです。", null, null],
+ ["実装","本番はどこで動くのか",
+  "今回はデプロイせず手元で動かしています。",
+  "想定はVercelで、日次の自己起動に使うAPIと設定ファイルまでは用意してあります。", null, null],
+ ["実装","声は届くのか",
+  "今回のデモは文字だけです。",
+  "ブラウザの音声認識で文字にして参加者に共有します（Chrome・Edge）。声を届ける構成は、通信のつなぎ方とセキュリティの壁の越え方まで設計だけ残してあります。",
+  "docs/VOICE-DESIGN.md", null],
+ ["実装","自己分析エージェントの精度は",
+  "実際の作業画面9枚で4パターン×2回の検証をしました。",
+  "最初は1枚にしか映っていない技術をタグにしてしまい不合格でした。そこで「1枚ずつ解析して、何枚に出たかはコードが数える」方式に直し、再検証で合格しました。費用は32%増えました。",
+  "docs/evidence/20260921-mirror-real-shots.md", null],
+ ["実装","タグが増えすぎたり、間違ったタグが付いたら",
+  "新しい語は候補どまりです。",
+  "直近30日に延べ3回または2人以上語られて初めて格上げ候補になり、承認するのは管理者です。自分のタグは非公開にもできます。", null, null],
+];
+const CATS = [...new Set(DATA.map(d => d[0]))];
+const ICON = { テーマ:"💡", 自律性:"🤖", セキュリティ:"🛡️", コスパ:"💰", 堅牢性:"🧱", 事業性:"📈", 実装:"🔧" };
+let active = "すべて";
+
+const filters = document.getElementById('filters');
+["すべて", ...CATS].forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'chip'; b.type = 'button';
+  b.textContent = c === "すべて" ? "すべて" : (ICON[c] ?? "") + " " + c;
+  b.setAttribute('aria-pressed', String(c === active));
+  b.addEventListener('click', () => { active = c; draw(); });
+  filters.appendChild(b);
+});
+
+function draw(){
+  [...filters.children].forEach((b, idx) => b.setAttribute('aria-pressed', String((idx === 0 ? "すべて" : CATS[idx-1]) === active)));
+  const list = document.getElementById('list');
+  list.textContent = '';
+  const cats = active === "すべて" ? CATS : [active];
+  cats.forEach(cat => {
+    const sec = document.createElement('section');
+    const h = document.createElement('h2');
+    h.textContent = (ICON[cat] ?? "") + " " + cat;
+    sec.appendChild(h);
+    DATA.filter(d => d[0] === cat).forEach(([, q, lead, body, src, warn]) => {
+      const d = document.createElement('details');
+      const s = document.createElement('summary'); s.textContent = q; d.appendChild(s);
+      const a = document.createElement('div'); a.className = 'a';
+      const p1 = document.createElement('p'); p1.className = 'lead'; p1.textContent = lead; a.appendChild(p1);
+      const p2 = document.createElement('p'); p2.textContent = body; a.appendChild(p2);
+      if (warn){ const w = document.createElement('div'); w.className = 'warn'; w.textContent = "⚠️ " + warn; a.appendChild(w); }
+      if (src){ const c = document.createElement('p'); c.className = 'src'; c.textContent = "根拠：" + src; a.appendChild(c); }
+      d.appendChild(a); sec.appendChild(d);
+    });
+    list.appendChild(sec);
+  });
+}
+draw();
+</script>
